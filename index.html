@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>太陽の涙、虚脱の空</title>
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1c1917">
 <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Zen+Old+Mincho:wght@400;500&family=Shippori+Mincho+B1:wght@400&display=swap" rel="stylesheet">
 <style>
@@ -40,15 +40,12 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 <h1>太陽の涙、虚脱の空</h1>
 <div class="device"><button id="sp" class="active">スマホ</button><button id="tab">タブレット</button></div>
 </header>
-
-<div class="hero"><img src="/hero.jpg" alt="hero"></div>
-
+<div class="hero"><img src="hero.jpg" alt="hero"></div>
 <div class="poem-wrap" id="poemWrap">
   <div class="poem-card">
     <div class="poem-main" id="poemMain">汚れっちまった悲しみに、小雪が降る。</div>
     <div class="poem-sub" id="poemSub">虚脱の空 / 仙人級 / 舞子ビラ</div>
   </div>
-
   <div class="controls">
     <select id="placeSelect" class="select"></select>
     <div class="practical" id="practical">晴 21℃/12℃ 降水30% 南西3m 神戸・舞子ビラ</div>
@@ -62,17 +59,14 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
     </div>
   </div>
 </div>
-
 <div class="real">
   <div class="real-card" id="realCard">実写静止画（プロトタイプはグラデーション）<br><span id="time"></span></div>
 </div>
-
 <footer>© rayvisionkobe-collab / PWA template v1 / 背景は生成り #1c1917 温墨</footer>
-
 <script>
 let cfg=null;
 async function loadConfig(){
-  const r=await fetch('/config.json'); cfg=await r.json();
+  const r=await fetch('config.json'); cfg=await r.json();
   const sel=document.getElementById('placeSelect');
   cfg.locations.forEach(l=>{
     const o=document.createElement('option'); o.value=l.id; o.textContent=l.name; sel.appendChild(o);
@@ -116,7 +110,7 @@ document.getElementById('poetToggle').addEventListener('click',e=>{
 });
 document.getElementById('sp').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='390px';document.getElementById('sp').classList.add('active');document.getElementById('tab').classList.remove('active')};
 document.getElementById('tab').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='768px';document.getElementById('tab').classList.add('active');document.getElementById('sp').classList.remove('active')};
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
 loadConfig();
 </script>
 </body>
