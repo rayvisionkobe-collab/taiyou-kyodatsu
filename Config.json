@@ -1,0 +1,87 @@
+{
+  "appName": "太陽の涙、虚脱の空",
+  "shortName": "虚脱の空",
+  "description": "実用的な天気と詩の一行を重ねる天気アプリ",
+  "themeColor": "#1c1917",
+  "backgroundColor": "#1c1917",
+  "poets": [
+    {
+      "id": "kyodatsu",
+      "label": "虚脱の空",
+      "poet": "中原中也風",
+      "default": true
+    },
+    {
+      "id": "taiyou",
+      "label": "太陽の涙",
+      "poet": "宮沢賢治風",
+      "default": false
+    }
+  ],
+  "levels": [
+    {
+      "id": 0,
+      "label": "からっと",
+      "desc": "短く事実的"
+    },
+    {
+      "id": 1,
+      "label": "ほどよく",
+      "desc": "比喩少し"
+    },
+    {
+      "id": 2,
+      "label": "こいめ",
+      "desc": "主観濃く"
+    },
+    {
+      "id": 3,
+      "label": "仙人級",
+      "desc": "長く解体的"
+    }
+  ],
+  "locations": [
+    {
+      "id": "maiko",
+      "name": "舞子ビラ・明石海峡大橋",
+      "lat": 34.634,
+      "lon": 135.029
+    },
+    {
+      "id": "kobe_air",
+      "name": "神戸空港",
+      "lat": 34.632,
+      "lon": 135.223
+    },
+    {
+      "id": "sapporo",
+      "name": "札幌すすきの",
+      "lat": 43.055,
+      "lon": 141.353
+    },
+    {
+      "id": "tokyo",
+      "name": "東京スカイツリー",
+      "lat": 35.71,
+      "lon": 139.81
+    },
+    {
+      "id": "fuji",
+      "name": "富士山裾野",
+      "lat": 35.28,
+      "lon": 138.61
+    },
+    {
+      "id": "fukuoka",
+      "name": "福岡空港",
+      "lat": 33.584,
+      "lon": 130.451
+    },
+    {
+      "id": "naha",
+      "name": "那覇国際通り",
+      "lat": 26.215,
+      "lon": 127.68
+    }
+  ]
+}

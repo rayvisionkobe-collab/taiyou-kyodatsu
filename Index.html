@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>太陽の涙、虚脱の空</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1c1917">
+<link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Zen+Old+Mincho:wght@400;500&family=Shippori+Mincho+B1:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1c1917;--card:#231e1b;--text:#f5f1e8;--muted:#a8a29e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:"Zen Old Mincho",serif}
+header{height:38px;background:rgba(28,25,23,0.9);display:flex;align-items:center;justify-content:space-between;padding:0 12px;position:sticky;top:0;z-index:10;backdrop-filter:blur(8px)}
+header h1{font-family:"Shippori Mincho B1",serif;font-size:14px;letter-spacing:0.08em;margin:0}
+.device{display:flex;gap:6px} .device button{font-size:11px;padding:4px 8px;border:1px solid #444;background:transparent;color:var(--text);border-radius:12px}
+.device button.active{background:var(--text);color:var(--bg)}
+.hero{width:100%;background:#0a0a0a;display:flex;justify-content:center;align-items:center;overflow:hidden}
+.hero img{width:100%;height:auto;max-height:85vh;object-fit:contain;object-position:center}
+@media(max-width:430px){.hero img{aspect-ratio:4/3;}}
+.poem-wrap{max-width:768px;margin:0 auto;padding:24px 16px;background:rgba(28,25,23,0.78);backdrop-filter:blur(12px)}
+.poem-card{padding:28px 20px;text-align:center}
+.poem-main{font-family:"Yuji Syuku",cursive;font-size:26px;line-height:1.6;letter-spacing:0.04em;white-space:pre-wrap}
+.poem-sub{margin-top:12px;font-size:13px;color:var(--muted);font-family:"Shippori Mincho B1",serif}
+.practical{margin-top:16px;padding:10px 14px;background:#1e1e1e;border-radius:8px;color:var(--text);font-size:13px;line-height:1.5}
+.controls{margin-top:20px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.select{width:100%;padding:10px;background:#111;color:var(--text);border:1px solid #333;border-radius:8px;font-size:13px}
+.toggle{display:flex;background:#111;border-radius:20px;padding:3px}
+.toggle button{flex:1;padding:6px 12px;border-radius:16px;border:none;background:transparent;color:var(--muted);font-size:13px}
+.toggle button.active{background:var(--text);color:var(--bg)}
+.slider{width:100%}
+.labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
+.real{max-width:768px;margin:0 auto;padding:16px}
+.real-card{aspect-ratio:16/9;background:linear-gradient(180deg,#2a3a5a,#1c1917);border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+<h1>太陽の涙、虚脱の空</h1>
+<div class="device"><button id="sp" class="active">スマホ</button><button id="tab">タブレット</button></div>
+</header>
+
+<div class="hero"><img src="/hero.jpg" alt="hero"></div>
+
+<div class="poem-wrap" id="poemWrap">
+  <div class="poem-card">
+    <div class="poem-main" id="poemMain">汚れっちまった悲しみに、小雪が降る。</div>
+    <div class="poem-sub" id="poemSub">虚脱の空 / 仙人級 / 舞子ビラ</div>
+  </div>
+
+  <div class="controls">
+    <select id="placeSelect" class="select"></select>
+    <div class="practical" id="practical">晴 21℃/12℃ 降水30% 南西3m 神戸・舞子ビラ</div>
+    <div class="toggle" id="poetToggle">
+      <button data-poet="kyodatsu" class="active">虚脱の空</button>
+      <button data-poet="taiyou">太陽の涙</button>
+    </div>
+    <div>
+      <input type="range" id="level" min="0" max="3" step="1" value="3" class="slider">
+      <div class="labels"><span>からっと</span><span>ほどよく</span><span>こいめ</span><span>仙人級</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="real">
+  <div class="real-card" id="realCard">実写静止画（プロトタイプはグラデーション）<br><span id="time"></span></div>
+</div>
+
+<footer>© rayvisionkobe-collab / PWA template v1 / 背景は生成り #1c1917 温墨</footer>
+
+<script>
+let cfg=null;
+async function loadConfig(){
+  const r=await fetch('/config.json'); cfg=await r.json();
+  const sel=document.getElementById('placeSelect');
+  cfg.locations.forEach(l=>{
+    const o=document.createElement('option'); o.value=l.id; o.textContent=l.name; sel.appendChild(o);
+  });
+  updatePoem();
+}
+function getPoem(poet,level,place){
+  const base={
+    kyodatsu:[
+      "今日は歩けそうな空です。",
+      "雲が橋を渡ろうとしています。",
+      "汚れっちまった悲しみに、風が触れる。",
+      "汚れっちまった悲しみに、今日も小雪の降りかかる、虚脱の空でした。どこへも行けず、空だけが遠くへ行ってしまうような、仙人級の午後。"
+    ],
+    taiyou:[
+      "光が砕けて、道に落ちています。",
+      "海の向こうで、風が渡ろうとしています。",
+      "空が少し傾いて、3°、光をこぼした。",
+      "光の粒子が霧を照らし、樹々は朝日を浴びて輝く。今日の空は、すべての存在を光に包むような、太陽の涙の仙人級でした。"
+    ]
+  };
+  return base[poet][level]||base[poet][1];
+}
+function updatePoem(){
+  const poet=document.querySelector('#poetToggle button.active').dataset.poet;
+  const level=parseInt(document.getElementById('level').value);
+  const place=document.getElementById('placeSelect').value;
+  const placeName=document.getElementById('placeSelect').selectedOptions[0]?.textContent||'舞子ビラ';
+  const levels=["からっと","ほどよく","こいめ","仙人級"];
+  document.getElementById('poemMain').textContent=getPoem(poet,level,place);
+  document.getElementById('poemSub').textContent=`${poet==='kyodatsu'?'虚脱の空':'太陽の涙'} / ${levels[level]} / ${placeName}`;
+  document.getElementById('time').textContent=new Date().toLocaleString('ja-JP');
+}
+document.getElementById('placeSelect').addEventListener('change',updatePoem);
+document.getElementById('level').addEventListener('input',updatePoem);
+document.getElementById('poetToggle').addEventListener('click',e=>{
+  if(e.target.tagName==='BUTTON'){
+    document.querySelectorAll('#poetToggle button').forEach(b=>b.classList.remove('active'));
+    e.target.classList.add('active'); updatePoem();
+  }
+});
+document.getElementById('sp').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='390px';document.getElementById('sp').classList.add('active');document.getElementById('tab').classList.remove('active')};
+document.getElementById('tab').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='768px';document.getElementById('tab').classList.add('active');document.getElementById('sp').classList.remove('active')};
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}
+loadConfig();
+</script>
+</body>
+</html>
