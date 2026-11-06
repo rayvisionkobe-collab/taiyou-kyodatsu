@@ -64,7 +64,7 @@
     },
     {
       "id": "tokyo",
-      "name": "東京スカイツリー",
+      "name": "東京タワー",
       "lat": 35.71,
       "lon": 139.81,
       "video_id": "nu6NE55_X7A"
@@ -85,10 +85,10 @@
     },
     {
       "id": "naha",
-      "name": "那覇国際通り",
+      "name": "那覇空港",
       "lat": 26.215,
       "lon": 127.68,
-      "video_id": "Yq8WmXplhrU"
+      "video_id": "NFYOcLaF6uM"
     }
   ]
 }
