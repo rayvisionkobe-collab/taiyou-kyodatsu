@@ -2,19 +2,16 @@ name: Update Weather Still and Poem
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
-concurrency:
-  group: update-weather
-  cancel-in-progress: false
-
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -26,9 +23,9 @@ jobs:
 
       - name: Install ffmpeg and yt-dlp
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
-          pip install yt-dlp requests Pillow
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          pip install -q yt-dlp requests Pillow
 
       - name: Fetch still and generate poem
         env:
