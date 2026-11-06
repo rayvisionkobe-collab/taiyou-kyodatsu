@@ -83,9 +83,6 @@ def generate_poems(image_path, place_name, lat=None, lon=None):
         return fallback_poems(place_name, lat, lon), "fallback-no-key"
     try:
         b64 = base64.b64encode(Path(image_path).read_bytes()).decode()
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
-        # fallback model if 2.0 fails
-        fallback_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
         prompt = f"""この画像は日本の{place_name}のライブカメラです。画像をよく見て、2人の詩人の詩をJSONで作ってください。
 返答はJSONだけ、説明文なしで。
 形式:
@@ -97,30 +94,36 @@ def generate_poems(image_path, place_name, lat=None, lon=None):
 - 場所名「{place_name}」を各詩に1回は入れる
 - 0は短く事実的、1は比喩少し、2は主観濃く、3は長く解体的
 """
-        payload = {"contents":[{"parts":[{"text":prompt},{"inline_data":{"mime_type":"image/jpeg","data":b64}}]}], "generationConfig":{"temperature":0.9,"maxOutputTokens":1200,"response_mime_type":"application/json"}}
-        r = requests.post(url, json=payload, timeout=90)
-        if r.status_code != 200:
-            print(f"gemini 2.0 status {r.status_code}, try 1.5")
-            # JSON mode may not be supported on 1.5, so remove response_mime_type
-            payload2 = dict(payload); payload2.pop("generationConfig", None); payload2["generationConfig"]={"temperature":0.9,"maxOutputTokens":1200}
-            r = requests.post(fallback_url, json=payload2, timeout=90)
-        r.raise_for_status()
-        txt = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
-        # JSON抽出
-        m = re.search(r"\{.*\}", txt, re.DOTALL)
-        if m:
-            txt = m.group(0)
-        data = json.loads(txt)
-        # バリデーション
-        if "kyodatsu" in data and "taiyou" in data:
-            # 欠けをフォールバックで補う
-            fb = fallback_poems(place_name)
-            for poet in ["kyodatsu","taiyou"]:
-                for lvl in ["0","1","2","3"]:
-                    if not data[poet].get(lvl):
-                        data[poet][lvl] = fb[poet][lvl]
-            return data, "gemini-2.0-flash"
-        raise ValueError("bad json structure")
+        # 2026年11月現在: 2.0 / 1.5 / 2.5 は新規キーでは404になる。Gemini 3系を優先する
+        models = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.0-flash"]
+        last_err = None
+        for model in models:
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+                payload = {"contents":[{"parts":[{"text":prompt},{"inline_data":{"mime_type":"image/jpeg","data":b64}}]}], "generationConfig":{"temperature":0.9,"maxOutputTokens":1200,"response_mime_type":"application/json"}}
+                r = requests.post(url, json=payload, timeout=90)
+                if r.status_code != 200:
+                    print(f"gemini {model} status {r.status_code}: {r.text[:200]}")
+                    last_err = f"{model} {r.status_code}"
+                    continue
+                txt = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+                m = re.search(r"\{.*\}", txt, re.DOTALL)
+                if m:
+                    txt = m.group(0)
+                data = json.loads(txt)
+                if "kyodatsu" in data and "taiyou" in data:
+                    fb = fallback_poems(place_name, lat, lon)
+                    for poet in ["kyodatsu","taiyou"]:
+                        for lvl in ["0","1","2","3"]:
+                            if not data[poet].get(lvl):
+                                data[poet][lvl] = fb[poet][lvl]
+                    return data, model
+                raise ValueError("bad json structure")
+            except Exception as e:
+                print(f"gemini {model} fail {place_name}: {e}")
+                last_err = str(e)
+                continue
+        raise Exception(f"all models failed: {last_err}")
     except Exception as e:
         print(f"gemini fail {place_name}: {e}")
         return fallback_poems(place_name, lat, lon), "fallback"
