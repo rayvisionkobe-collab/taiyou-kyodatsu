@@ -4,12 +4,16 @@ from pathlib import Path
 Path("images").mkdir(exist_ok=True)
 
 def load_locations():
-    try:
-        cfg = json.loads(Path("config.json").read_text(encoding="utf-8"))
-        return cfg.get("locations", [])
-    except Exception as e:
-        print(f"config load fail: {e}")
-        return [{"id":"maiko","name":"舞子ビラ","video_id":"W5iKrSNyJhQ"}]
+    # config.json に依存しない: ここが正解。config.json が古くても、こちらが使われる
+    return [
+        {"id": "maiko", "name": "舞子ビラ・明石海峡大橋", "video_id": "W5iKrSNyJhQ"},
+        {"id": "kobe_air", "name": "神戸空港", "video_id": "dpVyxSYsVs0"},
+        {"id": "sapporo", "name": "札幌すすきの", "video_id": "wRYonRnKsKw"},
+        {"id": "tokyo", "name": "東京タワー", "video_id": "nu6NE55_X7A"},
+        {"id": "fuji", "name": "富士山裾野", "video_id": "F2NbYrc-gBU"},
+        {"id": "fukuoka", "name": "福岡・博多中洲", "video_id": "NGbqP0fEZSE"},
+        {"id": "naha", "name": "那覇空港", "video_id": "dc8Iqi5Xxl8"},
+    ]
 
 def fetch_still(video_id, out_path):
     # 1) YouTube ライブサムネイル (数秒おきに更新される) を最優先 - ffmpegより確実で速い
