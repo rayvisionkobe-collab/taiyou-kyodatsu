@@ -12,32 +12,35 @@ def load_locations():
         return [{"id":"maiko","name":"舞子ビラ","video_id":"W5iKrSNyJhQ"}]
 
 def fetch_still(video_id, out_path):
-    # 1) yt-dlp で複数フォーマットを試す
+    # 1) YouTube ライブサムネイル (数秒おきに更新される) を最優先 - ffmpegより確実で速い
+    for q in ["hqdefault_live", "maxresdefault_live", "hqdefault", "maxresdefault"]:
+        try:
+            url = f"https://i.ytimg.com/vi/{video_id}/{q}.jpg"
+            r = requests.get(url, timeout=15)
+            # ライブサムネイルは 404 だと小さいグレーの画像 (約1-2KB) が返るので、サイズで判定
+            if r.status_code == 200 and len(r.content) > 8000:
+                Path(out_path).write_bytes(r.content)
+                print(f"live-thumb ok {video_id} {q} {len(r.content)} bytes")
+                return "live-thumb"
+            else:
+                print(f"live-thumb skip {video_id} {q} status={r.status_code} size={len(r.content) if r.status_code==200 else 0}")
+        except Exception as e:
+            print(f"live-thumb fail {video_id} {q}: {e}")
+    # 2) yt-dlp + ffmpeg を試す (本物の動画フレーム)
     for fmt in ["bv*[height<=720]+ba/b[height<=720]/best", "best[height<=720]", "best"]:
         try:
-            result = subprocess.run(["yt-dlp","-g","-f",fmt, f"https://www.youtube.com/watch?v={video_id}"], capture_output=True, text=True, timeout=90)
+            result = subprocess.run(["yt-dlp","-g","-f",fmt, f"https://www.youtube.com/watch?v={video_id}"], capture_output=True, text=True, timeout=35)
             urls = [u.strip() for u in result.stdout.strip().splitlines() if u.strip().startswith("http")]
             if not urls:
                 continue
             stream_url = urls[0]
-            r = subprocess.run(["ffmpeg","-y","-i",stream_url,"-vframes","1","-q:v","3",out_path], capture_output=True, timeout=90)
+            r = subprocess.run(["ffmpeg","-y","-i",stream_url,"-vframes","1","-q:v","3",out_path], capture_output=True, timeout=35)
             if Path(out_path).exists() and Path(out_path).stat().st_size > 8000:
                 print(f"ffmpeg ok {video_id} fmt={fmt}")
                 return "live"
         except Exception as e:
-            print(f"try fmt {fmt} fail {video_id}: {e}")
+            print(f"ffmpeg try {fmt} fail {video_id}: {e}")
             continue
-    # 2) サムネイル fallback (hq -> maxres)
-    for q in ["maxresdefault","hqdefault","mqdefault"]:
-        try:
-            thumb = f"https://i.ytimg.com/vi/{video_id}/{q}.jpg"
-            r = requests.get(thumb, timeout=20)
-            if r.status_code==200 and len(r.content)>8000:
-                Path(out_path).write_bytes(r.content)
-                print(f"thumb ok {video_id} {q}")
-                return "thumbnail"
-        except Exception as e:
-            print(f"thumb fail {video_id} {q}: {e}")
     return None
 
 def fallback_poems(place_name):
