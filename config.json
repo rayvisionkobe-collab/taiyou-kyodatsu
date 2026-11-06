@@ -45,43 +45,50 @@
       "id": "maiko",
       "name": "舞子ビラ・明石海峡大橋",
       "lat": 34.634,
-      "lon": 135.029
+      "lon": 135.029,
+      "video_id": "W5iKrSNyJhQ"
     },
     {
       "id": "kobe_air",
       "name": "神戸空港",
       "lat": 34.632,
-      "lon": 135.223
+      "lon": 135.223,
+      "video_id": "dpVyxSYsVs0"
     },
     {
       "id": "sapporo",
       "name": "札幌すすきの",
       "lat": 43.055,
-      "lon": 141.353
+      "lon": 141.353,
+      "video_id": "k4KjP2hG7dI"
     },
     {
       "id": "tokyo",
       "name": "東京スカイツリー",
       "lat": 35.71,
-      "lon": 139.81
+      "lon": 139.81,
+      "video_id": "s1T9Z2eJz0g"
     },
     {
       "id": "fuji",
       "name": "富士山裾野",
       "lat": 35.28,
-      "lon": 138.61
+      "lon": 138.61,
+      "video_id": "LxV8cR1k6yQ"
     },
     {
       "id": "fukuoka",
       "name": "福岡空港",
       "lat": 33.584,
-      "lon": 130.451
+      "lon": 130.451,
+      "video_id": "7hR1hT6bK9k"
     },
     {
       "id": "naha",
       "name": "那覇国際通り",
       "lat": 26.215,
-      "lon": 127.68
+      "lon": 127.68,
+      "video_id": "X8a2f5b3K9k"
     }
   ]
 }
