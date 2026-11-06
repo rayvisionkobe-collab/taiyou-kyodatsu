@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-07T00:16:05.580809+09:00",
+  "updated_at": "2026-11-07T00:36:45.764357+09:00",
   "locations": {
     "kobe_maiko": {
       "video_id": "W5iKrSNyJhQ",
@@ -14,6 +14,55 @@
       "poem": "空が、そっと息をしている。\n風は、遠くで何かを運んでくる。\n今日も、ここで生きている。",
       "model": "fallback",
       "updated_at": "2026-11-07T00:16:05.580809+09:00"
+    },
+    "maiko": {
+      "video_id": "W5iKrSNyJhQ",
+      "image": "images/maiko.jpg",
+      "poem": "空が、そっと息をしている。\n風は、遠くで何かを運んでくる。\n今日も、ここで生きている。",
+      "model": "fallback",
+      "updated_at": "2026-11-07T00:36:45.764357+09:00"
+    },
+    "kobe_air": {
+      "video_id": "dpVyxSYsVs0",
+      "image": "images/kobe_air.jpg",
+      "poem": "空が、そっと息をしている。\n風は、遠くで何かを運んでくる。\n今日も、ここで生きている。",
+      "model": "fallback",
+      "updated_at": "2026-11-07T00:36:45.764357+09:00"
+    },
+    "sapporo": {
+      "video_id": "k4KjP2hG7dI",
+      "image": "images/sapporo.jpg",
+      "poem": "空が、そっと息をしている。\n風は、遠くで何かを運んでくる。\n今日も、ここで生きている。",
+      "model": "fallback",
+      "updated_at": "2026-11-07T00:36:45.764357+09:00"
+    },
+    "tokyo": {
+      "video_id": "s1T9Z2eJz0g",
+      "image": "images/tokyo.jpg",
+      "poem": "空が、そっと息をしている。\n風は、遠くで何かを運んでくる。\n今日も、ここで生きている。",
+      "model": "fallback",
+      "updated_at": "2026-11-07T00:36:45.764357+09:00"
+    },
+    "fuji": {
+      "video_id": "LxV8cR1k6yQ",
+      "image": "images/fuji.jpg",
+      "poem": "空が、そっと息をしている。\n風は、遠くで何かを運んでくる。\n今日も、ここで生きている。",
+      "model": "fallback",
+      "updated_at": "2026-11-07T00:36:45.764357+09:00"
+    },
+    "fukuoka": {
+      "video_id": "7hR1hT6bK9k",
+      "image": "images/fukuoka.jpg",
+      "poem": "空が、そっと息をしている。\n風は、遠くで何かを運んでくる。\n今日も、ここで生きている。",
+      "model": "fallback",
+      "updated_at": "2026-11-07T00:36:45.764357+09:00"
+    },
+    "naha": {
+      "video_id": "X8a2f5b3K9k",
+      "image": "images/naha.jpg",
+      "poem": "空が、そっと息をしている。\n風は、遠くで何かを運んでくる。\n今日も、ここで生きている。",
+      "model": "fallback",
+      "updated_at": "2026-11-07T00:36:45.764357+09:00"
     }
   }
 }
