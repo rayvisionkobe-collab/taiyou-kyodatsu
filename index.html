@@ -87,21 +87,27 @@ async function loadLive(){
     if(res.ok) liveData=await res.json();
   }catch(e){ console.log('live skip', e); }
 }
-function getAIPoem(place, level){
-  if(!liveData?.locations?.[place]?.poem) return null;
-  const lines = liveData.locations[place].poem.split('\n').filter(Boolean);
-  // level: 0=1行, 1=2行, 2=3行, 3=3行+余韻
-  if(level===0) return lines[0]||lines.join('\n');
-  if(level===1) return lines.slice(0,2).join('\n');
-  if(level===2) return lines.slice(0,3).join('\n');
-  return lines.slice(0,3).join('\n');
-}
-function getTemplatePoem(poet, level){
-  const base={
-    kyodatsu:["今日は歩けそうな空です。","雲が橋を渡ろうとしています。","汚れっちまった悲しみに、風が触れる。","汚れっちまった悲しみに、今日も小雪の降りかかる、虚脱の空でした。どこへも行けず、空だけが遠くへ行ってしまうような、仙人級の午後。"],
-    taiyou:["光が砕けて、道に落ちています。","海の向こうで、風が渡ろうとしています。","空が少し傾いて、3°、光をこぼした。","光の粒子が霧を照らし、樹々は朝日を浴びて輝く。今日の空は、すべての存在を光に包むような、太陽の涙の仙人級でした。"]
+function getPoem(place, poet, level){
+  const entry = liveData?.locations?.[place];
+  // 新形式: poems[poet][level]
+  if(entry?.poems?.[poet]?.[String(level)]){
+    return entry.poems[poet][String(level)];
+  }
+  // 旧形式: poem (3行) をレベルで切るフォールバック
+  if(entry?.poem){
+    const lines = entry.poem.split('\n').filter(Boolean);
+    if(level===0) return lines[0]||entry.poem;
+    if(level===1) return lines.slice(0,2).join('\n');
+    return lines.slice(0,3).join('\n');
+  }
+  // 完全フォールバック: 場所名入りテンプレート
+  const loc = cfg?.locations?.find(l=>l.id===place);
+  const name = loc?.name || place;
+  const tpl = {
+    kyodatsu: [`${name}の空は、今日も静かだ。`, `${name}の空は、今日も静かだ。\n風が、遠くで何かを運んでくる。`, `${name}の空は、今日も静かだ。\n風が、遠くで何かを運んでくる。\n曇りの午後、空だけが遠くへ行く。`, `${name}の空は、今日も静かだ。風が、遠くで何かを運んでくる。曇りの午後、どこへも行けず、空だけが遠くへ行ってしまうような、虚脱の午後だった。`],
+    taiyou: [`${name}に、光が落ちている。`, `${name}に、光が落ちている。\n海の向こうで、風が渡ろうとしている。`, `${name}に、光が落ちている。\n海の向こうで、風が渡ろうとしている。\n晴れの光が、今日の空を包んでいる。`, `${name}に、光が落ちている。海の向こうで、風が渡ろうとしている。晴れの光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった。`]
   };
-  return base[poet][level]||base[poet][1];
+  return tpl[poet][level]||tpl[poet][1];
 }
 async function fetchWeather(lat, lon){
   try{
@@ -109,9 +115,8 @@ async function fetchWeather(lat, lon){
     const r = await fetch(url);
     const j = await r.json();
     const cur = j.current, day = j.daily;
-    const code = cur.weather_code;
     const wmap = {0:'晴',1:'晴',2:'曇',3:'曇',45:'霧',48:'霧',51:'小雨',53:'雨',55:'雨',61:'雨',63:'雨',65:'大雨',71:'雪',73:'雪',75:'大雪',80:'雨',95:'雷雨'};
-    const w = wmap[code]||'曇';
+    const w = wmap[cur.weather_code]||'曇';
     return `${w} ${Math.round(cur.temperature_2m)}℃ / ${Math.round(day.temperature_2m_min[0])}℃ 降水${cur.precipitation}mm 風${Math.round(cur.wind_speed_10m)}m`;
   }catch(e){ return '天気を取得中…'; }
 }
@@ -122,36 +127,30 @@ async function updateAll(){
   const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
   const level = parseInt(document.getElementById('level').value);
   const levels = ["からっと","ほどよく","こいめ","仙人級"];
-  // 中：AI詩を優先、なければテンプレート
-  const ai = getAIPoem(place, level);
-  const poemText = ai || getTemplatePoem(poet, level);
+  const poemText = getPoem(place, poet, level);
   document.getElementById('poemMain').textContent = poemText;
   const placeName = loc.name;
-  document.getElementById('poemSub').textContent = `${poet==='kyodatsu'?'虚脱の空':'太陽の涙'} / ${levels[level]} / ${placeName} ${ai ? '・ AI生成' : ''}`;
-  // 天気：Open-Meteo
+  const isAI = !!liveData?.locations?.[place]?.poems;
+  document.getElementById('poemSub').textContent = `${poet==='kyodatsu'?'虚脱の空':'太陽の涙'} / ${levels[level]} / ${placeName} ${isAI ? '・ AI生成' : '・ テンプレート'}`;
   document.getElementById('practical').textContent = '天気を取得中… ' + placeName;
   const w = await fetchWeather(loc.lat, loc.lon);
   document.getElementById('practical').textContent = w + ' ' + placeName;
-  // 下：ライブ静止画のみ（詩は中に移動したので、ここは画像だけ）
   const item = liveData?.locations?.[place];
   const img = document.getElementById('liveImg');
   const ph = document.getElementById('livePlaceholder');
-  const poemBox = document.getElementById('livePoem');
-  const note = document.getElementById('livePoemNote');
-  if(item && item.image){
+  if(item && item.image && item.status !== 'no-image'){
+    // 画像が実際に存在するか確認: onerror でプレースホルダーに戻す
+    img.onerror = ()=>{ img.style.display='none'; if(ph){ ph.style.display='block'; ph.innerHTML='ライブ静止画を取得中…<br>次回の更新（30分おき）で表示されます<br><span id="time"></span>'; } };
     img.src = item.image + '?v=' + Date.now();
     img.style.display='block';
     if(ph) ph.style.display='none';
   } else {
-    if(ph) ph.style.display='block';
     if(img) img.style.display='none';
+    if(ph){ ph.style.display='block'; ph.innerHTML='ライブ静止画を取得中…<br>この場所のライブがまだ取得できていません。次回の更新で表示されます<br><span id="time"></span>'; }
   }
-  // 下の詩ボックスは隠す（中へ移動したため）
-  if(poemBox) poemBox.style.display='none';
-  if(note) note.style.display='none';
   const upd = document.getElementById('liveUpdated');
   if(upd && item?.updated_at) upd.textContent = '・ ' + new Date(item.updated_at).toLocaleString('ja-JP');
-  document.getElementById('time').textContent = new Date().toLocaleString('ja-JP');
+  const t = document.getElementById('time'); if(t) t.textContent = new Date().toLocaleString('ja-JP');
 }
 document.getElementById('placeSelect').addEventListener('change', updateAll);
 document.getElementById('level').addEventListener('input', updateAll);
