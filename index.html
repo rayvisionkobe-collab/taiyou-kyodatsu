@@ -54,7 +54,7 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
       <button data-poet="taiyou">太陽の涙</button>
     </div>
     <div>
-      <input type="range" id="level" min="0" max="3" step="1" value="3" class="slider">
+      <input type="range" id="level" min="0" max="3" step="1" value="1" class="slider">
       <div class="labels"><span>からっと</span><span>ほどよく</span><span>こいめ</span><span>仙人級</span></div>
     </div>
   </div>
@@ -70,84 +70,101 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 </div>
 <footer>© rayvisionkobe-collab / PWA template v1 / 背景は生成り #1c1917 温墨</footer>
 <script>
-let cfg=null;
+let cfg=null, liveData=null;
 async function loadConfig(){
   const r=await fetch('config.json'); cfg=await r.json();
   const sel=document.getElementById('placeSelect');
+  sel.innerHTML='';
   cfg.locations.forEach(l=>{
     const o=document.createElement('option'); o.value=l.id; o.textContent=l.name; sel.appendChild(o);
   });
-  updatePoem();
+  await loadLive();
+  updateAll();
 }
-function getPoem(poet,level,place){
+async function loadLive(){
+  try{
+    const res=await fetch('data.json?v='+Date.now());
+    if(res.ok) liveData=await res.json();
+  }catch(e){ console.log('live skip', e); }
+}
+function getAIPoem(place, level){
+  if(!liveData?.locations?.[place]?.poem) return null;
+  const lines = liveData.locations[place].poem.split('\n').filter(Boolean);
+  // level: 0=1行, 1=2行, 2=3行, 3=3行+余韻
+  if(level===0) return lines[0]||lines.join('\n');
+  if(level===1) return lines.slice(0,2).join('\n');
+  if(level===2) return lines.slice(0,3).join('\n');
+  return lines.slice(0,3).join('\n');
+}
+function getTemplatePoem(poet, level){
   const base={
-    kyodatsu:[
-      "今日は歩けそうな空です。",
-      "雲が橋を渡ろうとしています。",
-      "汚れっちまった悲しみに、風が触れる。",
-      "汚れっちまった悲しみに、今日も小雪の降りかかる、虚脱の空でした。どこへも行けず、空だけが遠くへ行ってしまうような、仙人級の午後。"
-    ],
-    taiyou:[
-      "光が砕けて、道に落ちています。",
-      "海の向こうで、風が渡ろうとしています。",
-      "空が少し傾いて、3°、光をこぼした。",
-      "光の粒子が霧を照らし、樹々は朝日を浴びて輝く。今日の空は、すべての存在を光に包むような、太陽の涙の仙人級でした。"
-    ]
+    kyodatsu:["今日は歩けそうな空です。","雲が橋を渡ろうとしています。","汚れっちまった悲しみに、風が触れる。","汚れっちまった悲しみに、今日も小雪の降りかかる、虚脱の空でした。どこへも行けず、空だけが遠くへ行ってしまうような、仙人級の午後。"],
+    taiyou:["光が砕けて、道に落ちています。","海の向こうで、風が渡ろうとしています。","空が少し傾いて、3°、光をこぼした。","光の粒子が霧を照らし、樹々は朝日を浴びて輝く。今日の空は、すべての存在を光に包むような、太陽の涙の仙人級でした。"]
   };
   return base[poet][level]||base[poet][1];
 }
-function updatePoem(){
-  const poet=document.querySelector('#poetToggle button.active').dataset.poet;
-  const level=parseInt(document.getElementById('level').value);
-  const place=document.getElementById('placeSelect').value;
-  const placeName=document.getElementById('placeSelect').selectedOptions[0]?.textContent||'舞子ビラ';
-  const levels=["からっと","ほどよく","こいめ","仙人級"];
-  document.getElementById('poemMain').textContent=getPoem(poet,level,place);
-  document.getElementById('poemSub').textContent=`${poet==='kyodatsu'?'虚脱の空':'太陽の涙'} / ${levels[level]} / ${placeName}`;
-  document.getElementById('time').textContent=new Date().toLocaleString('ja-JP');
+async function fetchWeather(lat, lon){
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo`;
+    const r = await fetch(url);
+    const j = await r.json();
+    const cur = j.current, day = j.daily;
+    const code = cur.weather_code;
+    const wmap = {0:'晴',1:'晴',2:'曇',3:'曇',45:'霧',48:'霧',51:'小雨',53:'雨',55:'雨',61:'雨',63:'雨',65:'大雨',71:'雪',73:'雪',75:'大雪',80:'雨',95:'雷雨'};
+    const w = wmap[code]||'曇';
+    return `${w} ${Math.round(cur.temperature_2m)}℃ / ${Math.round(day.temperature_2m_min[0])}℃ 降水${cur.precipitation}mm 風${Math.round(cur.wind_speed_10m)}m`;
+  }catch(e){ return '天気を取得中…'; }
 }
-document.getElementById('placeSelect').addEventListener('change',updatePoem);
-document.getElementById('level').addEventListener('input',updatePoem);
-document.getElementById('poetToggle').addEventListener('click',e=>{
+async function updateAll(){
+  if(!cfg) return;
+  const place = document.getElementById('placeSelect').value;
+  const loc = cfg.locations.find(l=>l.id===place) || cfg.locations[0];
+  const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
+  const level = parseInt(document.getElementById('level').value);
+  const levels = ["からっと","ほどよく","こいめ","仙人級"];
+  // 中：AI詩を優先、なければテンプレート
+  const ai = getAIPoem(place, level);
+  const poemText = ai || getTemplatePoem(poet, level);
+  document.getElementById('poemMain').textContent = poemText;
+  const placeName = loc.name;
+  document.getElementById('poemSub').textContent = `${poet==='kyodatsu'?'虚脱の空':'太陽の涙'} / ${levels[level]} / ${placeName} ${ai ? '・ AI生成' : ''}`;
+  // 天気：Open-Meteo
+  document.getElementById('practical').textContent = '天気を取得中… ' + placeName;
+  const w = await fetchWeather(loc.lat, loc.lon);
+  document.getElementById('practical').textContent = w + ' ' + placeName;
+  // 下：ライブ静止画のみ（詩は中に移動したので、ここは画像だけ）
+  const item = liveData?.locations?.[place];
+  const img = document.getElementById('liveImg');
+  const ph = document.getElementById('livePlaceholder');
+  const poemBox = document.getElementById('livePoem');
+  const note = document.getElementById('livePoemNote');
+  if(item && item.image){
+    img.src = item.image + '?v=' + Date.now();
+    img.style.display='block';
+    if(ph) ph.style.display='none';
+  } else {
+    if(ph) ph.style.display='block';
+    if(img) img.style.display='none';
+  }
+  // 下の詩ボックスは隠す（中へ移動したため）
+  if(poemBox) poemBox.style.display='none';
+  if(note) note.style.display='none';
+  const upd = document.getElementById('liveUpdated');
+  if(upd && item?.updated_at) upd.textContent = '・ ' + new Date(item.updated_at).toLocaleString('ja-JP');
+  document.getElementById('time').textContent = new Date().toLocaleString('ja-JP');
+}
+document.getElementById('placeSelect').addEventListener('change', updateAll);
+document.getElementById('level').addEventListener('input', updateAll);
+document.getElementById('poetToggle').addEventListener('click', e=>{
   if(e.target.tagName==='BUTTON'){
     document.querySelectorAll('#poetToggle button').forEach(b=>b.classList.remove('active'));
-    e.target.classList.add('active'); updatePoem();
+    e.target.classList.add('active'); updateAll();
   }
 });
 document.getElementById('sp').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='390px';document.getElementById('sp').classList.add('active');document.getElementById('tab').classList.remove('active')};
 document.getElementById('tab').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='768px';document.getElementById('tab').classList.add('active');document.getElementById('sp').classList.remove('active')};
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
 loadConfig();
-</script>
-<script>
-async function loadLive(){
-  try{
-    const res = await fetch('data.json?v='+Date.now());
-    if(!res.ok) return;
-    const data = await res.json();
-    const place = document.getElementById('placeSelect')?.value || 'kobe_maiko';
-    const item = data.locations?.[place] || data.locations?.['kobe_maiko'];
-    if(!item || !item.image) return;
-    const img = document.getElementById('liveImg');
-    const ph = document.getElementById('livePlaceholder');
-    if(img){
-      img.src = item.image + '?v=' + Date.now();
-      img.style.display = 'block';
-      if(ph) ph.style.display = 'none';
-    }
-    const poemBox = document.getElementById('livePoem');
-    const note = document.getElementById('livePoemNote');
-    if(poemBox && item.poem){
-      poemBox.textContent = item.poem;
-      poemBox.style.display = 'block';
-      if(note) note.style.display = 'block';
-    }
-    const upd = document.getElementById('liveUpdated');
-    if(upd && item.updated_at) upd.textContent = '・ ' + new Date(item.updated_at).toLocaleString('ja-JP');
-  }catch(e){ console.log('live load skip', e); }
-}
-document.addEventListener('DOMContentLoaded', loadLive);
-document.getElementById('placeSelect')?.addEventListener('change', ()=>{ loadLive(); updatePoem(); });
 </script>
 </body>
 </html>
