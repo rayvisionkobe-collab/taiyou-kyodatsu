@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-07T07:44:38.289624+09:00",
+  "updated_at": "2026-11-07T08:09:05.683139+09:00",
   "locations": {
     "kobe_maiko": {
       "video_id": "W5iKrSNyJhQ",
@@ -33,8 +33,8 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:44:38.289624+09:00",
-      "status": "thumbnail"
+      "updated_at": "2026-11-07T08:09:05.683139+09:00",
+      "status": "live-thumb"
     },
     "kobe_air": {
       "video_id": "dpVyxSYsVs0",
@@ -54,8 +54,8 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:44:38.289624+09:00",
-      "status": "thumbnail"
+      "updated_at": "2026-11-07T08:09:05.683139+09:00",
+      "status": "live-thumb"
     },
     "sapporo": {
       "video_id": "wRYonRnKsKw",
@@ -75,8 +75,8 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:44:38.289624+09:00",
-      "status": "thumbnail"
+      "updated_at": "2026-11-07T08:09:05.683139+09:00",
+      "status": "live-thumb"
     },
     "tokyo": {
       "video_id": "nu6NE55_X7A",
@@ -96,8 +96,8 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:44:38.289624+09:00",
-      "status": "thumbnail"
+      "updated_at": "2026-11-07T08:09:05.683139+09:00",
+      "status": "live-thumb"
     },
     "fuji": {
       "video_id": "F2NbYrc-gBU",
@@ -117,8 +117,8 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:44:38.289624+09:00",
-      "status": "thumbnail"
+      "updated_at": "2026-11-07T08:09:05.683139+09:00",
+      "status": "live-thumb"
     },
     "fukuoka": {
       "video_id": "NGbqP0fEZSE",
@@ -138,8 +138,8 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:44:38.289624+09:00",
-      "status": "thumbnail"
+      "updated_at": "2026-11-07T08:09:05.683139+09:00",
+      "status": "live-thumb"
     },
     "naha": {
       "video_id": "dc8Iqi5Xxl8",
@@ -159,8 +159,8 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:44:38.289624+09:00",
-      "status": "thumbnail"
+      "updated_at": "2026-11-07T08:09:05.683139+09:00",
+      "status": "live-thumb"
     }
   }
 }
