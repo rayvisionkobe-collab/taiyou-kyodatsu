@@ -43,12 +43,12 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 <div class="hero"><img src="hero.jpg" alt="hero"></div>
 <div class="poem-wrap" id="poemWrap">
   <div class="poem-card">
-    <div class="poem-main" id="poemMain">汚れっちまった悲しみに、小雪が降る。</div>
+    <div class="poem-main" id="poemMain">読み込み中…</div>
     <div class="poem-sub" id="poemSub">虚脱の空 / 仙人級 / 舞子ビラ</div>
   </div>
   <div class="controls">
     <select id="placeSelect" class="select"></select>
-    <div class="practical" id="practical">晴 21℃/12℃ 降水30% 南西3m 神戸・舞子ビラ</div>
+    <div class="practical" id="practical">天気を取得中…</div>
     <div class="toggle" id="poetToggle">
       <button data-poet="kyodatsu" class="active">虚脱の空</button>
       <button data-poet="taiyou">太陽の涙</button>
@@ -70,38 +70,32 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 </div>
 <footer>© rayvisionkobe-collab / PWA template v1 / 背景は生成り #1c1917 温墨</footer>
 <script>
-let cfg=null, liveData=null;
-async function loadConfig(){
-  const r=await fetch('config.json'); cfg=await r.json();
-  const sel=document.getElementById('placeSelect');
-  sel.innerHTML='';
-  cfg.locations.forEach(l=>{
-    const o=document.createElement('option'); o.value=l.id; o.textContent=l.name; sel.appendChild(o);
-  });
-  await loadLive();
-  updateAll();
-}
+const LOCATIONS = [
+  {id:"maiko", name:"舞子ビラ・明石海峡大橋", lat:34.634, lon:135.029, video_id:"W5iKrSNyJhQ"},
+  {id:"kobe_air", name:"神戸空港", lat:34.632, lon:135.223, video_id:"dpVyxSYsVs0"},
+  {id:"sapporo", name:"札幌すすきの", lat:43.055, lon:141.353, video_id:"wRYonRnKsKw"},
+  {id:"tokyo", name:"東京スカイツリー", lat:35.71, lon:139.81, video_id:"nu6NE55_X7A"},
+  {id:"fuji", name:"富士山裾野", lat:35.28, lon:138.61, video_id:"F2NbYrc-gBU"},
+  {id:"fukuoka", name:"福岡・博多中洲", lat:33.584, lon:130.451, video_id:"NGbqP0fEZSE"},
+  {id:"naha", name:"那覇国際通り", lat:26.215, lon:127.68, video_id:"Yq8WmXplhrU"}
+];
+let liveData=null;
 async function loadLive(){
   try{
-    const res=await fetch('data.json?v='+Date.now());
+    const res=await fetch('data.json?v='+Date.now(), {cache:'no-store'});
     if(res.ok) liveData=await res.json();
   }catch(e){ console.log('live skip', e); }
 }
 function getPoem(place, poet, level){
   const entry = liveData?.locations?.[place];
-  // 新形式: poems[poet][level]
-  if(entry?.poems?.[poet]?.[String(level)]){
-    return entry.poems[poet][String(level)];
-  }
-  // 旧形式: poem (3行) をレベルで切るフォールバック
+  if(entry?.poems?.[poet]?.[String(level)]) return entry.poems[poet][String(level)];
   if(entry?.poem){
     const lines = entry.poem.split('\n').filter(Boolean);
     if(level===0) return lines[0]||entry.poem;
     if(level===1) return lines.slice(0,2).join('\n');
     return lines.slice(0,3).join('\n');
   }
-  // 完全フォールバック: 場所名入りテンプレート
-  const loc = cfg?.locations?.find(l=>l.id===place);
+  const loc = LOCATIONS.find(l=>l.id===place);
   const name = loc?.name || place;
   const tpl = {
     kyodatsu: [`${name}の空は、今日も静かだ。`, `${name}の空は、今日も静かだ。\n風が、遠くで何かを運んでくる。`, `${name}の空は、今日も静かだ。\n風が、遠くで何かを運んでくる。\n曇りの午後、空だけが遠くへ行く。`, `${name}の空は、今日も静かだ。風が、遠くで何かを運んでくる。曇りの午後、どこへも行けず、空だけが遠くへ行ってしまうような、虚脱の午後だった。`],
@@ -121,14 +115,12 @@ async function fetchWeather(lat, lon){
   }catch(e){ return '天気を取得中…'; }
 }
 async function updateAll(){
-  if(!cfg) return;
-  const place = document.getElementById('placeSelect').value;
-  const loc = cfg.locations.find(l=>l.id===place) || cfg.locations[0];
+  const place = document.getElementById('placeSelect').value || 'maiko';
+  const loc = LOCATIONS.find(l=>l.id===place) || LOCATIONS[0];
   const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
   const level = parseInt(document.getElementById('level').value);
   const levels = ["からっと","ほどよく","こいめ","仙人級"];
-  const poemText = getPoem(place, poet, level);
-  document.getElementById('poemMain').textContent = poemText;
+  document.getElementById('poemMain').textContent = getPoem(place, poet, level);
   const placeName = loc.name;
   const isAI = !!liveData?.locations?.[place]?.poems;
   document.getElementById('poemSub').textContent = `${poet==='kyodatsu'?'虚脱の空':'太陽の涙'} / ${levels[level]} / ${placeName} ${isAI ? '・ AI生成' : '・ テンプレート'}`;
@@ -139,8 +131,7 @@ async function updateAll(){
   const img = document.getElementById('liveImg');
   const ph = document.getElementById('livePlaceholder');
   if(item && item.image && item.status !== 'no-image'){
-    // 画像が実際に存在するか確認: onerror でプレースホルダーに戻す
-    img.onerror = ()=>{ img.style.display='none'; if(ph){ ph.style.display='block'; ph.innerHTML='ライブ静止画を取得中…<br>次回の更新（30分おき）で表示されます<br><span id="time"></span>'; } };
+    img.onerror = ()=>{ img.style.display='none'; if(ph){ ph.style.display='block'; ph.innerHTML='ライブ静止画を取得中…<br>次回の更新（1時間おき）で表示されます<br><span id="time"></span>'; } };
     img.src = item.image + '?v=' + Date.now();
     img.style.display='block';
     if(ph) ph.style.display='none';
@@ -152,6 +143,21 @@ async function updateAll(){
   if(upd && item?.updated_at) upd.textContent = '・ ' + new Date(item.updated_at).toLocaleString('ja-JP');
   const t = document.getElementById('time'); if(t) t.textContent = new Date().toLocaleString('ja-JP');
 }
+function init(){
+  const sel=document.getElementById('placeSelect');
+  sel.innerHTML='';
+  LOCATIONS.forEach(l=>{
+    const o=document.createElement('option'); o.value=l.id; o.textContent=l.name; sel.appendChild(o);
+  });
+  // Service Workerの古いキャッシュを消す
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(regs=>{
+      regs.forEach(r=>r.unregister());
+    });
+    if('caches' in window){ caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))); }
+  }
+  loadLive().then(updateAll);
+}
 document.getElementById('placeSelect').addEventListener('change', updateAll);
 document.getElementById('level').addEventListener('input', updateAll);
 document.getElementById('poetToggle').addEventListener('click', e=>{
@@ -162,8 +168,8 @@ document.getElementById('poetToggle').addEventListener('click', e=>{
 });
 document.getElementById('sp').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='390px';document.getElementById('sp').classList.add('active');document.getElementById('tab').classList.remove('active')};
 document.getElementById('tab').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='768px';document.getElementById('tab').classList.add('active');document.getElementById('sp').classList.remove('active')};
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
-loadConfig();
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
+
