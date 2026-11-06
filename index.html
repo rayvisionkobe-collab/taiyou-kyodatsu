@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>太陽の涙、虚脱の空</title>
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#1c1917">
 <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Zen+Old+Mincho:wght@400;500&family=Shippori+Mincho+B1:wght@400&display=swap" rel="stylesheet">
 <style>
@@ -36,11 +36,11 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 </style>
 </head>
 <body>
-<header>
+<div id="updatedAt" style="font-size:12px;opacity:.7;text-align:center;padding:4px;">ライブ取得中…</div><header>
 <h1>太陽の涙、虚脱の空</h1>
 <div class="device"><button id="sp" class="active">スマホ</button><button id="tab">タブレット</button></div>
 </header>
-<div class="hero"><img src="hero.jpg" alt="hero"></div>
+<div class="hero"><img src="/hero.jpg" alt="hero"></div>
 <div class="poem-wrap" id="poemWrap">
   <div class="poem-card">
     <div class="poem-main" id="poemMain">汚れっちまった悲しみに、小雪が降る。</div>
@@ -66,7 +66,7 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 <script>
 let cfg=null;
 async function loadConfig(){
-  const r=await fetch('config.json'); cfg=await r.json();
+  const r=await fetch('/config.json'); cfg=await r.json();
   const sel=document.getElementById('placeSelect');
   cfg.locations.forEach(l=>{
     const o=document.createElement('option'); o.value=l.id; o.textContent=l.name; sel.appendChild(o);
@@ -110,8 +110,32 @@ document.getElementById('poetToggle').addEventListener('click',e=>{
 });
 document.getElementById('sp').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='390px';document.getElementById('sp').classList.add('active');document.getElementById('tab').classList.remove('active')};
 document.getElementById('tab').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='768px';document.getElementById('tab').classList.add('active');document.getElementById('sp').classList.remove('active')};
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}
 loadConfig();
+</script>
+<script>
+async function loadLive(){
+  try{
+    const res = await fetch('data.json?'+Date.now());
+    if(!res.ok) return;
+    const data = await res.json();
+    const loc = document.getElementById('place')?.value || 'kobe_maiko';
+    const item = data.locations?.[loc] || data.locations?.['kobe_maiko'];
+    if(!item) return;
+    const img = document.querySelector('img[src*="hero.jpg"], #heroImg, .hero-img');
+    const heroImg = document.getElementById('liveImg') || img;
+    if(heroImg) heroImg.src = item.image + '?'+Date.now();
+    const poemEl = document.getElementById('poemText') || document.querySelector('.poem, [data-poem]');
+    if(poemEl) poemEl.innerText = item.poem;
+    const timeEl = document.getElementById('updatedAt');
+    if(timeEl) timeEl.innerText = '更新: ' + new Date(item.updated_at).toLocaleString('ja-JP');
+  }catch(e){ console.log('live load skip', e); }
+}
+document.addEventListener('DOMContentLoaded', loadLive);
+document.getElementById('place')?.addEventListener('change', loadLive);
+</script>
+</body>
+</html>
 </script>
 </body>
 </html>
