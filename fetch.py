@@ -1,4 +1,5 @@
 import os, json, base64, subprocess, datetime, requests, re
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 Path("images").mkdir(exist_ok=True)
@@ -15,12 +16,12 @@ def fetch_still(video_id, out_path):
     # 1) yt-dlp で複数フォーマットを試す
     for fmt in ["bv*[height<=720]+ba/b[height<=720]/best", "best[height<=720]", "best"]:
         try:
-            result = subprocess.run(["yt-dlp","-g","-f",fmt, f"https://www.youtube.com/watch?v={video_id}"], capture_output=True, text=True, timeout=90)
+            result = subprocess.run(["yt-dlp","-g","-f",fmt, f"https://www.youtube.com/watch?v={video_id}"], capture_output=True, text=True, timeout=35)
             urls = [u.strip() for u in result.stdout.strip().splitlines() if u.strip().startswith("http")]
             if not urls:
                 continue
             stream_url = urls[0]
-            r = subprocess.run(["ffmpeg","-y","-i",stream_url,"-vframes","1","-q:v","3",out_path], capture_output=True, timeout=90)
+            r = subprocess.run(["ffmpeg","-y","-i",stream_url,"-vframes","1","-q:v","3",out_path], capture_output=True, timeout=35)
             if Path(out_path).exists() and Path(out_path).stat().st_size > 8000:
                 print(f"ffmpeg ok {video_id} fmt={fmt}")
                 return "live"
@@ -31,7 +32,7 @@ def fetch_still(video_id, out_path):
     for q in ["maxresdefault","hqdefault","mqdefault"]:
         try:
             thumb = f"https://i.ytimg.com/vi/{video_id}/{q}.jpg"
-            r = requests.get(thumb, timeout=20)
+            r = requests.get(thumb, timeout=12)
             if r.status_code==200 and len(r.content)>8000:
                 Path(out_path).write_bytes(r.content)
                 print(f"thumb ok {video_id} {q}")
@@ -76,7 +77,7 @@ def generate_poems(image_path, place_name):
 - 0は短く事実的、1は比喩少し、2は主観濃く、3は長く解体的
 """
         payload = {"contents":[{"parts":[{"text":prompt},{"inline_data":{"mime_type":"image/jpeg","data":b64}}]}], "generationConfig":{"temperature":0.9,"maxOutputTokens":1200,"response_mime_type":"application/json"}}
-        r = requests.post(url, json=payload, timeout=90)
+        r = requests.post(url, json=payload, timeout=35)
         r.raise_for_status()
         txt = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
         # JSON抽出
@@ -108,22 +109,29 @@ def main():
             data["updated_at"] = now
         except:
             pass
-    for loc in load_locations():
+    def process_one(loc):
         key = loc["id"]; vid = loc.get("video_id"); name = loc.get("name", key)
         if not vid:
-            continue
+            return None
         out = f"images/{key}.jpg"
-        # 既存画像があればバックアップとして残す
         status = fetch_still(vid, out)
         if status is None:
             print(f"skip {key}: no image, keep old")
-            # 既存がなければフォールバック詩だけ保存
             if key not in data["locations"]:
-                data["locations"][key] = {"video_id": vid, "image": out, "poems": fallback_poems(name), "model": "fallback-no-image", "updated_at": now, "status": "no-image"}
-            continue
+                return (key, {"video_id": vid, "image": out, "poems": fallback_poems(name), "model": "fallback-no-image", "updated_at": now, "status": "no-image"})
+            return None
         poems, model = generate_poems(out, name)
-        data["locations"][key] = {"video_id": vid, "image": out, "poems": poems, "model": model, "updated_at": now, "status": status}
         print(f"{key}: {status} {model} {poems['kyodatsu']['1'][:20]}")
+        return (key, {"video_id": vid, "image": out, "poems": poems, "model": model, "updated_at": now, "status": status})
+
+    locs = load_locations()
+    with ThreadPoolExecutor(max_workers=4) as ex:
+        futs = {ex.submit(process_one, loc): loc["id"] for loc in locs}
+        for fut in as_completed(futs):
+            res = fut.result()
+            if res:
+                k, v = res
+                data["locations"][k] = v
     Path("data.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 if __name__ == "__main__":
