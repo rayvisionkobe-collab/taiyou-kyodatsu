@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-07T07:39:13.154043+09:00",
+  "updated_at": "2026-11-07T07:44:38.289624+09:00",
   "locations": {
     "kobe_maiko": {
       "video_id": "W5iKrSNyJhQ",
@@ -33,7 +33,7 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:39:13.154043+09:00",
+      "updated_at": "2026-11-07T07:44:38.289624+09:00",
       "status": "thumbnail"
     },
     "kobe_air": {
@@ -54,7 +54,7 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:39:13.154043+09:00",
+      "updated_at": "2026-11-07T07:44:38.289624+09:00",
       "status": "thumbnail"
     },
     "sapporo": {
@@ -75,7 +75,7 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:39:13.154043+09:00",
+      "updated_at": "2026-11-07T07:44:38.289624+09:00",
       "status": "thumbnail"
     },
     "tokyo": {
@@ -96,7 +96,7 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:39:13.154043+09:00",
+      "updated_at": "2026-11-07T07:44:38.289624+09:00",
       "status": "thumbnail"
     },
     "fuji": {
@@ -117,7 +117,7 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:39:13.154043+09:00",
+      "updated_at": "2026-11-07T07:44:38.289624+09:00",
       "status": "thumbnail"
     },
     "fukuoka": {
@@ -138,7 +138,7 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:39:13.154043+09:00",
+      "updated_at": "2026-11-07T07:44:38.289624+09:00",
       "status": "thumbnail"
     },
     "naha": {
@@ -159,7 +159,7 @@
         }
       },
       "model": "fallback",
-      "updated_at": "2026-11-07T07:39:13.154043+09:00",
+      "updated_at": "2026-11-07T07:44:38.289624+09:00",
       "status": "thumbnail"
     }
   }
