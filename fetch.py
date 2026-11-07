@@ -116,50 +116,130 @@ def fallback_poems(place_name, lat=None, lon=None):
         }
     }
 
-def generate_poems(image_path, place_name, lat=None, lon=None):
+# ---- Gemini 設定: 忙しい時間とモデル回遊 ----
+POEM_HOURS = [6, 12, 18]  # 朝・昼・晩の3回だけ AI詩を作る
+BUSY_HOURS = [15, 16]  # 統計で 429/503 が集中した時間帯 (JST) は避ける
+# 3.8だけだと429で止まるので、広げて回遊する。404なら次へ、429/503なら少し待って次へ
+GEMINI_MODELS = [
+    "gemini-3.8-flash",
+    "gemini-3.5-flash",
+    "gemini-3-flash",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-2.0-flash",
+    "gemini-flash-latest",
+]
+
+def current_poem_slot(hour):
+    # 6時台->朝, 12時台->昼, 18時台->晩。それ以外は None (作らない)
+    if hour == 6:
+        return "morning"
+    if hour == 12:
+        return "noon"
+    if hour == 18:
+        return "evening"
+    return None
+
+def should_generate_poem(now, existing):
+    hour = now.hour
+    # 忙しい時間は作らない
+    if hour in BUSY_HOURS:
+        print(f"skip gemini: busy hour {hour} (429/503回避)")
+        return False, None
+    slot = current_poem_slot(hour)
+    if slot is None:
+        return False, None
+    # 同じ日の同じスロットなら作らない (重複防止)
+    if existing.get("poem_date") == now.date().isoformat() and existing.get("poem_slot") == slot:
+        return False, slot
+    # 前のスロットの詩がまだ無い場合 (初回) も作る
+    return True, slot
+
+def generate_poems(image_path, place_name, lat=None, lon=None, loc_index=0):
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         return fallback_poems(place_name, lat, lon), "fallback-no-key"
-    model = "gemini-3.8-flash"
     try:
         b64 = base64.b64encode(Path(image_path).read_bytes()).decode()
-        prompt = f"""この画像は日本の{place_name}のライブカメラです。画像をよく見て、詩を8つ作ってください。\n形式は必ずこれだけ。JSONは使わない。説明文なし。\n---\nKYODATSU0: {place_name}を入れた1行の詩、中原中也風、少し寂しく温かい\nKYODATSU1: {place_name}を入れた2行の詩、中原中也風、比喩少し\nKYODATSU2: {place_name}を入れた3行の詩、中原中也風、主観濃く\nKYODATSU3: {place_name}を入れた長めの1段落、中原中也風、解体的\nTAIYOU0: {place_name}を入れた1行の詩、宮沢賢治風、光と風\nTAIYOU1: {place_name}を入れた2行の詩、宮沢賢治風、比喩少し\nTAIYOU2: {place_name}を入れた3行の詩、宮沢賢治風、主観濃く\nTAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感じる\n---\n条件: 各詩に天気の言葉(晴れ・曇り・雨・風・雪など)を1つだけ入れる。改行は詩の中では使わず、1行で書く。\n"""
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
-        payload = {"contents":[{"parts":[{"text":prompt},{"inline_data":{"mime_type":"image/jpeg","data":b64}}]}], "generationConfig":{"temperature":0.9,"maxOutputTokens":1200}}
-        r = requests.post(url, json=payload, timeout=60)
-        if r.status_code != 200:
-            print(f"gemini {model} status {r.status_code}: {r.text[:300]}")
-            raise Exception(f"{model} {r.status_code}")
-        txt = r.json()["candidates"][0]["content"]["parts"][0]["text"]
-        data = {"kyodatsu":{}, "taiyou":{}}
-        for line in txt.splitlines():
-            line=line.strip()
-            if not line or ":" not in line:
-                continue
-            key, val = line.split(":", 1)
-            key=key.strip().upper(); val=val.strip()
-            if key.startswith("KYODATSU") and key[-1] in "0123":
-                data["kyodatsu"][key[-1]] = val
-            elif key.startswith("TAIYOU") and key[-1] in "0123":
-                data["taiyou"][key[-1]] = val
-        fb = fallback_poems(place_name, lat, lon)
-        ok = 0
-        for poet in ["kyodatsu","taiyou"]:
-            for lvl in ["0","1","2","3"]:
-                if data[poet].get(lvl):
-                    ok += 1
-                else:
-                    data[poet][lvl] = fb[poet][lvl]
-        print(f"gemini ok {place_name} model={model} parsed={ok}/8")
-        if ok == 0:
-            raise ValueError("no poems parsed")
-        return data, model
     except Exception as e:
-        print(f"gemini fail {place_name}: {e}")
-        return fallback_poems(place_name, lat, lon), "fallback"
+        print(f"gemini fail {place_name}: image read {e}")
+        return fallback_poems(place_name, lat, lon), "fallback-no-image"
+    prompt = f"""この画像は日本の{place_name}のライブカメラです。画像をよく見て、詩を8つ作ってください。
+形式は必ずこれだけ。JSONは使わない。説明文なし。
+---
+KYODATSU0: {place_name}を入れた1行の詩、中原中也風、少し寂しく温かい
+KYODATSU1: {place_name}を入れた2行の詩、中原中也風、比喩少し
+KYODATSU2: {place_name}を入れた3行の詩、中原中也風、主観濃く
+KYODATSU3: {place_name}を入れた長めの1段落、中原中也風、解体的
+TAIYOU0: {place_name}を入れた1行の詩、宮沢賢治風、光と風
+TAIYOU1: {place_name}を入れた2行の詩、宮沢賢治風、比喩少し
+TAIYOU2: {place_name}を入れた3行の詩、宮沢賢治風、主観濃く
+TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感じる
+---
+条件: 各詩に天気の言葉(晴れ・曇り・雨・風・雪など)を1つだけ入れる。改行は詩の中では使わず、1行で書く。
+"""
+    # 場所ごとに開始モデルをずらして、1つのモデルに集中しない (429分散)
+    models = GEMINI_MODELS[loc_index % len(GEMINI_MODELS):] + GEMINI_MODELS[:loc_index % len(GEMINI_MODELS)]
+    last_err = ""
+    for mi, model in enumerate(models):
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+            payload = {"contents":[{"parts":[{"text":prompt},{"inline_data":{"mime_type":"image/jpeg","data":b64}}]}], "generationConfig":{"temperature":0.9,"maxOutputTokens":1200}}
+            r = requests.post(url, json=payload, timeout=60)
+            if r.status_code == 404:
+                print(f"gemini {model} 404 NotFound {place_name}: 次のモデルへ")
+                last_err = "404"
+                continue
+            if r.status_code == 429:
+                print(f"gemini {model} 429 TooManyRequests {place_name}: 10秒待って次のモデルへ")
+                last_err = "429"
+                time.sleep(10)
+                continue
+            if r.status_code == 503:
+                print(f"gemini {model} 503 ServiceUnavailable {place_name}: 5秒待って次のモデルへ")
+                last_err = "503"
+                time.sleep(5)
+                continue
+            if r.status_code != 200:
+                print(f"gemini {model} status {r.status_code}: {r.text[:300]}")
+                last_err = str(r.status_code)
+                time.sleep(3)
+                continue
+            txt = r.json()["candidates"][0]["content"]["parts"][0]["text"]
+            data = {"kyodatsu":{}, "taiyou":{}}
+            for line in txt.splitlines():
+                line=line.strip()
+                if not line or ":" not in line:
+                    continue
+                key, val = line.split(":", 1)
+                key=key.strip().upper(); val=val.strip()
+                if key.startswith("KYODATSU") and key[-1] in "0123":
+                    data["kyodatsu"][key[-1]] = val
+                elif key.startswith("TAIYOU") and key[-1] in "0123":
+                    data["taiyou"][key[-1]] = val
+            fb = fallback_poems(place_name, lat, lon)
+            ok = 0
+            for poet in ["kyodatsu","taiyou"]:
+                for lvl in ["0","1","2","3"]:
+                    if data[poet].get(lvl):
+                        ok += 1
+                    else:
+                        data[poet][lvl] = fb[poet][lvl]
+            print(f"gemini ok {place_name} model={model} parsed={ok}/8 (試した {mi+1} 個目)")
+            if ok == 0:
+                continue
+            return data, model
+        except Exception as e:
+            print(f"gemini fail {place_name} model={model}: {e}")
+            last_err = str(e)
+            time.sleep(3)
+            continue
+    print(f"gemini all failed {place_name}: last={last_err} -> fallback")
+    return fallback_poems(place_name, lat, lon), "fallback"
 
 def main():
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).isoformat()
+    now_dt = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
     data = {"updated_at": now, "locations": {}}
     if Path("data.json").exists():
         try:
@@ -168,15 +248,13 @@ def main():
             data["updated_at"] = now
         except:
             pass
-    # 古い場所と古い画像を掃除する (不一致の原因)
-    valid_ids = {l["id"] for l in load_locations()}
-    # data.json の古い場所を削除
+    locs = load_locations()
+    valid_ids = {l["id"] for l in locs}
     if "locations" in data:
         for old_key in list(data["locations"].keys()):
             if old_key not in valid_ids:
                 print(f"cleanup data.json: remove old {old_key}")
                 del data["locations"][old_key]
-    # images/ の古い画像を削除
     for img in Path("images").glob("*.jpg"):
         if img.stem not in valid_ids:
             try:
@@ -184,29 +262,33 @@ def main():
                 print(f"cleanup images: remove old {img.name}")
             except Exception as e:
                 print(f"cleanup fail {img.name}: {e}")
-    for loc in load_locations():
+    for loc_index, loc in enumerate(locs):
         key = loc["id"]; name = loc.get("name", key)
         out = f"images/{key}.jpg"
         status = fetch_weathernews(loc["weathernews_id"], out, loc.get("page_url"))
         if status is None:
             print(f"skip {key}: no image, keep old")
             if key not in data["locations"]:
-                data["locations"][key] = {"image": out, "poems": fallback_poems(name, loc.get("lat"), loc.get("lon")), "model": "fallback-no-image", "updated_at": now, "status": "no-image", "poem_date": now[:10]}
+                data["locations"][key] = {"image": out, "poems": fallback_poems(name, loc.get("lat"), loc.get("lon")), "model": "fallback-no-image", "updated_at": now, "status": "no-image", "poem_date": now[:10], "poem_slot": None}
             continue
-        today = now[:10]
         existing = data.get("locations", {}).get(key, {})
-        if existing.get("poems") and existing.get("poem_date") == today:
-            poems, model = existing["poems"], "cached"
-            print(f"{key}: reuse poems from today {today}")
+        do_gen, slot = should_generate_poem(now_dt, existing)
+        if do_gen:
+            poems, model = generate_poems(out, name, loc.get("lat"), loc.get("lon"), loc_index=loc_index)
+            poem_slot = slot
+            print(f"{key}: NEW poem slot={slot} model={model}")
         else:
-            hour = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).hour
-            if hour == 6 or not existing.get("poems"):
-                poems, model = generate_poems(out, name, loc.get("lat"), loc.get("lon"))
+            if existing.get("poems"):
+                poems, model = existing["poems"], "cached"
+                poem_slot = existing.get("poem_slot")
+                print(f"{key}: reuse poems slot={poem_slot} date={existing.get('poem_date')}")
             else:
                 poems, model = fallback_poems(name, loc.get("lat"), loc.get("lon")), "fallback-hourly"
-        data["locations"][key] = {"image": out, "poems": poems, "model": model, "updated_at": now, "status": status, "poem_date": now[:10], "weathernews_id": loc["weathernews_id"]}
+                poem_slot = existing.get("poem_slot")
+                print(f"{key}: fallback poems (no existing)")
+        data["locations"][key] = {"image": out, "poems": poems, "model": model, "updated_at": now, "status": status, "poem_date": now[:10], "poem_slot": poem_slot, "weathernews_id": loc["weathernews_id"]}
         print(f"{key}: {status} {model}")
-        time.sleep(2)
+        time.sleep(8)  # 429分散: 地点ごとに8秒待つ
     Path("data.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 if __name__ == "__main__":
