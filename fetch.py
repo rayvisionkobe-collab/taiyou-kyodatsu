@@ -164,6 +164,13 @@ def current_poem_slot(hour):
     return None
 
 def should_generate_poem(now, existing):
+    # 1回だけ強制: Actionsで FORCE_POEM=1 を付けたら、時間に関係なく作る
+    if os.environ.get("FORCE_POEM") == "1":
+        # 今の時間に近いスロットを決める (19時なら evening)
+        h = now.hour
+        slot_now = "morning" if 5 <= h < 11 else "noon" if 11 <= h < 17 else "evening" if 17 <= h < 22 else "morning"
+        print(f"FORCE_POEM=1: force slot={slot_now} hour={h}")
+        return True, slot_now
     hour = now.hour
     # 忙しい時間は作らない
     if hour in BUSY_HOURS:
@@ -285,6 +292,19 @@ def main():
                 print(f"cleanup images: remove old {img.name}")
             except Exception as e:
                 print(f"cleanup fail {img.name}: {e}")
+    # 古い詩の掃除: data.json に残っている「広島市・福岡市・那覇市」を直す
+    # 新しく作らなくても、使い回しの詩の地名だけ直す
+    if "locations" in data:
+        for _k, _v in data["locations"].items():
+            if _v.get("poems"):
+                for _poet in ["kyodatsu", "taiyou"]:
+                    for _lvl in ["0","1","2","3"]:
+                        _txt = _v["poems"].get(_poet, {}).get(_lvl, "")
+                        if _txt:
+                            _txt = _txt.replace("広島市", "広島").replace("福岡市", "福岡").replace("那覇市", "那覇")
+                            # 古い温度表示も体感に置き換える (例: 25℃ -> ほどよく暖かい は難しいので、数字だけ消す)
+                            # 25℃ が入っていたら、そのままにせず、後で新しい詩で上書きされるまで置いておく
+                            _v["poems"][_poet][_lvl] = _txt
     for loc_index, loc in enumerate(locs):
         key = loc["id"]; name = loc.get("name", key)
         out = f"images/{key}.jpg"
