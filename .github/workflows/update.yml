@@ -25,7 +25,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg
-          pip install -q yt-dlp requests Pillow
+          pip install -q -U yt-dlp requests Pillow
 
       - name: Fetch still and generate poem
         env:
