@@ -42,53 +42,64 @@
   ],
   "locations": [
     {
-      "id": "maiko",
-      "name": "舞子ビラ・明石海峡大橋",
-      "lat": 34.634,
-      "lon": 135.029,
-      "video_id": "W5iKrSNyJhQ"
+      "id": "kobe",
+      "name": "神戸",
+      "lat": 34.69,
+      "lon": 135.19
     },
     {
-      "id": "kobe_air",
-      "name": "神戸空港",
-      "lat": 34.632,
-      "lon": 135.223,
-      "video_id": "dpVyxSYsVs0"
+      "id": "osaka",
+      "name": "大阪",
+      "lat": 34.69,
+      "lon": 135.5
     },
     {
       "id": "sapporo",
-      "name": "札幌すすきの",
-      "lat": 43.055,
-      "lon": 141.353,
-      "video_id": "wRYonRnKsKw"
+      "name": "札幌",
+      "lat": 43.06,
+      "lon": 141.35
     },
     {
       "id": "tokyo",
-      "name": "東京タワー",
-      "lat": 35.6586,
-      "lon": 139.7454,
-      "video_id": "nu6NE55_X7A"
+      "name": "東京",
+      "lat": 35.68,
+      "lon": 139.76
     },
     {
-      "id": "fuji",
-      "name": "富士山裾野",
-      "lat": 35.28,
-      "lon": 138.61,
-      "video_id": "F2NbYrc-gBU"
+      "id": "sendai",
+      "name": "仙台",
+      "lat": 38.26,
+      "lon": 140.87
+    },
+    {
+      "id": "nagoya",
+      "name": "名古屋",
+      "lat": 35.18,
+      "lon": 136.9
+    },
+    {
+      "id": "joetsu",
+      "name": "上越市",
+      "lat": 37.15,
+      "lon": 138.23
+    },
+    {
+      "id": "hiroshima",
+      "name": "広島市",
+      "lat": 34.39,
+      "lon": 132.45
     },
     {
       "id": "fukuoka",
-      "name": "福岡・博多中洲",
-      "lat": 33.584,
-      "lon": 130.451,
-      "video_id": "NGbqP0fEZSE"
+      "name": "福岡市",
+      "lat": 33.59,
+      "lon": 130.4
     },
     {
       "id": "naha",
-      "name": "那覇空港",
-      "lat": 26.195,
-      "lon": 127.646,
-      "video_id": "dc8Iqi5Xxl8"
+      "name": "那覇市",
+      "lat": 26.21,
+      "lon": 127.68
     }
   ]
 }
