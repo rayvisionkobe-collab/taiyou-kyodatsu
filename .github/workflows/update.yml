@@ -1,42 +1,30 @@
-name: Update Weather Still and Poem
+name: update weather + poems
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: "0 * * * *"
   workflow_dispatch:
 
-permissions:
-  contents: write
+concurrency:
+  group: update-weather
+  cancel-in-progress: false  # 実行中に新しい実行が来ても、前のをキャンセルしない
 
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup Python
-        uses: actions/setup-python@v6
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
-          python-version: '3.11'
-
-      - name: Install ffmpeg and yt-dlp
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg
-          pip install -q -U yt-dlp requests Pillow
-
-      - name: Fetch still and generate poem
+          python-version: "3.11"
+      - run: pip install requests pillow
+      - run: python fetch.py
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: |
-          python fetch.py
-
-      - name: Commit and push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data.json images/ || true
-          git diff --cached --quiet || git commit -m "auto update: still and poem"
-          git push || echo "nothing to push"
+      - run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add data.json images/
+          git diff --cached --quiet || git commit -m "update"
+          git push
