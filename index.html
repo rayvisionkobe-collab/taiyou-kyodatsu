@@ -60,7 +60,7 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
   </div>
 </div>
 <div class="real">
-  <div style="font-size:12px;color:#a8a29e;margin-bottom:6px;">ライブ静止画 ・ 1時間おきに更新 <span id="liveUpdated"></span></div>
+  <div style="font-size:12px;color:#a8a29e;margin-bottom:6px;">ライブ静止画 ・ 30分おきに更新 <span id="liveUpdated"></span></div>
   <div class="real-card" id="realCard">
     <img id="liveImg" src="hero.jpg" alt="ライブ静止画" style="width:100%;height:100%;object-fit:cover;display:none;">
     <div id="livePlaceholder" style="text-align:center;padding:20px;">ライブ静止画を取得中…<br><span id="time"></span></div>
@@ -68,16 +68,19 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
   <div id="livePoem" style="margin-top:10px;padding:14px;background:#231e1b;border-radius:8px;font-family:'Yuji Syuku',cursive;font-size:19px;line-height:1.7;white-space:pre-wrap;display:none;"></div>
   <div id="livePoemNote" style="font-size:11px;color:#a8a29e;margin-top:6px;display:none;">AIがライブ画像から自動生成した詩です。上の温墨イラストはトップのままです。</div>
 </div>
-<footer>© rayvisionkobe-collab / PWA template v1 / 背景は生成り #1c1917 温墨</footer>
+<footer>出典：ウェザーニュース / Myライブカメラ © rayvisionkobe-collab / PWA template v1 / 背景は生成り #1c1917 温墨</footer>
 <script>
 const LOCATIONS = [
-  {id:"maiko", name:"舞子ビラ・明石海峡大橋", lat:34.634, lon:135.029, video_id:"W5iKrSNyJhQ"},
-  {id:"kobe_air", name:"神戸空港", lat:34.632, lon:135.223, video_id:"dpVyxSYsVs0"},
-  {id:"sapporo", name:"札幌すすきの", lat:43.055, lon:141.353, video_id:"wRYonRnKsKw"},
-  {id:"tokyo", name:"東京タワー", lat:35.6586, lon:139.7454, video_id:"nu6NE55_X7A"},
-  {id:"fuji", name:"富士山裾野", lat:35.28, lon:138.61, video_id:"F2NbYrc-gBU"},
-  {id:"fukuoka", name:"福岡・博多中洲", lat:33.584, lon:130.451, video_id:"NGbqP0fEZSE"},
-  {id:"naha", name:"那覇空港", lat:26.195, lon:127.646, video_id:"dc8Iqi5Xxl8"}
+  {id:"kobe", name:"神戸", lat:34.69, lon:135.19, weathernews_id:"7CDDE9067E16"},
+  {id:"osaka", name:"大阪", lat:34.69, lon:135.50, weathernews_id:"7CDDE906F8CE"},
+  {id:"sapporo", name:"札幌", lat:43.06, lon:141.35, weathernews_id:"410001361"},
+  {id:"tokyo", name:"東京", lat:35.68, lon:139.76, weathernews_id:"410000116"},
+  {id:"sendai", name:"仙台", lat:38.26, lon:140.87, weathernews_id:"7CDDE905CDB1"},
+  {id:"nagoya", name:"名古屋", lat:35.18, lon:136.90, weathernews_id:"7CDDE906B81D"},
+  {id:"joetsu", name:"上越市", lat:37.15, lon:138.23, weathernews_id:"410000925"},
+  {id:"hiroshima", name:"広島市", lat:34.39, lon:132.45, weathernews_id:"7CDDE908C8DC"},
+  {id:"fukuoka", name:"福岡市", lat:33.59, lon:130.40, weathernews_id:"7CDDE906F156"},
+  {id:"naha", name:"那覇市", lat:26.21, lon:127.68, weathernews_id:"7CDDE9086CB8"}
 ];
 let liveData=null;
 async function loadLive(){
@@ -115,7 +118,7 @@ async function fetchWeather(lat, lon){
   }catch(e){ return '天気を取得中…'; }
 }
 async function updateAll(){
-  const place = document.getElementById('placeSelect').value || 'maiko';
+  const place = document.getElementById('placeSelect').value || 'kobe';
   const loc = LOCATIONS.find(l=>l.id===place) || LOCATIONS[0];
   const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
   const level = parseInt(document.getElementById('level').value);
