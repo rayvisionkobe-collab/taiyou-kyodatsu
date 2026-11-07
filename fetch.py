@@ -120,49 +120,57 @@ def generate_poems(image_path, place_name, lat=None, lon=None):
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         return fallback_poems(place_name, lat, lon), "fallback-no-key"
+    # 2026-11: Google推奨は gemini-3.8-flash。1モデルだけ使う(5モデル試すと429になる)
+    model = "gemini-3.8-flash"
     try:
         b64 = base64.b64encode(Path(image_path).read_bytes()).decode()
-        prompt = f"""この画像は日本の{place_name}のライブカメラです。画像をよく見て、2人の詩人の詩をJSONで作ってください。
-返答はJSONだけ、説明文なしで。
-形式:
-{{"kyodatsu": {{"0":"1行","1":"2行（改行で区切る）","2":"3行","3":"長めの1段落"}}, "taiyou": {{"0":"1行","1":"2行","2":"3行","3":"長めの1段落"}}}}
-条件:
-- kyodatsuは中原中也風、少し寂しく温かい余韻
-- taiyouは宮沢賢治風、光と風と宇宙を感じる
-- 各詩に天気の言葉（晴れ・曇り・雨・風・雪など）を1つだけ入れる
-- 場所名「{place_name}」を各詩に1回は入れる
-- 0は短く事実的、1は比喩少し、2は主観濃く、3は長く解体的
+        # JSONで返させない。プレーンテキストで区切り文字で返すと、壊れたJSONにならない
+        prompt = f"""この画像は日本の{place_name}のライブカメラです。画像をよく見て、詩を8つ作ってください。
+形式は必ずこれだけ。JSONは使わない。説明文なし。
+---
+KYODATSU0: {place_name}を入れた1行の詩、中原中也風、少し寂しく温かい
+KYODATSU1: {place_name}を入れた2行の詩、中原中也風、比喩少し
+KYODATSU2: {place_name}を入れた3行の詩、中原中也風、主観濃く
+KYODATSU3: {place_name}を入れた長めの1段落、中原中也風、解体的
+TAIYOU0: {place_name}を入れた1行の詩、宮沢賢治風、光と風
+TAIYOU1: {place_name}を入れた2行の詩、宮沢賢治風、比喩少し
+TAIYOU2: {place_name}を入れた3行の詩、宮沢賢治風、主観濃く
+TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感じる
+---
+条件: 各詩に天気の言葉(晴れ・曇り・雨・風・雪など)を1つだけ入れる。改行は詩の中では使わず、1行で書く。
 """
-        # 2026年11月現在: 2.0 / 1.5 / 2.5 は新規キーでは404になる。Gemini 3系を優先する
-        models = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.0-flash"]
-        last_err = None
-        for model in models:
-            try:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
-                payload = {"contents":[{"parts":[{"text":prompt},{"inline_data":{"mime_type":"image/jpeg","data":b64}}]}], "generationConfig":{"temperature":0.9,"maxOutputTokens":1200,"response_mime_type":"application/json"}}
-                r = requests.post(url, json=payload, timeout=90)
-                if r.status_code != 200:
-                    print(f"gemini {model} status {r.status_code}: {r.text[:200]}")
-                    last_err = f"{model} {r.status_code}"
-                    continue
-                txt = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
-                m = re.search(r"\{.*\}", txt, re.DOTALL)
-                if m:
-                    txt = m.group(0)
-                data = json.loads(txt)
-                if "kyodatsu" in data and "taiyou" in data:
-                    fb = fallback_poems(place_name, lat, lon)
-                    for poet in ["kyodatsu","taiyou"]:
-                        for lvl in ["0","1","2","3"]:
-                            if not data[poet].get(lvl):
-                                data[poet][lvl] = fb[poet][lvl]
-                    return data, model
-                raise ValueError("bad json structure")
-            except Exception as e:
-                print(f"gemini {model} fail {place_name}: {e}")
-                last_err = str(e)
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+        payload = {"contents":[{"parts":[{"text":prompt},{"inline_data":{"mime_type":"image/jpeg","data":b64}}]}], "generationConfig":{"temperature":0.9,"maxOutputTokens":1200}}
+        r = requests.post(url, json=payload, timeout=90)
+        if r.status_code != 200:
+            print(f"gemini {model} status {r.status_code}: {r.text[:300]}")
+            raise Exception(f"{model} {r.status_code}")
+        txt = r.json()["candidates"][0]["content"]["parts"][0]["text"]
+        # パース: KYODATSU0: ... の行を拾う
+        data = {"kyodatsu":{}, "taiyou":{}}
+        for line in txt.splitlines():
+            line=line.strip()
+            if not line or ":" not in line:
                 continue
-        raise Exception(f"all models failed: {last_err}")
+            key, val = line.split(":", 1)
+            key=key.strip().upper(); val=val.strip()
+            if key.startswith("KYODATSU") and key[-1] in "0123":
+                data["kyodatsu"][key[-1]] = val
+            elif key.startswith("TAIYOU") and key[-1] in "0123":
+                data["taiyou"][key[-1]] = val
+        # 足りない分はフォールバックで埋める
+        fb = fallback_poems(place_name, lat, lon)
+        ok = 0
+        for poet in ["kyodatsu","taiyou"]:
+            for lvl in ["0","1","2","3"]:
+                if data[poet].get(lvl):
+                    ok += 1
+                else:
+                    data[poet][lvl] = fb[poet][lvl]
+        print(f"gemini ok {place_name} model={model} parsed={ok}/8")
+        if ok == 0:
+            raise ValueError("no poems parsed")
+        return data, model
     except Exception as e:
         print(f"gemini fail {place_name}: {e}")
         return fallback_poems(place_name, lat, lon), "fallback"
@@ -193,6 +201,7 @@ def main():
         poems, model = generate_poems(out, name, loc.get("lat"), loc.get("lon"))
         data["locations"][key] = {"video_id": vid, "image": out, "poems": poems, "model": model, "updated_at": now, "status": status}
         print(f"{key}: {status} {model} {poems['kyodatsu']['1'][:20]}")
+        time.sleep(3)  # 429対策: 地点ごとに3秒待つ
     Path("data.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 if __name__ == "__main__":
