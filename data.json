@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-07T17:04:04.450209+09:00",
+  "updated_at": "2026-11-07T17:24:04.330439+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T17:04:04.450209+09:00",
+      "updated_at": "2026-11-07T17:24:04.330439+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "poem_slot": null,
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T17:04:04.450209+09:00",
+      "updated_at": "2026-11-07T17:24:04.330439+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "poem_slot": null,
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T17:04:04.450209+09:00",
+      "updated_at": "2026-11-07T17:24:04.330439+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "poem_slot": null,
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T17:04:04.450209+09:00",
+      "updated_at": "2026-11-07T17:24:04.330439+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "poem_slot": null,
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T17:04:04.450209+09:00",
+      "updated_at": "2026-11-07T17:24:04.330439+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "poem_slot": null,
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T17:04:04.450209+09:00",
+      "updated_at": "2026-11-07T17:24:04.330439+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "poem_slot": null,
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T17:04:04.450209+09:00",
+      "updated_at": "2026-11-07T17:24:04.330439+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "poem_slot": null,
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T17:04:04.450209+09:00",
+      "updated_at": "2026-11-07T17:24:04.330439+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "poem_slot": null,
