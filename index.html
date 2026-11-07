@@ -176,11 +176,37 @@ async function updateAll(){
   if(upd && item?.updated_at) upd.textContent = '・ ' + new Date(item.updated_at).toLocaleString('ja-JP');
   const t = document.getElementById('time'); if(t) t.textContent = new Date().toLocaleString('ja-JP');
 }
+function loadPrefs(){
+  try{
+    return {
+      place: localStorage.getItem('kyodatsu_place') || 'kobe',
+      poet: localStorage.getItem('kyodatsu_poet') || 'kyodatsu',
+      level: localStorage.getItem('kyodatsu_level') || '1'
+    };
+  }catch(e){ return {place:'kobe', poet:'kyodatsu', level:'1'}; }
+}
+function savePrefs(){
+  try{
+    const place = document.getElementById('placeSelect').value;
+    const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
+    const level = document.getElementById('level').value;
+    localStorage.setItem('kyodatsu_place', place);
+    localStorage.setItem('kyodatsu_poet', poet);
+    localStorage.setItem('kyodatsu_level', level);
+  }catch(e){}
+}
 function init(){
   const sel=document.getElementById('placeSelect');
   sel.innerHTML='';
   LOCATIONS.forEach(l=>{
     const o=document.createElement('option'); o.value=l.id; o.textContent=l.name; sel.appendChild(o);
+  });
+  // 保存されたデフォルトを復元
+  const prefs = loadPrefs();
+  sel.value = prefs.place;
+  document.getElementById('level').value = prefs.level;
+  document.querySelectorAll('#poetToggle button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.poet === prefs.poet);
   });
   // Service Workerの古いキャッシュを消す
   if('serviceWorker' in navigator){
@@ -191,12 +217,12 @@ function init(){
   }
   loadLive().then(updateAll);
 }
-document.getElementById('placeSelect').addEventListener('change', updateAll);
-document.getElementById('level').addEventListener('input', updateAll);
+document.getElementById('placeSelect').addEventListener('change', ()=>{ savePrefs(); updateAll(); });
+document.getElementById('level').addEventListener('input', ()=>{ savePrefs(); updateAll(); });
 document.getElementById('poetToggle').addEventListener('click', e=>{
   if(e.target.tagName==='BUTTON'){
     document.querySelectorAll('#poetToggle button').forEach(b=>b.classList.remove('active'));
-    e.target.classList.add('active'); updateAll();
+    e.target.classList.add('active'); savePrefs(); updateAll();
   }
 });
 document.getElementById('sp').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='390px';document.getElementById('sp').classList.add('active');document.getElementById('tab').classList.remove('active')};
