@@ -1,4 +1,4 @@
-import os, json, base64, subprocess, datetime, requests, re
+import os, json, time, base64, subprocess, datetime, requests, re
 from pathlib import Path
 
 Path("images").mkdir(exist_ok=True)
@@ -141,7 +141,7 @@ TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感�
 """
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
         payload = {"contents":[{"parts":[{"text":prompt},{"inline_data":{"mime_type":"image/jpeg","data":b64}}]}], "generationConfig":{"temperature":0.9,"maxOutputTokens":1200}}
-        r = requests.post(url, json=payload, timeout=90)
+        r = requests.post(url, json=payload, timeout=60)
         if r.status_code != 200:
             print(f"gemini {model} status {r.status_code}: {r.text[:300]}")
             raise Exception(f"{model} {r.status_code}")
