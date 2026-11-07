@@ -11,7 +11,7 @@ def load_locations():
         {"id": "sapporo", "name": "札幌すすきの", "lat": 43.055, "lon": 141.353, "video_id": "wRYonRnKsKw"},
         {"id": "tokyo", "name": "東京タワー", "lat": 35.6586, "lon": 139.7454, "video_id": "nu6NE55_X7A"},
         {"id": "fuji", "name": "富士山裾野", "lat": 35.28, "lon": 138.61, "video_id": "F2NbYrc-gBU"},
-        {"id": "fukuoka", "name": "福岡・博多中洲", "lat": 33.584, "lon": 130.451, "video_id": "NGbqP0fEZSE"},
+        {"id": "fukuoka", "name": "福岡・博多中洲", "lat": 33.584, "lon": 130.451, "video_id": "EQZzcrYnjuk"},
         {"id": "naha", "name": "那覇空港", "lat": 26.195, "lon": 127.646, "video_id": "dc8Iqi5Xxl8"},
     ]
 
