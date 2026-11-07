@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-07T23:36:07.723759+09:00",
+  "updated_at": "2026-11-08T00:30:23.960645+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -18,9 +18,9 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T23:36:07.723759+09:00",
+      "updated_at": "2026-11-08T00:30:23.960645+09:00",
       "status": "weathernews-page",
-      "poem_date": "2026-11-07",
+      "poem_date": "2026-11-08",
       "poem_slot": "evening",
       "weathernews_id": "410001361"
     },
@@ -41,9 +41,9 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T23:36:07.723759+09:00",
+      "updated_at": "2026-11-08T00:30:23.960645+09:00",
       "status": "weathernews-page",
-      "poem_date": "2026-11-07",
+      "poem_date": "2026-11-08",
       "poem_slot": "evening",
       "weathernews_id": "410000116"
     },
@@ -64,9 +64,9 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T23:36:07.723759+09:00",
+      "updated_at": "2026-11-08T00:30:23.960645+09:00",
       "status": "weathernews-page",
-      "poem_date": "2026-11-07",
+      "poem_date": "2026-11-08",
       "poem_slot": "evening",
       "weathernews_id": "7CDDE906F156"
     },
@@ -87,9 +87,9 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T23:36:07.723759+09:00",
+      "updated_at": "2026-11-08T00:30:23.960645+09:00",
       "status": "weathernews-page",
-      "poem_date": "2026-11-07",
+      "poem_date": "2026-11-08",
       "poem_slot": "evening",
       "weathernews_id": "7CDDE9086CB8"
     },
@@ -110,9 +110,9 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T23:36:07.723759+09:00",
+      "updated_at": "2026-11-08T00:30:23.960645+09:00",
       "status": "weathernews-page",
-      "poem_date": "2026-11-07",
+      "poem_date": "2026-11-08",
       "poem_slot": "evening",
       "weathernews_id": "7CDDE9067E16"
     },
@@ -133,9 +133,9 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T23:36:07.723759+09:00",
+      "updated_at": "2026-11-08T00:30:23.960645+09:00",
       "status": "weathernews-page",
-      "poem_date": "2026-11-07",
+      "poem_date": "2026-11-08",
       "poem_slot": "evening",
       "weathernews_id": "7CDDE906F8CE"
     },
@@ -156,9 +156,9 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T23:36:07.723759+09:00",
+      "updated_at": "2026-11-08T00:30:23.960645+09:00",
       "status": "weathernews-page",
-      "poem_date": "2026-11-07",
+      "poem_date": "2026-11-08",
       "poem_slot": "evening",
       "weathernews_id": "7CDDE905CDB1"
     },
@@ -179,9 +179,9 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T23:36:07.723759+09:00",
+      "updated_at": "2026-11-08T00:30:23.960645+09:00",
       "status": "weathernews-page",
-      "poem_date": "2026-11-07",
+      "poem_date": "2026-11-08",
       "poem_slot": "evening",
       "weathernews_id": "7CDDE906B81D"
     },
@@ -202,9 +202,9 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T23:36:07.723759+09:00",
+      "updated_at": "2026-11-08T00:30:23.960645+09:00",
       "status": "weathernews-page",
-      "poem_date": "2026-11-07",
+      "poem_date": "2026-11-08",
       "poem_slot": "evening",
       "weathernews_id": "7CDDE908C8DC"
     }
