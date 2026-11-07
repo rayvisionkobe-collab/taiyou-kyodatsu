@@ -33,6 +33,23 @@ header h1{font-family:"Shippori Mincho B1",serif;font-size:14px;letter-spacing:0
 .real{max-width:768px;margin:0 auto;padding:16px}
 .real-card{aspect-ratio:16/9;background:linear-gradient(180deg,#2a3a5a,#1c1917);border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
 footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
+/* v24: 詩をメインに */
+.poem-main{font-size:26px !important;line-height:1.9 !important;}
+@media(min-width:768px){
+  .poem-main{font-size:34px !important;line-height:2.0 !important;}
+  .poem-wrap{max-width:720px;margin:0 auto;}
+  .real{max-width:520px;margin:0 auto;}  /* 画像は小さく */
+  .real-card{aspect-ratio:16/9;}
+}
+@media(min-width:1024px){
+  .poem-main{font-size:38px !important;}
+  .real{max-width:480px;}
+}
+/* ③ 下の詩風と濃淡を小さく、目立たなく */
+#bottomControls{opacity:0.75;transform:scale(0.92);transform-origin:top center;}
+#bottomControls .toggle button{font-size:13px;padding:6px 10px;}
+#bottomControls .slider{height:4px;}
+#bottomControls .labels{font-size:11px;color:#a8a29e;}
 </style>
 </head>
 <body>
@@ -44,7 +61,7 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 <div class="poem-wrap" id="poemWrap">
   <div class="poem-card">
     <div class="poem-main" id="poemMain">読み込み中…</div>
-    <div class="poem-sub" id="poemSub">虚脱の空 / 仙人級 / 舞子ビラ</div>
+    
   </div>
   <div class="controls">
     <select id="placeSelect" class="select"></select>
@@ -128,7 +145,7 @@ async function updateAll(){
   document.getElementById('poemMain').textContent = getPoem(place, poet, level);
   const placeName = loc.name;
   const isAI = !!liveData?.locations?.[place]?.poems;
-  document.getElementById('poemSub').textContent = `${poet==='kyodatsu'?'虚脱の空':'太陽の涙'} / ${levels[level]} / ${placeName} ${isAI ? '・ AI生成' : '・ テンプレート'}`;
+  (document.getElementById('poemSub')||{}).textContent = `${poet==='kyodatsu'?'虚脱の空':'太陽の涙'} / ${levels[level]} / ${placeName} ${isAI ? '・ AI生成' : '・ テンプレート'}`;
   document.getElementById('practical').textContent = '天気を取得中… ' + placeName;
   const w = await fetchWeather(loc.lat, loc.lon);
   document.getElementById('practical').textContent = w + ' ' + placeName;
