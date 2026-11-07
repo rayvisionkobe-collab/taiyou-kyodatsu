@@ -1,8 +1,17 @@
+# ============================================================
+# fetch.py v19 - 朝・昼・晩の3回だけAI詩を作る版
+# POEM_HOURS = [6, 12, 18]  <- ここにあります (朝6時・昼12時・晩18時)
+# BUSY_HOURS = [15, 16]     <- 15-16時はGeminiを使わない
+# GEMINI_MODELS = 7つ回遊  <- 3.8が429でも次へ逃げる
+# ============================================================
 import os, json, time, base64, subprocess, datetime, requests, re, hashlib
 from pathlib import Path
 from io import BytesIO
 
 Path("images").mkdir(exist_ok=True)
+
+POEM_HOURS = [6, 12, 18]  # 朝6時・昼12時・晩18時だけAI詩を作る
+BUSY_HOURS = [15, 16]  # 15-16時はGeminiを使わない (429/503回避)
 
 def load_locations():
     return [
@@ -117,8 +126,6 @@ def fallback_poems(place_name, lat=None, lon=None):
     }
 
 # ---- Gemini 設定: 忙しい時間とモデル回遊 ----
-POEM_HOURS = [6, 12, 18]  # 朝・昼・晩の3回だけ AI詩を作る
-BUSY_HOURS = [15, 16]  # 統計で 429/503 が集中した時間帯 (JST) は避ける
 # 3.8だけだと429で止まるので、広げて回遊する。404なら次へ、429/503なら少し待って次へ
 GEMINI_MODELS = [
     "gemini-3.8-flash",
