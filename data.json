@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-07T16:30:29.543446+09:00",
+  "updated_at": "2026-11-07T16:54:26.883913+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -17,8 +17,8 @@
           "3": "札幌に、曇りの光が落ちている。昼下がり、海の向こうで風が渡ろうとしている。1℃の光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "fallback-hourly",
-      "updated_at": "2026-11-07T16:30:29.543446+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-07T16:54:26.883913+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "weathernews_id": "410001361"
@@ -39,8 +39,8 @@
           "3": "東京に、晴れの光が落ちている。昼下がり、海の向こうで風が渡ろうとしている。15℃の光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "fallback-hourly",
-      "updated_at": "2026-11-07T16:30:29.543446+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-07T16:54:26.883913+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "weathernews_id": "410000116"
@@ -62,7 +62,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:30:29.543446+09:00",
+      "updated_at": "2026-11-07T16:54:26.883913+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "weathernews_id": "7CDDE906F156"
@@ -84,7 +84,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:30:29.543446+09:00",
+      "updated_at": "2026-11-07T16:54:26.883913+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "weathernews_id": "7CDDE9086CB8"
@@ -106,7 +106,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:30:29.543446+09:00",
+      "updated_at": "2026-11-07T16:54:26.883913+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "weathernews_id": "7CDDE9067E16"
@@ -128,7 +128,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:30:29.543446+09:00",
+      "updated_at": "2026-11-07T16:54:26.883913+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "weathernews_id": "7CDDE906F8CE"
@@ -150,7 +150,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:30:29.543446+09:00",
+      "updated_at": "2026-11-07T16:54:26.883913+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "weathernews_id": "7CDDE905CDB1"
@@ -172,7 +172,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:30:29.543446+09:00",
+      "updated_at": "2026-11-07T16:54:26.883913+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
       "weathernews_id": "7CDDE906B81D"
