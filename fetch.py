@@ -24,7 +24,11 @@ def fetch_weathernews(camera_id, out_path):
     except:
         Image = None
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
-    for back in range(0, 13):
+    # 古いカメラ(410...)は更新が1時間に1回くらいなので、3時間前まで探す
+    # 新しいカメラ(7CDDE...)は13分前までで十分
+    max_back = 180 if camera_id.startswith("410") else 13
+    step = 5 if camera_id.startswith("410") else 1
+    for back in range(0, max_back + 1, step):
         t_base = now - datetime.timedelta(minutes=back)
         for sec in ["00", "01", "11", "30", "50", "41"]:  # 上越は 01 や 41 の秒もある
             ts = t_base.strftime("%Y%m%d%H%M") + sec
@@ -45,7 +49,7 @@ def fetch_weathernews(camera_id, out_path):
                         return "weathernews"
                 except Exception:
                     continue
-    print(f"weathernews FAILED {camera_id}")
+    print(f"weathernews FAILED {camera_id} (max_back={max_back}min)")
     return None
 
 def get_weather(lat, lon):
