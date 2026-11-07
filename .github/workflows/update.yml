@@ -7,7 +7,10 @@ on:
 
 concurrency:
   group: update-weather
-  cancel-in-progress: false  # 実行中に新しい実行が来ても、前のをキャンセルしない
+  cancel-in-progress: false
+
+permissions:
+  contents: write  # data.json と images/ を push するために必要
 
 jobs:
   update:
