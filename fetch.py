@@ -12,7 +12,6 @@ def load_locations():
         {"id": "tokyo", "name": "東京", "lat": 35.68, "lon": 139.76, "weathernews_id": "410000116"},
         {"id": "sendai", "name": "仙台", "lat": 38.26, "lon": 140.87, "weathernews_id": "7CDDE905CDB1"},
         {"id": "nagoya", "name": "名古屋", "lat": 35.18, "lon": 136.90, "weathernews_id": "7CDDE906B81D"},
-        {"id": "joetsu", "name": "上越市", "lat": 37.15, "lon": 138.23, "weathernews_id": "410000925"},
         {"id": "hiroshima", "name": "広島市", "lat": 34.39, "lon": 132.45, "weathernews_id": "7CDDE908C8DC"},
         {"id": "fukuoka", "name": "福岡市", "lat": 33.59, "lon": 130.40, "weathernews_id": "7CDDE906F156"},
         {"id": "naha", "name": "那覇市", "lat": 26.21, "lon": 127.68, "weathernews_id": "7CDDE9086CB8"},
@@ -27,7 +26,7 @@ def fetch_weathernews(camera_id, out_path):
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
     for back in range(0, 13):
         t_base = now - datetime.timedelta(minutes=back)
-        for sec in ["00", "11", "30", "50"]:
+        for sec in ["00", "01", "11", "30", "50", "41"]:  # 上越は 01 や 41 の秒もある
             ts = t_base.strftime("%Y%m%d%H%M") + sec
             for ext in ["webp", "jpg"]:
                 url = f"https://gvs.weathernews.jp/livecam/{camera_id}/640/{ts}.{ext}"
@@ -132,6 +131,22 @@ def main():
             data["updated_at"] = now
         except:
             pass
+    # 古い場所と古い画像を掃除する (不一致の原因)
+    valid_ids = {l["id"] for l in load_locations()}
+    # data.json の古い場所を削除
+    if "locations" in data:
+        for old_key in list(data["locations"].keys()):
+            if old_key not in valid_ids:
+                print(f"cleanup data.json: remove old {old_key}")
+                del data["locations"][old_key]
+    # images/ の古い画像を削除
+    for img in Path("images").glob("*.jpg"):
+        if img.stem not in valid_ids:
+            try:
+                img.unlink()
+                print(f"cleanup images: remove old {img.name}")
+            except Exception as e:
+                print(f"cleanup fail {img.name}: {e}")
     for loc in load_locations():
         key = loc["id"]; name = loc.get("name", key)
         out = f"images/{key}.jpg"
