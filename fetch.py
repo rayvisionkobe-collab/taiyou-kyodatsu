@@ -151,8 +151,7 @@ def fallback_poems(place_name, lat=None, lon=None):
 GEMINI_MODELS = [
     "gemini-3.8-flash",
     "gemini-3.5-flash",
-    "gemini-2.5-flash",
-]  # 7つだと404ばかりで時間がかかるので、確実にある3つだけに絞る
+]  # 2.5-flash は 404 なので外す  # 7つだと404ばかりで時間がかかるので、確実にある3つだけに絞る
 
 def current_poem_slot(hour):
     # 6時台->朝, 12時台->昼, 18時台->晩。それ以外は None (作らない)
@@ -231,16 +230,16 @@ TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感�
                 continue
             txt = r.json()["candidates"][0]["content"]["parts"][0]["text"]
             data = {"kyodatsu":{}, "taiyou":{}}
-            for line in txt.splitlines():
-                line=line.strip()
-                if not line or ":" not in line:
-                    continue
-                key, val = line.split(":", 1)
-                key=key.strip().upper(); val=val.strip()
-                if key.startswith("KYODATSU") and key[-1] in "0123":
-                    data["kyodatsu"][key[-1]] = val
-                elif key.startswith("TAIYOU") and key[-1] in "0123":
-                    data["taiyou"][key[-1]] = val
+            import re as _re
+            # KYODATSU0: / KYODATSU 0: / KYODATSU-0: / **KYODATSU0** など全部拾う
+            for m in _re.finditer(r"(KYODATSU|TAIYOU)[\s\*\-\:]*([0-3])\s*[:：]\s*(.+)", txt, _re.IGNORECASE):
+                poet = "kyodatsu" if m.group(1).upper() == "KYODATSU" else "taiyou"
+                lvl = m.group(2)
+                val = m.group(3).strip().strip("*").strip()
+                # 改行が混ざっていたら1行にする
+                val = val.replace("\n", " ").strip()
+                if val:
+                    data[poet][lvl] = val
             fb = fallback_poems(place_name, lat, lon)
             ok = 0
             for poet in ["kyodatsu","taiyou"]:
