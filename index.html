@@ -49,14 +49,7 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
   <div class="controls">
     <select id="placeSelect" class="select"></select>
     <div class="practical" id="practical">天気を取得中…</div>
-    <div class="toggle" id="poetToggle">
-      <button data-poet="kyodatsu" class="active">虚脱の空</button>
-      <button data-poet="taiyou">太陽の涙</button>
-    </div>
-    <div>
-      <input type="range" id="level" min="0" max="3" step="1" value="1" class="slider">
-      <div class="labels"><span>からっと</span><span>ほどよく</span><span>こいめ</span><span>仙人級</span></div>
-    </div>
+    <div id="weatherTime" style="font-size:11px;color:#a8a29e;margin-top:2px;"></div>
   </div>
 </div>
 <div class="real">
@@ -67,6 +60,16 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
   </div>
   <div id="livePoem" style="margin-top:10px;padding:14px;background:#231e1b;border-radius:8px;font-family:'Yuji Syuku',cursive;font-size:19px;line-height:1.7;white-space:pre-wrap;display:none;"></div>
   <div id="livePoemNote" style="font-size:11px;color:#a8a29e;margin-top:6px;display:none;">AIがライブ画像から自動生成した詩です。上の温墨イラストはトップのままです。</div>
+</div>
+<div class="controls" id="bottomControls" style="margin-top:18px;border-top:1px solid #44403c;padding-top:14px;">
+  <div class="toggle" id="poetToggle">
+    <button data-poet="kyodatsu" class="active">虚脱の空</button>
+    <button data-poet="taiyou">太陽の涙</button>
+  </div>
+  <div>
+    <input type="range" id="level" min="0" max="3" step="1" value="1" class="slider">
+    <div class="labels"><span>からっと</span><span>ほどよく</span><span>こいめ</span><span>仙人級</span></div>
+  </div>
 </div>
 <footer>出典：ウェザーニュース / Myライブカメラ © rayvisionkobe-collab / PWA template v1 / 背景は生成り #1c1917 温墨</footer>
 <script>
@@ -129,6 +132,17 @@ async function updateAll(){
   document.getElementById('practical').textContent = '天気を取得中… ' + placeName;
   const w = await fetchWeather(loc.lat, loc.lon);
   document.getElementById('practical').textContent = w + ' ' + placeName;
+    // 何時現在の天気か: data.json の updated_at から表示
+    try{
+      const wt = liveData?.updated_at || liveData?.locations?.[place]?.updated_at;
+      if(wt){
+        const d = new Date(wt);
+        const mm = d.getMonth()+1, dd = d.getDate(), hh = String(d.getHours()).padStart(2,'0'), mi = String(d.getMinutes()).padStart(2,'0');
+        document.getElementById('weatherTime').textContent = mm + '月' + dd + '日 ' + hh + ':' + mi + ' 現在の天気';
+      } else {
+        document.getElementById('weatherTime').textContent = '';
+      }
+    }catch(e){}
   const item = liveData?.locations?.[place];
   const img = document.getElementById('liveImg');
   const ph = document.getElementById('livePlaceholder');
