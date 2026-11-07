@@ -4,13 +4,18 @@ on:
   schedule:
     - cron: "0 * * * *"
   workflow_dispatch:
+    inputs:
+      force_poem:
+        description: "1にすると今すぐ詩を作り直す (那覇だけ朝のままの時に使う)"
+        required: false
+        default: "0"
 
 concurrency:
   group: update-weather
   cancel-in-progress: false
 
 permissions:
-  contents: write  # data.json と images/ を push するために必要
+  contents: write
 
 jobs:
   update:
@@ -25,6 +30,7 @@ jobs:
       - run: python fetch.py
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FORCE_POEM: ${{ github.event.inputs.force_poem || '0' }}
       - run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
