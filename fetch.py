@@ -318,8 +318,15 @@ def main():
         do_gen, slot = should_generate_poem(now_dt, existing)
         if do_gen:
             poems, model = generate_poems(out, name, loc.get("lat"), loc.get("lon"), loc_index=loc_index)
-            poem_slot = slot
-            print(f"{key}: NEW poem slot={slot} model={model}")
+            # 失敗して fallback になったら、古いAIの詩を捨てないで残す
+            if model.startswith("fallback") and existing.get("poems"):
+                print(f"{key}: gemini failed, KEEP old AI poems (slot={existing.get('poem_slot')}) instead of fallback")
+                poems, model = existing["poems"], "cached-keep"
+                poem_slot = existing.get("poem_slot")
+                # poem_date も古いままにして、次の 12時で再試行できるようにする
+            else:
+                poem_slot = slot
+                print(f"{key}: NEW poem slot={slot} model={model}")
         else:
             if existing.get("poems"):
                 poems, model = existing["poems"], "cached"
@@ -331,7 +338,7 @@ def main():
                 print(f"{key}: fallback poems (no existing)")
         data["locations"][key] = {"image": out, "poems": poems, "model": model, "updated_at": now, "status": status, "poem_date": now[:10], "poem_slot": poem_slot, "weathernews_id": loc["weathernews_id"]}
         print(f"{key}: {status} {model}")
-        time.sleep(3)  # 地点ごとに3秒待つ (8秒だと9分超える)
+        time.sleep(15)  # 地点ごとに15秒待つ (429回避: 一気に作らない) (8秒だと9分超える)
     Path("data.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 if __name__ == "__main__":
