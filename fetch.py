@@ -16,32 +16,71 @@ def load_locations():
     ]
 
 def fetch_still(video_id, out_path):
-    # 1) ffmpeg で本物の動画フレームを取る (動く画像)
-    for fmt in ["bv*[height<=720]+ba/b[height<=720]/best", "best[height<=720]", "best"]:
+    import hashlib
+    # 前の画像のハッシュを覚えて、同じ画像なら「更新なし」と分かるようにする
+    old_hash = None
+    if Path(out_path).exists():
         try:
-            result = subprocess.run(["yt-dlp","-g","-f",fmt, f"https://www.youtube.com/watch?v={video_id}"], capture_output=True, text=True, timeout=35)
-            urls = [u.strip() for u in result.stdout.strip().splitlines() if u.strip().startswith("http")]
-            if not urls:
+            old_hash = hashlib.md5(Path(out_path).read_bytes()).hexdigest()
+        except:
+            pass
+
+    # 1) yt-dlp + ffmpeg で本物のフレームを取る
+    # GitHub ActionsのIPはYouTubeにブロックされやすいので、player_client を変えて3通り試す
+    for client in ["android", "web", "tv"]:
+        for fmt in ["bv*[height<=720]+ba/b[height<=720]/best", "best[height<=720]"]:
+            try:
+                cmd = ["yt-dlp", "-g", "-f", fmt, "--no-check-certificates", "--extractor-args", f"youtube:player_client={client}", f"https://www.youtube.com/watch?v={video_id}"]
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=40)
+                if result.returncode != 0:
+                    print(f"yt-dlp {client} {fmt} fail {video_id}: {result.stderr[:300]}")
+                    continue
+                urls = [u.strip() for u in result.stdout.strip().splitlines() if u.strip().startswith("http")]
+                if not urls:
+                    print(f"yt-dlp {client} {fmt} no url {video_id}")
+                    continue
+                stream_url = urls[0]
+                # ffmpeg で1フレーム切り出す。-reconnect で途切れ対策
+                r = subprocess.run(["ffmpeg", "-y", "-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "2", "-i", stream_url, "-vframes", "1", "-q:v", "3", out_path], capture_output=True, timeout=40)
+                if Path(out_path).exists() and Path(out_path).stat().st_size > 8000:
+                    new_hash = hashlib.md5(Path(out_path).read_bytes()).hexdigest()
+                    print(f"ffmpeg ok {video_id} client={client} fmt={fmt} hash_changed={new_hash!=old_hash}")
+                    return "live"
+                else:
+                    print(f"ffmpeg small file {video_id} client={client}")
+            except Exception as e:
+                print(f"ffmpeg try {client} {fmt} fail {video_id}: {e}")
                 continue
-            stream_url = urls[0]
-            r = subprocess.run(["ffmpeg","-y","-i",stream_url,"-vframes","1","-q:v","3",out_path], capture_output=True, timeout=35)
-            if Path(out_path).exists() and Path(out_path).stat().st_size > 8000:
-                print(f"ffmpeg ok {video_id} fmt={fmt}")
-                return "live"
-        except Exception as e:
-            print(f"ffmpeg try {fmt} fail {video_id}: {e}")
-            continue
-    # 2) ライブサムネイル (ffmpegがダメな時だけ)
-    for q in ["hqdefault_live", "maxresdefault_live", "hqdefault", "maxresdefault"]:
+
+    # 2) ライブサムネイル - ただしキャッシュバスター付きで、古い静止サムネイルを避ける
+    import time
+    for q in ["hqdefault_live", "maxresdefault_live", "sddefault_live"]:
         try:
-            url = f"https://i.ytimg.com/vi/{video_id}/{q}.jpg"
-            r = requests.get(url, timeout=15)
+            url = f"https://i.ytimg.com/vi/{video_id}/{q}.jpg?t={int(time.time())}"
+            r = requests.get(url, timeout=15, headers={"Cache-Control": "no-cache"})
             if r.status_code == 200 and len(r.content) > 8000:
+                new_hash = hashlib.md5(r.content).hexdigest()
+                if new_hash == old_hash:
+                    print(f"live-thumb same as before {video_id} {q} - サムネイルが更新されていません")
+                    continue
                 Path(out_path).write_bytes(r.content)
-                print(f"live-thumb ok {video_id} {q} {len(r.content)} bytes")
+                print(f"live-thumb ok {video_id} {q} {len(r.content)} bytes hash_changed=True")
                 return "live-thumb"
+            else:
+                print(f"live-thumb skip {video_id} {q} status={r.status_code}")
         except Exception as e:
             print(f"live-thumb fail {video_id} {q}: {e}")
+
+    # 3) 最後の手段: 通常サムネイル (静止画でも、何もないよりマシ)
+    try:
+        r = requests.get(f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg", timeout=15)
+        if r.status_code == 200 and len(r.content) > 8000:
+            Path(out_path).write_bytes(r.content)
+            print(f"thumb fallback ok {video_id} hqdefault")
+            return "thumbnail"
+    except Exception as e:
+        print(f"thumb fallback fail {video_id}: {e}")
+    print(f"fetch_still FAILED {video_id} - 前の画像を残します")
     return None
 
 def get_weather(lat, lon):
