@@ -105,23 +105,44 @@ def get_weather(lat, lon):
     except:
         return "曇り", 14, 3
 
+def temp_to_feeling(temp):
+    # 数字の温度は使わない。時間帯が変わるとズレるため、体感に変える
+    if temp >= 32:
+        return "焼けるような暑さ"
+    if temp >= 28:
+        return "熱い"
+    if temp >= 24:
+        return "ほどよく暖かい"
+    if temp >= 19:
+        return "過ごしやすい"
+    if temp >= 15:
+        return "涼しい"
+    if temp >= 10:
+        return "肌寒い"
+    if temp >= 4:
+        return "冷たい"
+    if temp >= 0:
+        return "凍えそう"
+    return "凍えそう"
+
 def fallback_poems(place_name, lat=None, lon=None):
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
     hour = now.hour
     time_word = "夜明け" if 5 <= hour < 8 else "朝" if 8 <= hour < 12 else "昼下がり" if 12 <= hour < 17 else "夕暮れ" if 17 <= hour < 19 else "夜"
     weather, temp, wind = get_weather(lat, lon) if lat else ("曇り", 14, 3)
+    feeling = temp_to_feeling(temp)
     return {
         "kyodatsu": {
-            "0": f"{place_name}の空は、{weather}、{temp}℃。",
-            "1": f"{place_name}の空は、{weather}、{temp}℃。\n{time_word}の風が、遠くで何かを運んでくる。",
-            "2": f"{place_name}の空は、{weather}、{temp}℃。\n{time_word}の風が、遠くで何かを運んでくる。\n風{wind}m、どこへも行けず、空だけが遠くへ行く。",
-            "3": f"{place_name}の空は、{weather}、{temp}℃。{time_word}の風が、遠くで何かを運んでくる。風{wind}mの午後、どこへも行けず、空だけが遠くへ行ってしまうような、虚脱の午後だった."
+            "0": f"{place_name}の空は、{weather}、{feeling}。",
+            "1": f"{place_name}の空は、{weather}、{feeling}。\n{time_word}の風が、遠くで何かを運んでくる。",
+            "2": f"{place_name}の空は、{weather}、{feeling}。\n{time_word}の風が、遠くで何かを運んでくる。\nどこへも行けず、空だけが遠くへ行く。",
+            "3": f"{place_name}の空は、{weather}、{feeling}。{time_word}の風が、遠くで何かを運んでくる。どこへも行けず、空だけが遠くへ行ってしまうような、虚脱の午後だった."
         },
         "taiyou": {
             "0": f"{place_name}に、{weather}の光が落ちている。",
             "1": f"{place_name}に、{weather}の光が落ちている。\n{time_word}、海の向こうで風が渡ろうとしている。",
-            "2": f"{place_name}に、{weather}の光が落ちている。\n{time_word}、海の向こうで風が渡ろうとしている。\n{temp}℃の光が、今日の空を包んでいる。",
-            "3": f"{place_name}に、{weather}の光が落ちている。{time_word}、海の向こうで風が渡ろうとしている。{temp}℃の光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
+            "2": f"{place_name}に、{weather}の光が落ちている。\n{time_word}、海の向こうで風が渡ろうとしている。\n{feeling}光が、今日の空を包んでいる。",
+            "3": f"{place_name}に、{weather}の光が落ちている。{time_word}、海の向こうで風が渡ろうとしている。{feeling}光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
     }
 
@@ -183,7 +204,7 @@ TAIYOU1: {place_name}を入れた2行の詩、宮沢賢治風、比喩少し
 TAIYOU2: {place_name}を入れた3行の詩、宮沢賢治風、主観濃く
 TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感じる
 ---
-条件: 各詩に天気の言葉(晴れ・曇り・雨・風・雪など)を1つだけ入れる。改行は詩の中では使わず、1行で書く。
+条件: 各詩に天気の言葉(晴れ・曇り・雨・風・雪など)を1つだけ入れる。温度の数字(℃)は入れない。代わりに体感(熱い・過ごしやすい・涼しい・肌寒い・凍えそうなど)を使う。改行は詩の中では使わず、1行で書く。
 """
     # 場所ごとに開始モデルをずらして、1つのモデルに集中しない (429分散)
     models = GEMINI_MODELS[loc_index % len(GEMINI_MODELS):] + GEMINI_MODELS[:loc_index % len(GEMINI_MODELS)]
