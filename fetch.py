@@ -10,7 +10,14 @@ from io import BytesIO
 
 Path("images").mkdir(exist_ok=True)
 
-POEM_HOURS = [6, 12, 18]  # 朝6時・昼12時・晩18時だけAI詩を作る
+POEM_HOURS = [6, 7, 12, 18]  # 朝6・7時、昼12時、晩18時の4回
+# 詩の生成を4回に分ける (朝・晩の混雑時間は3ヶ所以内)
+POEM_SCHEDULE = {
+    6:  {"slot": "morning", "targets": ["kobe", "osaka", "tokyo"]},   # 朝6時: 神戸・大阪・東京 (3ヶ所)
+    7:  {"slot": "morning", "targets": ["nagoya", "fukuoka"]},      # 朝7時: 名古屋・福岡 (2ヶ所)
+    12: {"slot": "noon",    "targets": ["sapporo", "sendai", "hiroshima", "naha"]},  # 昼12時: 札幌・仙台・広島・那覇 (4ヶ所、昼は空いている)
+    18: {"slot": "evening", "targets": ["kobe", "osaka", "tokyo"]},   # 晩18時: 神戸・大阪・東京 (3ヶ所)
+}
 BUSY_HOURS = [15, 16]  # 15-16時はGeminiを使わない (429/503回避)
 
 def load_locations():
@@ -154,8 +161,8 @@ GEMINI_MODELS = [
 ]  # 2.5-flash は 404 なので外す  # 7つだと404ばかりで時間がかかるので、確実にある3つだけに絞る
 
 def current_poem_slot(hour):
-    # 6時台->朝, 12時台->昼, 18時台->晩。それ以外は None (作らない)
-    if hour == 6:
+    # 6・7時台->朝, 12時台->昼, 18時台->晩。それ以外は None (作らない)
+    if hour in (6, 7):
         return "morning"
     if hour == 12:
         return "noon"
@@ -198,11 +205,11 @@ def generate_poems(image_path, place_name, lat=None, lon=None, loc_index=0, slot
     _now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
     _slot = slot or ("morning" if 5 <= _now.hour < 11 else "noon" if 11 <= _now.hour < 17 else "evening")
     if _slot == "morning":
-        _time_text = "今は朝6時です。朝・夜明け・朝焼けの言葉を使ってください。夕空・夕暮れ・夕焼け・夜の言葉は絶対に使わないでください。"
+        _time_text = f"今は朝{_now.hour}時です。朝・夜明け・朝焼けの言葉を使ってください。夕空・夕暮れ・夕焼け・夜の言葉は絶対に使わないでください。"
     elif _slot == "noon":
-        _time_text = "今は昼12時です。昼・昼下がりの言葉を使ってください。夕空・夕暮れ・夜明け・夜の言葉は絶対に使わないでください。"
+        _time_text = f"今は昼{_now.hour}時です。昼・昼下がりの言葉を使ってください。夕空・夕暮れ・夜明け・夜の言葉は絶対に使わないでください。"
     else:
-        _time_text = "今は晩18時です。夕方・夕暮れ・夜の言葉を使ってください。朝・夜明け・朝焼けの言葉は絶対に使わないでください。"
+        _time_text = f"今は晩{_now.hour}時です。夕方・夕暮れ・夜の言葉を使ってください。朝・夜明け・朝焼けの言葉は絶対に使わないでください。"
     prompt = f"""この画像は日本の{place_name}のライブカメラです。{_time_text} 画像をよく見て、詩を8つ作ってください。
 形式は必ずこれだけ。JSONは使わない。説明文なし。
 ---
@@ -230,10 +237,10 @@ TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感�
                 last_err = "404"
                 continue
             if r.status_code == 429:
-                print(f"gemini {model} 429 TooManyRequests {place_name}: 10秒待って次のモデルへ")
+                print(f"gemini {model} 429 TooManyRequests {place_name}: 2つ目は試さない (同じ上限に当たるだけ) -> この場所はスキップして古い詩を残す")
                 last_err = "429"
-                time.sleep(3)  # 503は3秒だけ待つ  # 429は5秒だけ待つ (長く待っても直らない)
-                continue
+                # 429は待っても直らない。次の場所でまた叩くと悪化するので、ここで打ち切る
+                break
             if r.status_code == 503:
                 print(f"gemini {model} 503 ServiceUnavailable {place_name}: 5秒待って次のモデルへ")
                 last_err = "503"
@@ -336,6 +343,14 @@ def main():
             # 古い画像があれば、それを詩生成に使う。無ければフォールバック
         existing = data.get("locations", {}).get(key, {})
         do_gen, slot = should_generate_poem(now_dt, existing)
+        # --- v30: 4回に分ける (ユーザーの案) ---
+        # 6時: 神戸・大阪・東京 / 7時: 名古屋・福岡 / 12時: 札幌・仙台・広島・那覇 / 18時: 神戸・大阪・東京
+        # 朝・晩の混雑時間は3ヶ所以内にする。FORCE_POEM=1 の時は全ヶ所作る
+        if do_gen and os.environ.get("FORCE_POEM") != "1":
+            _sched = POEM_SCHEDULE.get(now_dt.hour)
+            if _sched and key not in _sched["targets"]:
+                print(f"{key}: skip poem this run (hour={now_dt.hour} targets={_sched['targets']} slot={slot}) -> keep old poems")
+                do_gen = False
         if do_gen:
             poems, model = generate_poems(out, name, loc.get("lat"), loc.get("lon"), loc_index=loc_index, slot=slot)
             # 失敗して fallback になったら、古いAIの詩を捨てないで残す
@@ -358,7 +373,7 @@ def main():
                 print(f"{key}: fallback poems (no existing)")
         data["locations"][key] = {"image": out, "poems": poems, "model": model, "updated_at": now, "status": status, "poem_date": now[:10], "poem_slot": poem_slot, "weathernews_id": loc["weathernews_id"]}
         print(f"{key}: {status} {model}")
-        time.sleep(15)  # 地点ごとに15秒待つ (429回避: 一気に作らない) (8秒だと9分超える)
+        time.sleep(20)  # 地点ごとに20秒待つ (3ヶ所だけなので合計1分) (429回避: 一気に作らない) (8秒だと9分超える)
     Path("data.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 if __name__ == "__main__":
