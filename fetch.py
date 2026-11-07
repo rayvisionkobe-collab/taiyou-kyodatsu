@@ -68,7 +68,7 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
             print(f"page parse fail {camera_id}: {e}")
     # 2. ページから取れなければ、時刻推測でバックアップ
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
-    max_back = 180 if camera_id.startswith("410") else 13
+    max_back = 60 if camera_id.startswith("410") else 13  # 180分だと遅いので60分に
     step = 5 if camera_id.startswith("410") else 1
     for back in range(0, max_back + 1, step):
         t_base = now - datetime.timedelta(minutes=back)
@@ -151,12 +151,8 @@ def fallback_poems(place_name, lat=None, lon=None):
 GEMINI_MODELS = [
     "gemini-3.8-flash",
     "gemini-3.5-flash",
-    "gemini-3-flash",
     "gemini-2.5-flash",
-    "gemini-2.5-flash-lite",
-    "gemini-2.0-flash",
-    "gemini-flash-latest",
-]
+]  # 7つだと404ばかりで時間がかかるので、確実にある3つだけに絞る
 
 def current_poem_slot(hour):
     # 6時台->朝, 12時台->昼, 18時台->晩。それ以外は None (作らない)
@@ -221,12 +217,12 @@ TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感�
             if r.status_code == 429:
                 print(f"gemini {model} 429 TooManyRequests {place_name}: 10秒待って次のモデルへ")
                 last_err = "429"
-                time.sleep(10)
+                time.sleep(3)  # 503は3秒だけ待つ  # 429は5秒だけ待つ (長く待っても直らない)
                 continue
             if r.status_code == 503:
                 print(f"gemini {model} 503 ServiceUnavailable {place_name}: 5秒待って次のモデルへ")
                 last_err = "503"
-                time.sleep(5)
+                time.sleep(3)  # 503は3秒だけ待つ
                 continue
             if r.status_code != 200:
                 print(f"gemini {model} status {r.status_code}: {r.text[:300]}")
@@ -316,7 +312,7 @@ def main():
                 print(f"{key}: fallback poems (no existing)")
         data["locations"][key] = {"image": out, "poems": poems, "model": model, "updated_at": now, "status": status, "poem_date": now[:10], "poem_slot": poem_slot, "weathernews_id": loc["weathernews_id"]}
         print(f"{key}: {status} {model}")
-        time.sleep(8)  # 429分散: 地点ごとに8秒待つ
+        time.sleep(3)  # 地点ごとに3秒待つ (8秒だと9分超える)
     Path("data.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 if __name__ == "__main__":
