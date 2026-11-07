@@ -51,7 +51,7 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
                 latest = found[-1]
                 print(f"page parse {camera_id} found {len(found)} -> latest {latest}")
                 rr = requests.get(latest, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
-                if rr.status_code == 200 and len(rr.content) > 8000:
+                if rr.status_code == 200 and len(rr.content) > 3000:
                     if Image:
                         try:
                             img = Image.open(BytesIO(rr.content)).convert("RGB")
@@ -78,7 +78,7 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
                 url = f"https://gvs.weathernews.jp/livecam/{camera_id}/640/{ts}.{ext}"
                 try:
                     r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
-                    if r.status_code == 200 and len(r.content) > 8000:
+                    if r.status_code == 200 and len(r.content) > 3000:
                         if Image:
                             try:
                                 img = Image.open(BytesIO(r.content)).convert("RGB")
@@ -310,10 +310,10 @@ def main():
         out = f"images/{key}.jpg"
         status = fetch_weathernews(loc["weathernews_id"], out, loc.get("page_url"))
         if status is None:
-            print(f"skip {key}: no image, keep old")
-            if key not in data["locations"]:
-                data["locations"][key] = {"image": out, "poems": fallback_poems(name, loc.get("lat"), loc.get("lon")), "model": "fallback-no-image", "updated_at": now, "status": "no-image", "poem_date": now[:10], "poem_slot": None}
-            continue
+            print(f"warn {key}: no new image, keep old image but still make poem")
+            # 画像が取れなくても、詩は作る。画像だけ古いままにする
+            status = "keep-old-image"
+            # 古い画像があれば、それを詩生成に使う。無ければフォールバック
         existing = data.get("locations", {}).get(key, {})
         do_gen, slot = should_generate_poem(now_dt, existing)
         if do_gen:
