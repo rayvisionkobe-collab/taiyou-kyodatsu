@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-07T16:54:26.883913+09:00",
+  "updated_at": "2026-11-07T17:04:04.450209+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -18,9 +18,10 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:54:26.883913+09:00",
+      "updated_at": "2026-11-07T17:04:04.450209+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
+      "poem_slot": null,
       "weathernews_id": "410001361"
     },
     "tokyo": {
@@ -40,9 +41,10 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:54:26.883913+09:00",
+      "updated_at": "2026-11-07T17:04:04.450209+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
+      "poem_slot": null,
       "weathernews_id": "410000116"
     },
     "fukuoka": {
@@ -62,9 +64,10 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:54:26.883913+09:00",
+      "updated_at": "2026-11-07T17:04:04.450209+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
+      "poem_slot": null,
       "weathernews_id": "7CDDE906F156"
     },
     "naha": {
@@ -84,9 +87,10 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:54:26.883913+09:00",
+      "updated_at": "2026-11-07T17:04:04.450209+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
+      "poem_slot": null,
       "weathernews_id": "7CDDE9086CB8"
     },
     "kobe": {
@@ -106,9 +110,10 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:54:26.883913+09:00",
+      "updated_at": "2026-11-07T17:04:04.450209+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
+      "poem_slot": null,
       "weathernews_id": "7CDDE9067E16"
     },
     "osaka": {
@@ -128,9 +133,10 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:54:26.883913+09:00",
+      "updated_at": "2026-11-07T17:04:04.450209+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
+      "poem_slot": null,
       "weathernews_id": "7CDDE906F8CE"
     },
     "sendai": {
@@ -150,9 +156,10 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:54:26.883913+09:00",
+      "updated_at": "2026-11-07T17:04:04.450209+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
+      "poem_slot": null,
       "weathernews_id": "7CDDE905CDB1"
     },
     "nagoya": {
@@ -172,9 +179,10 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-07T16:54:26.883913+09:00",
+      "updated_at": "2026-11-07T17:04:04.450209+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-07",
+      "poem_slot": null,
       "weathernews_id": "7CDDE906B81D"
     },
     "hiroshima": {
