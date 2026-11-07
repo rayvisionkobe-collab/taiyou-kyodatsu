@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-07T11:49:28.011830+09:00",
+  "updated_at": "2026-11-07T12:14:53.816690+09:00",
   "locations": {
     "kobe_maiko": {
       "video_id": "W5iKrSNyJhQ",
@@ -136,8 +136,8 @@
           "3": "福岡市に、曇りの光が落ちている。朝、海の向こうで風が渡ろうとしている。14℃の光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "fallback-hourly",
-      "updated_at": "2026-11-07T11:49:28.011830+09:00",
+      "model": "fallback-hourly-cached",
+      "updated_at": "2026-11-07T12:14:53.816690+09:00",
       "status": "weathernews",
       "poem_date": "2026-11-07",
       "weathernews_id": "7CDDE906F156"
@@ -158,8 +158,8 @@
           "3": "那覇市に、晴れの光が落ちている。朝、海の向こうで風が渡ろうとしている。25℃の光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "fallback-hourly",
-      "updated_at": "2026-11-07T11:49:28.011830+09:00",
+      "model": "fallback-hourly-cached",
+      "updated_at": "2026-11-07T12:14:53.816690+09:00",
       "status": "weathernews",
       "poem_date": "2026-11-07",
       "weathernews_id": "7CDDE9086CB8"
@@ -180,8 +180,8 @@
           "3": "神戸に、晴れの光が落ちている。朝、海の向こうで風が渡ろうとしている。16℃の光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "fallback",
-      "updated_at": "2026-11-07T11:49:28.011830+09:00",
+      "model": "fallback-cached",
+      "updated_at": "2026-11-07T12:14:53.816690+09:00",
       "status": "weathernews",
       "poem_date": "2026-11-07",
       "weathernews_id": "7CDDE9067E16"
@@ -202,8 +202,8 @@
           "3": "大阪に、曇りの光が落ちている。朝、海の向こうで風が渡ろうとしている。14℃の光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "fallback",
-      "updated_at": "2026-11-07T11:49:28.011830+09:00",
+      "model": "fallback-cached",
+      "updated_at": "2026-11-07T12:14:53.816690+09:00",
       "status": "weathernews",
       "poem_date": "2026-11-07",
       "weathernews_id": "7CDDE906F8CE"
@@ -224,8 +224,8 @@
           "3": "仙台に、小雨の光が落ちている。朝、海の向こうで風が渡ろうとしている。10℃の光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "fallback",
-      "updated_at": "2026-11-07T11:49:28.011830+09:00",
+      "model": "fallback-cached",
+      "updated_at": "2026-11-07T12:14:53.816690+09:00",
       "status": "weathernews",
       "poem_date": "2026-11-07",
       "weathernews_id": "7CDDE905CDB1"
@@ -246,8 +246,8 @@
           "3": "名古屋に、曇りの光が落ちている。朝、海の向こうで風が渡ろうとしている。14℃の光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "fallback",
-      "updated_at": "2026-11-07T11:49:28.011830+09:00",
+      "model": "fallback-cached",
+      "updated_at": "2026-11-07T12:14:53.816690+09:00",
       "status": "weathernews",
       "poem_date": "2026-11-07",
       "weathernews_id": "7CDDE906B81D"
@@ -289,8 +289,8 @@
           "3": "広島市に、晴れの光が落ちている。朝、海の向こうで風が渡ろうとしている。16℃の光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "fallback",
-      "updated_at": "2026-11-07T11:49:28.011830+09:00",
+      "model": "fallback-cached",
+      "updated_at": "2026-11-07T12:14:53.816690+09:00",
       "status": "weathernews",
       "poem_date": "2026-11-07",
       "weathernews_id": "7CDDE908C8DC"
