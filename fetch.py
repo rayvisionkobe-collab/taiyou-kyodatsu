@@ -4,83 +4,90 @@ from pathlib import Path
 Path("images").mkdir(exist_ok=True)
 
 def load_locations():
-    # config.json に依存しない: ここが正解。config.json が古くても、こちらが使われる
+    # ウェザーニュース 10ヶ所 (YouTubeを使わない)
+    # 形式: https://gvs.weathernews.jp/livecam/{ID}/640/{YYYYMMDDHHMMSS}.webp or .jpg
     return [
-        {"id": "maiko", "name": "舞子ビラ・明石海峡大橋", "lat": 34.634, "lon": 135.029, "video_id": "W5iKrSNyJhQ"},
-        {"id": "kobe_air", "name": "神戸空港", "lat": 34.632, "lon": 135.223, "video_id": "dpVyxSYsVs0"},
-        {"id": "sapporo", "name": "札幌すすきの", "lat": 43.055, "lon": 141.353, "video_id": "wRYonRnKsKw"},
-        {"id": "tokyo", "name": "東京タワー", "lat": 35.6586, "lon": 139.7454, "video_id": "nu6NE55_X7A"},
-        {"id": "fuji", "name": "富士山裾野", "lat": 35.28, "lon": 138.61, "video_id": "F2NbYrc-gBU"},
-        {"id": "fukuoka", "name": "福岡・博多中洲", "lat": 33.584, "lon": 130.451, "video_id": "EQZzcrYnjuk"},
-        {"id": "naha", "name": "那覇空港", "lat": 26.195, "lon": 127.646, "video_id": "dc8Iqi5Xxl8"},
+        {"id": "kobe", "name": "神戸", "lat": 34.69, "lon": 135.19, "weathernews_id": "7CDDE9067E16"},
+        {"id": "osaka", "name": "大阪", "lat": 34.69, "lon": 135.50, "weathernews_id": "7CDDE906F8CE"},
+        {"id": "sapporo", "name": "札幌", "lat": 43.06, "lon": 141.35, "weathernews_id": "410001361"},
+        {"id": "tokyo", "name": "東京", "lat": 35.68, "lon": 139.76, "weathernews_id": "410000116"},
+        {"id": "sendai", "name": "仙台", "lat": 38.26, "lon": 140.87, "weathernews_id": "7CDDE905CDB1"},
+        {"id": "nagoya", "name": "名古屋", "lat": 35.18, "lon": 136.90, "weathernews_id": "7CDDE906B81D"},
+        {"id": "joetsu", "name": "上越市", "lat": 37.15, "lon": 138.23, "weathernews_id": "410000925"},
+        {"id": "hiroshima", "name": "広島市", "lat": 34.39, "lon": 132.45, "weathernews_id": "7CDDE908C8DC"},
+        {"id": "fukuoka", "name": "福岡市", "lat": 33.59, "lon": 130.40, "weathernews_id": "7CDDE906F156"},
+        {"id": "naha", "name": "那覇市", "lat": 26.21, "lon": 127.68, "weathernews_id": "7CDDE9086CB8"},
     ]
 
-def fetch_still(video_id, out_path):
+def fetch_direct_jpg(direct_url, out_path):
+    """YouTube以外: 直接JPGをダウンロードする。ボット判定なし"""
+    import time as _t
+    try:
+        url = direct_url + f"?t={int(_t.time())}"
+        r = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0", "Cache-Control": "no-cache"})
+        if r.status_code == 200 and len(r.content) > 8000:
+            Path(out_path).write_bytes(r.content)
+            print(f"direct-jpg ok {direct_url[:60]} {len(r.content)} bytes")
+            return "direct-jpg"
+        print(f"direct-jpg fail {direct_url} status={r.status_code} size={len(r.content) if r.status_code==200 else 0}")
+    except Exception as e:
+        print(f"direct-jpg fail {direct_url}: {e}")
+    return None
+
+def fetch_still(video_id, out_path, direct_url=None):
+    # 0) YouTube以外があれば、まずそちら (ボット判定なしで確実)
+    if direct_url:
+        res = fetch_direct_jpg(direct_url, out_path)
+        if res:
+            return res
+        print(f"direct-jpg failed, fallback to YouTube {video_id}")
     import hashlib
-    # 前の画像のハッシュを覚えて、同じ画像なら「更新なし」と分かるようにする
     old_hash = None
     if Path(out_path).exists():
         try:
             old_hash = hashlib.md5(Path(out_path).read_bytes()).hexdigest()
         except:
             pass
-
-    # 1) yt-dlp + ffmpeg で本物のフレームを取る
-    # GitHub ActionsのIPはYouTubeにブロックされやすいので、player_client を変えて3通り試す
-    for client in ["android", "web", "tv"]:
-        for fmt in ["bv*[height<=720]+ba/b[height<=720]/best", "best[height<=720]"]:
-            try:
-                cmd = ["yt-dlp", "-g", "-f", fmt, "--no-check-certificates", "--extractor-args", f"youtube:player_client={client}", f"https://www.youtube.com/watch?v={video_id}"]
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=40)
-                if result.returncode != 0:
-                    print(f"yt-dlp {client} {fmt} fail {video_id}: {result.stderr[:300]}")
-                    continue
-                urls = [u.strip() for u in result.stdout.strip().splitlines() if u.strip().startswith("http")]
-                if not urls:
-                    print(f"yt-dlp {client} {fmt} no url {video_id}")
-                    continue
-                stream_url = urls[0]
-                # ffmpeg で1フレーム切り出す。-reconnect で途切れ対策
-                r = subprocess.run(["ffmpeg", "-y", "-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "2", "-i", stream_url, "-vframes", "1", "-q:v", "3", out_path], capture_output=True, timeout=40)
+    # 1) yt-dlp + ffmpeg (1回だけ試す。6回試すと時間がかかる)
+    try:
+        cmd = ["yt-dlp", "-g", "-f", "bv*[height<=720]+ba/b[height<=720]/best", "--no-check-certificates", "--extractor-args", "youtube:player_client=android", f"https://www.youtube.com/watch?v={video_id}"]
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=25)
+        if result.returncode == 0:
+            urls = [u.strip() for u in result.stdout.strip().splitlines() if u.strip().startswith("http")]
+            if urls:
+                r = subprocess.run(["ffmpeg", "-y", "-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "2", "-i", urls[0], "-vframes", "1", "-q:v", "3", out_path], capture_output=True, timeout=25)
                 if Path(out_path).exists() and Path(out_path).stat().st_size > 8000:
-                    new_hash = hashlib.md5(Path(out_path).read_bytes()).hexdigest()
-                    print(f"ffmpeg ok {video_id} client={client} fmt={fmt} hash_changed={new_hash!=old_hash}")
+                    print(f"ffmpeg ok {video_id}")
                     return "live"
-                else:
-                    print(f"ffmpeg small file {video_id} client={client}")
-            except Exception as e:
-                print(f"ffmpeg try {client} {fmt} fail {video_id}: {e}")
-                continue
-
-    # 2) ライブサムネイル - ただしキャッシュバスター付きで、古い静止サムネイルを避ける
-    import time
-    for q in ["hqdefault_live", "maxresdefault_live", "sddefault_live"]:
+        else:
+            print(f"yt-dlp fail {video_id}: {result.stderr[:150]}")
+    except Exception as e:
+        print(f"ffmpeg try fail {video_id}: {e}")
+    # 2) ライブサムネイル
+    import time as _t2
+    for q in ["maxresdefault_live", "hqdefault_live", "sddefault_live"]:
         try:
-            url = f"https://i.ytimg.com/vi/{video_id}/{q}.jpg?t={int(time.time())}"
+            url = f"https://i.ytimg.com/vi/{video_id}/{q}.jpg?t={int(_t2.time())}"
             r = requests.get(url, timeout=15, headers={"Cache-Control": "no-cache"})
             if r.status_code == 200 and len(r.content) > 8000:
                 new_hash = hashlib.md5(r.content).hexdigest()
                 if new_hash == old_hash:
-                    print(f"live-thumb same as before {video_id} {q} - サムネイルが更新されていません")
+                    print(f"live-thumb same {video_id} {q}")
                     continue
                 Path(out_path).write_bytes(r.content)
-                print(f"live-thumb ok {video_id} {q} {len(r.content)} bytes hash_changed=True")
+                print(f"live-thumb ok {video_id} {q} {len(r.content)} bytes")
                 return "live-thumb"
-            else:
-                print(f"live-thumb skip {video_id} {q} status={r.status_code}")
         except Exception as e:
             print(f"live-thumb fail {video_id} {q}: {e}")
-
-    # 3) 最後の手段: 通常サムネイル (静止画でも、何もないよりマシ)
     try:
         r = requests.get(f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg", timeout=15)
         if r.status_code == 200 and len(r.content) > 8000:
             Path(out_path).write_bytes(r.content)
-            print(f"thumb fallback ok {video_id} hqdefault")
+            print(f"thumb fallback ok {video_id}")
             return "thumbnail"
     except Exception as e:
         print(f"thumb fallback fail {video_id}: {e}")
-    print(f"fetch_still FAILED {video_id} - 前の画像を残します")
+    print(f"fetch_still FAILED {video_id}")
     return None
 
 def get_weather(lat, lon):
@@ -187,22 +194,79 @@ def main():
             pass
     for loc in load_locations():
         key = loc["id"]; vid = loc.get("video_id"); name = loc.get("name", key)
-        if not vid:
+        if not vid and not loc.get('weathernews_id') and not loc.get('direct_image_url'):
             continue
         out = f"images/{key}.jpg"
         # 既存画像があればバックアップとして残す
-        status = fetch_still(vid, out)
+        status = None
+        if loc.get('weathernews_id'):
+            status = fetch_weathernews(loc['weathernews_id'], out)
+        if status is None:
+            status = fetch_still(vid, out, loc.get('direct_image_url')) if vid else fetch_direct_jpg(loc.get('direct_image_url'), out) if loc.get('direct_image_url') else None
         if status is None:
             print(f"skip {key}: no image, keep old")
             # 既存がなければフォールバック詩だけ保存
             if key not in data["locations"]:
                 data["locations"][key] = {"video_id": vid, "image": out, "poems": fallback_poems(name, loc.get("lat"), loc.get("lon")), "model": "fallback-no-image", "updated_at": now, "status": "no-image"}
             continue
-        poems, model = generate_poems(out, name, loc.get("lat"), loc.get("lon"))
-        data["locations"][key] = {"video_id": vid, "image": out, "poems": poems, "model": model, "updated_at": now, "status": status}
+        # AI詩は1日1回だけ: 今日の詩がdata.jsonにあれば再利用 (Gemini 429/503対策)
+        today = now[:10]
+        existing = data.get("locations", {}).get(key, {})
+        if existing.get("poems") and existing.get("poem_date") == today:
+            poems, model = existing["poems"], existing.get("model", "cached") + "-cached"
+            print(f"{key}: reuse poems from today {today}")
+        else:
+            # 朝6時の実行だけAI生成、それ以外は天気詩で済ませる (1日1回に減らす)
+            hour = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).hour
+            if hour == 6 or not existing.get("poems"):
+                poems, model = generate_poems(out, name, loc.get("lat"), loc.get("lon"))
+                # 生成した詩に日付を付ける
+            else:
+                poems, model = fallback_poems(name, loc.get("lat"), loc.get("lon")), "fallback-hourly"
+        data["locations"][key] = {"video_id": vid, "image": out, "poems": poems, "model": model, "updated_at": now, "status": status, "poem_date": now[:10]}
         print(f"{key}: {status} {model} {poems['kyodatsu']['1'][:20]}")
         time.sleep(3)  # 429対策: 地点ごとに3秒待つ
     Path("data.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 if __name__ == "__main__":
-    main()
+    main(def fetch_weathernews(camera_id, out_path):
+    """ウェザーニュース: 最新の静止画を取る。webpとjpg両対応、秒も試す"""
+    import datetime as _dt
+    from io import BytesIO
+    try:
+        from PIL import Image
+    except:
+        Image = None
+    now = _dt.datetime.now(_dt.timezone(_dt.timedelta(hours=9)))
+    # 0分〜12分前まで、秒も変えて試す (古いカメラは秒が00でない)
+    for back in range(0, 13):
+        t_base = now - _dt.timedelta(minutes=back)
+        for sec in ["00", "11", "30", "50"]:
+            ts = t_base.strftime("%Y%m%d%H%M") + sec
+            for ext in ["webp", "jpg"]:
+                url = f"https://gvs.weathernews.jp/livecam/{camera_id}/640/{ts}.{ext}"
+                try:
+                    r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+                    if r.status_code == 200 and len(r.content) > 8000:
+                        if ext == "webp" and Image:
+                            img = Image.open(BytesIO(r.content)).convert("RGB")
+                            img.save(out_path, "JPEG", quality=88)
+                            print(f"weathernews ok {camera_id} {ts}.{ext} {len(r.content)} bytes -> jpg")
+                        elif ext == "jpg" and Image:
+                            # jpgも一旦PILで開いて再保存 (壊れたjpg対策)
+                            try:
+                                img = Image.open(BytesIO(r.content)).convert("RGB")
+                                img.save(out_path, "JPEG", quality=88)
+                            except:
+                                Path(out_path).write_bytes(r.content)
+                            print(f"weathernews ok {camera_id} {ts}.{ext} {len(r.content)} bytes")
+                        else:
+                            Path(out_path).write_bytes(r.content)
+                            print(f"weathernews ok {camera_id} {ts}.{ext}")
+                        return "weathernews"
+                except Exception as e:
+                    continue
+    print(f"weathernews FAILED {camera_id}")
+    return None
+
+)
