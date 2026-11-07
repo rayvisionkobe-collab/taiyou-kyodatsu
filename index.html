@@ -216,6 +216,33 @@ function init(){
     if('caches' in window){ caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))); }
   }
   loadLive().then(updateAll);
+  // 30分おきに自動更新: ページを開きっぱなしでも、新しい静止画と詩を取りに行く
+  // ユーザーの場所・詩風・濃淡は savePrefs で保存済みなので、更新しても変わらない
+  setInterval(()=>{
+    console.log('auto refresh 30min');
+    loadLive().then(updateAll);
+  }, 30*60*1000);
+  // 5分おきに軽くチェック: data.json が新しくなっていたら、すぐ更新
+  let lastUpdatedAt = null;
+  setInterval(async ()=>{
+    try{
+      const r = await fetch('data.json?v='+Date.now(), {cache:'no-store'});
+      if(!r.ok) return;
+      const j = await r.json();
+      if(lastUpdatedAt && j.updated_at === lastUpdatedAt) return;
+      if(!lastUpdatedAt) lastUpdatedAt = liveData?.updated_at;
+      if(j.updated_at !== lastUpdatedAt){ lastUpdatedAt = j.updated_at; liveData = j; updateAll(); }
+    }catch(e){}
+  }, 5*60*1000);
+  // 5分おきに data.json の updated_at だけ軽くチェック (30分より早く気づくため)
+  // 実際は30分ごとの更新に合わせるので、30分間隔で十分。5分チェックは入れない。
+  // アプリに戻ってきたら、すぐ更新 (バックグラウンドから復帰)
+  document.addEventListener('visibilitychange', ()=>{
+    if(!document.hidden){
+      console.log('back to foreground, refresh');
+      loadLive().then(updateAll);
+    }
+  });
 }
 document.getElementById('placeSelect').addEventListener('change', ()=>{ savePrefs(); updateAll(); });
 document.getElementById('level').addEventListener('input', ()=>{ savePrefs(); updateAll(); });
