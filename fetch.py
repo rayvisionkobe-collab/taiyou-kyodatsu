@@ -185,7 +185,7 @@ def should_generate_poem(now, existing):
     # 前のスロットの詩がまだ無い場合 (初回) も作る
     return True, slot
 
-def generate_poems(image_path, place_name, lat=None, lon=None, loc_index=0):
+def generate_poems(image_path, place_name, lat=None, lon=None, loc_index=0, slot=None):
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         return fallback_poems(place_name, lat, lon), "fallback-no-key"
@@ -194,19 +194,28 @@ def generate_poems(image_path, place_name, lat=None, lon=None, loc_index=0):
     except Exception as e:
         print(f"gemini fail {place_name}: image read {e}")
         return fallback_poems(place_name, lat, lon), "fallback-no-image"
-    prompt = f"""この画像は日本の{place_name}のライブカメラです。画像をよく見て、詩を8つ作ってください。
+    # 時間帯を決める: 朝なら夕方・夜の言葉を使わせない (朝焼けと夕焼けの間違い防止)
+    _now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+    _slot = slot or ("morning" if 5 <= _now.hour < 11 else "noon" if 11 <= _now.hour < 17 else "evening")
+    if _slot == "morning":
+        _time_text = "今は朝6時です。朝・夜明け・朝焼けの言葉を使ってください。夕空・夕暮れ・夕焼け・夜の言葉は絶対に使わないでください。"
+    elif _slot == "noon":
+        _time_text = "今は昼12時です。昼・昼下がりの言葉を使ってください。夕空・夕暮れ・夜明け・夜の言葉は絶対に使わないでください。"
+    else:
+        _time_text = "今は晩18時です。夕方・夕暮れ・夜の言葉を使ってください。朝・夜明け・朝焼けの言葉は絶対に使わないでください。"
+    prompt = f"""この画像は日本の{place_name}のライブカメラです。{_time_text} 画像をよく見て、詩を8つ作ってください。
 形式は必ずこれだけ。JSONは使わない。説明文なし。
 ---
-KYODATSU0: {place_name}を入れた1行の詩、中原中也風、少し寂しく温かい
-KYODATSU1: {place_name}を入れた2行の詩、中原中也風、比喩少し
-KYODATSU2: {place_name}を入れた3行の詩、中原中也風、主観濃く
-KYODATSU3: {place_name}を入れた長めの1段落、中原中也風、解体的
-TAIYOU0: {place_name}を入れた1行の詩、宮沢賢治風、光と風
-TAIYOU1: {place_name}を入れた2行の詩、宮沢賢治風、比喩少し
-TAIYOU2: {place_name}を入れた3行の詩、宮沢賢治風、主観濃く
-TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感じる
+KYODATSU0: {place_name}を入れた1行の詩、中原中也風、少し寂しく温かい【20文字以内、句読点は1つまで、短く】
+KYODATSU1: {place_name}を入れた2行の詩、中原中也風、比喩少し【合計35文字以内】
+KYODATSU2: {place_name}を入れた3行の詩、中原中也風、主観濃く【合計55文字以内】
+KYODATSU3: {place_name}を入れた長めの1段落、中原中也風、解体的【90〜120文字】
+TAIYOU0: {place_name}を入れた1行の詩、宮沢賢治風、光と風【20文字以内、句読点は1つまで、短く】
+TAIYOU1: {place_name}を入れた2行の詩、宮沢賢治風、比喩少し【合計35文字以内】
+TAIYOU2: {place_name}を入れた3行の詩、宮沢賢治風、主観濃く【合計55文字以内】
+TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感じる【90〜120文字】
 ---
-条件: 各詩に天気の言葉(晴れ・曇り・雨・風・雪など)を1つだけ入れる。温度の数字(℃)は入れない。代わりに体感(熱い・過ごしやすい・涼しい・肌寒い・凍えそうなど)を使う。改行は詩の中では使わず、1行で書く。
+条件: 各詩に天気の言葉(晴れ・曇り・雨・風・雪など)を1つだけ入れる。温度の数字(℃)は入れない。代わりに体感(熱い・過ごしやすい・涼しい・肌寒い・凍えそうなど)を使う。改行は詩の中では使わず、1行で書く。0番(からっと)は絶対に長くしない。20文字を超えたら切り捨てること。
 """
     # 場所ごとに開始モデルをずらして、1つのモデルに集中しない (429分散)
     models = GEMINI_MODELS[loc_index % len(GEMINI_MODELS):] + GEMINI_MODELS[:loc_index % len(GEMINI_MODELS)]
@@ -247,6 +256,17 @@ TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感�
                 val = val.replace("\n", " ").strip()
                 if val:
                     data[poet][lvl] = val
+            # 0番が長い場合の切り詰め: からっとは短く (20文字+句点まで)
+            for _poet in ["kyodatsu", "taiyou"]:
+                if data[_poet].get("0") and len(data[_poet]["0"]) > 28:
+                    _t = data[_poet]["0"]
+                    # 最初の句点(。)までで切る、無ければ28文字で切る
+                    _cut = _t.find("。")
+                    if _cut != -1 and _cut < 28:
+                        data[_poet]["0"] = _t[:_cut+1]
+                    else:
+                        data[_poet]["0"] = _t[:28] + "。"
+                    print(f"trim {place_name} {_poet}0: {len(_t)} -> {len(data[_poet]['0'])} chars")
             fb = fallback_poems(place_name, lat, lon)
             ok = 0
             for poet in ["kyodatsu","taiyou"]:
@@ -317,7 +337,7 @@ def main():
         existing = data.get("locations", {}).get(key, {})
         do_gen, slot = should_generate_poem(now_dt, existing)
         if do_gen:
-            poems, model = generate_poems(out, name, loc.get("lat"), loc.get("lon"), loc_index=loc_index)
+            poems, model = generate_poems(out, name, loc.get("lat"), loc.get("lon"), loc_index=loc_index, slot=slot)
             # 失敗して fallback になったら、古いAIの詩を捨てないで残す
             if model.startswith("fallback") and existing.get("poems"):
                 print(f"{key}: gemini failed, KEEP old AI poems (slot={existing.get('poem_slot')}) instead of fallback")
