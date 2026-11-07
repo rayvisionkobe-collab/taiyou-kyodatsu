@@ -6,31 +6,64 @@ Path("images").mkdir(exist_ok=True)
 
 def load_locations():
     return [
-        {"id": "kobe", "name": "神戸", "lat": 34.69, "lon": 135.19, "weathernews_id": "7CDDE9067E16"},
-        {"id": "osaka", "name": "大阪", "lat": 34.69, "lon": 135.50, "weathernews_id": "7CDDE906F8CE"},
-        {"id": "sapporo", "name": "札幌", "lat": 43.06, "lon": 141.35, "weathernews_id": "410001361"},
-        {"id": "tokyo", "name": "東京", "lat": 35.68, "lon": 139.76, "weathernews_id": "410000116"},
-        {"id": "sendai", "name": "仙台", "lat": 38.26, "lon": 140.87, "weathernews_id": "7CDDE905CDB1"},
-        {"id": "nagoya", "name": "名古屋", "lat": 35.18, "lon": 136.90, "weathernews_id": "7CDDE906B81D"},
-        {"id": "hiroshima", "name": "広島市", "lat": 34.39, "lon": 132.45, "weathernews_id": "7CDDE908C8DC"},
-        {"id": "fukuoka", "name": "福岡市", "lat": 33.59, "lon": 130.40, "weathernews_id": "7CDDE906F156"},
-        {"id": "naha", "name": "那覇市", "lat": 26.21, "lon": 127.68, "weathernews_id": "7CDDE9086CB8"},
+        {"id": "kobe", "name": "神戸", "lat": 34.69, "lon": 135.19, "weathernews_id": "7CDDE9067E16", "page_url": "https://weathernews.jp/onebox/livecam/kinki/hyogo/7CDDE9067E16/"},
+        {"id": "osaka", "name": "大阪", "lat": 34.69, "lon": 135.50, "weathernews_id": "7CDDE906F8CE", "page_url": "https://weathernews.jp/onebox/livecam/kinki/osaka/7CDDE906F8CE/"},
+        {"id": "sapporo", "name": "札幌", "lat": 43.06, "lon": 141.35, "weathernews_id": "410001361", "page_url": "https://weathernews.jp/onebox/livecam/hokkaido/douou/410001361/"},
+        {"id": "tokyo", "name": "東京", "lat": 35.68, "lon": 139.76, "weathernews_id": "410000116", "page_url": "https://weathernews.jp/onebox/livecam/kanto/tokyo/410000116/"},
+        {"id": "sendai", "name": "仙台", "lat": 38.26, "lon": 140.87, "weathernews_id": "7CDDE905CDB1", "page_url": "https://weathernews.jp/onebox/livecam/tohoku/miyagi/7CDDE905CDB1/"},
+        {"id": "nagoya", "name": "名古屋", "lat": 35.18, "lon": 136.90, "weathernews_id": "7CDDE906B81D", "page_url": "https://weathernews.jp/onebox/livecam/chubu/aichi/7CDDE906B81D/"},
+        {"id": "hiroshima", "name": "広島市", "lat": 34.39, "lon": 132.45, "weathernews_id": "7CDDE908C8DC", "page_url": "https://weathernews.jp/onebox/livecam/chugoku/hiroshima/7CDDE908C8DC/"},
+        {"id": "fukuoka", "name": "福岡市", "lat": 33.59, "lon": 130.40, "weathernews_id": "7CDDE906F156", "page_url": "https://weathernews.jp/onebox/livecam/kyushu/fukuoka/7CDDE906F156/"},
+        {"id": "naha", "name": "那覇市", "lat": 26.21, "lon": 127.68, "weathernews_id": "7CDDE9086CB8", "page_url": "https://weathernews.jp/onebox/livecam/okinawa/7CDDE9086CB8/"},
     ]
 
-def fetch_weathernews(camera_id, out_path):
-    """ウェザーニュース: 最新の静止画を取る。webpとjpg両対応"""
+def fetch_weathernews(camera_id, out_path, page_url=None):
+    """ウェザーニュース: ページから最新の画像URLを取る。推測しない"""
     try:
         from PIL import Image
     except:
         Image = None
+    # 1. ページから最新のURLを探す (一番大きい枠 = 自分のIDが入ったURLだけ)
+    if page_url:
+        try:
+            r = requests.get(page_url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+            html = r.text
+            # 自分のIDだけを拾う。周辺カメラ(別のID)は無視する
+            pattern = re.compile(r"https://gvs\.weathernews\.jp/livecam/" + re.escape(camera_id) + r"/640/\d+\.(?:webp|jpg)")
+            found = pattern.findall(html)
+            # HTMLエスケープや // になっている場合も拾う
+            if not found:
+                pattern2 = re.compile(r"gvs\.weathernews\.jp/livecam/" + re.escape(camera_id) + r"/640/\d+\.(?:webp|jpg)")
+                found2 = pattern2.findall(html)
+                found = ["https://" + u for u in found2]
+            if found:
+                # 一番新しい時刻 = ファイル名の数字が一番大きいもの
+                found = sorted(set(found))
+                latest = found[-1]
+                print(f"page parse {camera_id} found {len(found)} -> latest {latest}")
+                rr = requests.get(latest, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+                if rr.status_code == 200 and len(rr.content) > 8000:
+                    if Image:
+                        try:
+                            img = Image.open(BytesIO(rr.content)).convert("RGB")
+                            img.save(out_path, "JPEG", quality=88)
+                        except:
+                            Path(out_path).write_bytes(rr.content)
+                    else:
+                        Path(out_path).write_bytes(rr.content)
+                    print(f"weathernews ok {camera_id} via page {latest} {len(rr.content)} bytes")
+                    return "weathernews-page"
+                else:
+                    print(f"page image fail {camera_id} {latest} status={rr.status_code}")
+        except Exception as e:
+            print(f"page parse fail {camera_id}: {e}")
+    # 2. ページから取れなければ、時刻推測でバックアップ
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
-    # 古いカメラ(410...)は更新が1時間に1回くらいなので、3時間前まで探す
-    # 新しいカメラ(7CDDE...)は13分前までで十分
     max_back = 180 if camera_id.startswith("410") else 13
     step = 5 if camera_id.startswith("410") else 1
     for back in range(0, max_back + 1, step):
         t_base = now - datetime.timedelta(minutes=back)
-        for sec in ["00", "01", "11", "30", "50", "41"]:  # 上越は 01 や 41 の秒もある
+        for sec in ["00", "01", "11", "30", "50", "41"]:
             ts = t_base.strftime("%Y%m%d%H%M") + sec
             for ext in ["webp", "jpg"]:
                 url = f"https://gvs.weathernews.jp/livecam/{camera_id}/640/{ts}.{ext}"
@@ -45,11 +78,11 @@ def fetch_weathernews(camera_id, out_path):
                                 Path(out_path).write_bytes(r.content)
                         else:
                             Path(out_path).write_bytes(r.content)
-                        print(f"weathernews ok {camera_id} {ts}.{ext} {len(r.content)} bytes")
+                        print(f"weathernews ok {camera_id} via guess {ts}.{ext} {len(r.content)} bytes")
                         return "weathernews"
                 except Exception:
                     continue
-    print(f"weathernews FAILED {camera_id} (max_back={max_back}min)")
+    print(f"weathernews FAILED {camera_id}")
     return None
 
 def get_weather(lat, lon):
@@ -154,7 +187,7 @@ def main():
     for loc in load_locations():
         key = loc["id"]; name = loc.get("name", key)
         out = f"images/{key}.jpg"
-        status = fetch_weathernews(loc["weathernews_id"], out)
+        status = fetch_weathernews(loc["weathernews_id"], out, loc.get("page_url"))
         if status is None:
             print(f"skip {key}: no image, keep old")
             if key not in data["locations"]:
@@ -163,7 +196,7 @@ def main():
         today = now[:10]
         existing = data.get("locations", {}).get(key, {})
         if existing.get("poems") and existing.get("poem_date") == today:
-            poems, model = existing["poems"], existing.get("model", "cached") + "-cached"
+            poems, model = existing["poems"], "cached"
             print(f"{key}: reuse poems from today {today}")
         else:
             hour = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).hour
