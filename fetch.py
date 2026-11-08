@@ -32,8 +32,8 @@ def load_locations():
     return [
         {"id": "kobe", "name": "神戸", "lat": 34.69, "lon": 135.19, "weathernews_id": "7CDDE9067E16", "page_url": "https://weathernews.jp/onebox/livecam/kinki/hyogo/7CDDE9067E16/"},
         {"id": "osaka", "name": "大阪", "lat": 34.69, "lon": 135.50, "weathernews_id": "7CDDE906F8CE", "page_url": "https://weathernews.jp/onebox/livecam/kinki/osaka/7CDDE906F8CE/"},
-        {"id": "sapporo", "name": "札幌", "lat": 43.06, "lon": 141.35, "weathernews_id": "410001361", "page_url": "https://weathernews.jp/onebox/livecam/hokkaido/douou/410001361/"},
-        {"id": "tokyo", "name": "東京", "lat": 35.68, "lon": 139.76, "weathernews_id": "410000116", "page_url": "https://weathernews.jp/onebox/livecam/kanto/tokyo/410000116/"},
+        {"id": "sapporo", "name": "札幌", "lat": 43.06, "lon": 141.35, "weathernews_id": "7CDDE9068F23", "page_url": "https://weathernews.jp/onebox/livecam/hokkaido/douou/7CDDE9068F23/"},
+        {"id": "tokyo", "name": "東京", "lat": 35.68, "lon": 139.76, "weathernews_id": "7CDDE90689B1", "page_url": "https://weathernews.jp/onebox/livecam/kanto/tokyo/7CDDE90689B1/"},
         {"id": "sendai", "name": "仙台", "lat": 38.26, "lon": 140.87, "weathernews_id": "7CDDE905CDB1", "page_url": "https://weathernews.jp/onebox/livecam/tohoku/miyagi/7CDDE905CDB1/"},
         {"id": "nagoya", "name": "名古屋", "lat": 35.18, "lon": 136.90, "weathernews_id": "7CDDE906BBEF", "page_url": "https://weathernews.jp/onebox/livecam/chubu/aichi/7CDDE906BBEF/"},
         {"id": "hiroshima", "name": "広島", "lat": 34.39, "lon": 132.45, "weathernews_id": "7CDDE908C8DC", "page_url": "https://weathernews.jp/onebox/livecam/chugoku/hiroshima/7CDDE908C8DC/"},
@@ -50,7 +50,7 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
     # 1. ページから最新のURLを探す (一番大きい枠 = 自分のIDが入ったURLだけ)
     if page_url:
         try:
-            r = requests.get(page_url + ("&" if "?" in page_url else "?") + "v=" + str(int(datetime.datetime.now().timestamp())), timeout=10, headers={"User-Agent": "Mozilla/5.0", "Cache-Control": "no-cache"})
+            r = requests.get(page_url + ("&" if "?" in page_url else "?") + "v=" + str(int(datetime.datetime.now().timestamp())), timeout=8, headers={"User-Agent": "Mozilla/5.0", "Cache-Control": "no-cache"})
             html = r.text
             # 自分のIDだけを拾う。周辺カメラ(別のID)は無視する
             pattern = re.compile(r"https://gvs\.weathernews\.jp/livecam/" + re.escape(camera_id) + r"/\d+/\d+\.(?:webp|jpg)")
@@ -103,14 +103,14 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
             print(f"page parse fail {camera_id}: {e}")
     # 2. ページから取れなければ、時刻推測でバックアップ
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
-    max_back = 30  # 120分だと3360回試して7時間かかる → 30分で十分 (30分より古い画像は要らない)
+    max_back = 10  # 30分だと720回で16分かかる → 10分で十分 (7CDは毎分更新される)
     step = 1  # 410系も1分刻み (5分刻みだと拾えない)
     for back in range(0, max_back + 1, step):
         t_base = now - datetime.timedelta(minutes=back)
-        for sec in ["00", "30", "50", "59"]:
+        for sec in ["00", "30"]:  # 4つだと遅い → 2つに
             ts = t_base.strftime("%Y%m%d%H%M") + sec
             for ext in ["webp", "jpg"]:
-              for _size in ["640", "800", "1280"]:
+              for _size in ["640"]:  # 3サイズだと3倍遅い → 640だけ (7CDは640が基本)
                 url = f"https://gvs.weathernews.jp/livecam/{camera_id}/{_size}/{ts}.{ext}"
                 try:
                     r = requests.get(url, timeout=5, headers={"User-Agent": "Mozilla/5.0"})
