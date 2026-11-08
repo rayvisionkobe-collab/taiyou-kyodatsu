@@ -183,9 +183,10 @@ def fallback_poems(place_name, lat=None, lon=None):
 # ---- Gemini 設定: 忙しい時間とモデル回遊 ----
 # 3.8だけだと429で止まるので、広げて回遊する。404なら次へ、429/503なら少し待って次へ
 GEMINI_MODELS = [
-    "gemini-2.0-flash",       # 無料枠が大きい (15 RPM)
-    "gemini-2.5-flash",       # 2番目
-]  # 4つ試すと1ヶ所で6分かかる → 15分タイムアウトでキャンセルされるので、2つだけに
+    "gemini-3.5-flash-lite",  # 無料枠 500 RPD (1日500回) → まずこれ
+    "gemini-3.8-flash",       # 無料枠 20 RPD (1日20回) → 2番目
+    "gemini-3.5-flash",       # 無料枠 20 RPD → 3番目
+]  # 2.0/2.5 は引退して 404 になるので使わない。Lite が正解
 
 def current_poem_slot(hour):
     # GitHubの遅れ・429再試行: 6-10時->朝, 12-14・17時->昼, 18-20時->晩
