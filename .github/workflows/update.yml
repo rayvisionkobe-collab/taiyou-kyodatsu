@@ -2,7 +2,7 @@ name: update weather + poems
 
 on:
   schedule:
-    - cron: "*/30 * * * *"  # 30分おき (詩の時間に遅れても、次の30分で拾える)
+    - cron: "0 * * * *"  # 1時間おき (30分おきは多すぎて、無料枠を使い切る)
   workflow_dispatch:
     inputs:
       force_poem:
