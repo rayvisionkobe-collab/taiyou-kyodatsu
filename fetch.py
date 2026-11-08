@@ -183,11 +183,9 @@ def fallback_poems(place_name, lat=None, lon=None):
 # ---- Gemini 設定: 忙しい時間とモデル回遊 ----
 # 3.8だけだと429で止まるので、広げて回遊する。404なら次へ、429/503なら少し待って次へ
 GEMINI_MODELS = [
-    "gemini-2.0-flash",       # 無料枠が大きい (15 RPM) → まずこれを試す
+    "gemini-2.0-flash",       # 無料枠が大きい (15 RPM)
     "gemini-2.5-flash",       # 2番目
-    "gemini-3.5-flash",       # 3番目
-    "gemini-3.8-flash",       # 4番目 (枠が小さいので最後)
-]  # 3.8/3.5 だけだと 429 ばかりになるので、2.0 を先に使う
+]  # 4つ試すと1ヶ所で6分かかる → 15分タイムアウトでキャンセルされるので、2つだけに
 
 def current_poem_slot(hour):
     # GitHubの遅れ・429再試行: 6-10時->朝, 12-14・17時->昼, 18-20時->晩
@@ -260,7 +258,7 @@ TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感�
         try:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
             payload = {"contents":[{"parts":[{"text":prompt},{"inline_data":{"mime_type":"image/jpeg","data":b64}}]}], "generationConfig":{"temperature":0.9,"maxOutputTokens":900}}
-            r = requests.post(url, json=payload, timeout=90)
+            r = requests.post(url, json=payload, timeout=30)
             if r.status_code == 404:
                 print(f"gemini {model} 404 NotFound {place_name}: 次のモデルへ")
                 last_err = "404"
@@ -268,7 +266,7 @@ TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感�
             if r.status_code == 429:
                 print(f"gemini {model} 429 TooManyRequests {place_name}: 20秒待って次のモデルへ (モデルごとに枠が別)")
                 last_err = "429"
-                time.sleep(20)  # 20秒待つと、次のモデルの枠が空くことがある
+                time.sleep(10)  # 10秒待って次のモデルへ
                 continue
             if r.status_code == 503:
                 print(f"gemini {model} 503 ServiceUnavailable {place_name}: 5秒待って次のモデルへ")
@@ -404,7 +402,7 @@ def main():
         _img_updated = now if status != "keep-old-image" else existing.get("updated_at", now)
         data["locations"][key] = {"image": out, "poems": poems, "model": model, "updated_at": _img_updated, "status": status, "poem_date": now[:10], "poem_slot": poem_slot, "weathernews_id": loc["weathernews_id"]}
         print(f"{key}: {status} {model}")
-        time.sleep(20)  # 地点ごとに20秒待つ (3ヶ所だけなので合計1分) (429回避: 一気に作らない) (8秒だと9分超える)
+        time.sleep(10)  # 地点ごとに10秒待つ (2.0-flash は枠が大きい) (429回避: 一気に作らない) (8秒だと9分超える)
     Path("data.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 if __name__ == "__main__":
