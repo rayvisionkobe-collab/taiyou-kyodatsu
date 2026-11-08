@@ -27,7 +27,7 @@ def load_locations():
         {"id": "sapporo", "name": "札幌", "lat": 43.06, "lon": 141.35, "weathernews_id": "410001361", "page_url": "https://weathernews.jp/onebox/livecam/hokkaido/douou/410001361/"},
         {"id": "tokyo", "name": "東京", "lat": 35.68, "lon": 139.76, "weathernews_id": "410000116", "page_url": "https://weathernews.jp/onebox/livecam/kanto/tokyo/410000116/"},
         {"id": "sendai", "name": "仙台", "lat": 38.26, "lon": 140.87, "weathernews_id": "7CDDE905CDB1", "page_url": "https://weathernews.jp/onebox/livecam/tohoku/miyagi/7CDDE905CDB1/"},
-        {"id": "nagoya", "name": "名古屋", "lat": 35.18, "lon": 136.90, "weathernews_id": "7CDDE906B81D", "page_url": "https://weathernews.jp/onebox/livecam/chubu/aichi/7CDDE906B81D/"},
+        {"id": "nagoya", "name": "名古屋", "lat": 35.18, "lon": 136.90, "weathernews_id": "7CDDE906BBEF", "page_url": "https://weathernews.jp/onebox/livecam/chubu/aichi/7CDDE906BBEF/"},
         {"id": "hiroshima", "name": "広島", "lat": 34.39, "lon": 132.45, "weathernews_id": "7CDDE908C8DC", "page_url": "https://weathernews.jp/onebox/livecam/chugoku/hiroshima/7CDDE908C8DC/"},
         {"id": "fukuoka", "name": "福岡", "lat": 33.59, "lon": 130.40, "weathernews_id": "7CDDE906F156", "page_url": "https://weathernews.jp/onebox/livecam/kyushu/fukuoka/7CDDE906F156/"},
         {"id": "naha", "name": "那覇", "lat": 26.21, "lon": 127.68, "weathernews_id": "7CDDE9086CB8", "page_url": "https://weathernews.jp/onebox/livecam/okinawa/7CDDE9086CB8/"},
@@ -75,11 +75,11 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
             print(f"page parse fail {camera_id}: {e}")
     # 2. ページから取れなければ、時刻推測でバックアップ
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
-    max_back = 60 if camera_id.startswith("410") else 13  # 180分だと遅いので60分に
+    max_back = 120  # 名古屋は30分以上遅れることがあるので、2時間前まで探す (13分だとすぐFAILEDになる)
     step = 5 if camera_id.startswith("410") else 1
     for back in range(0, max_back + 1, step):
         t_base = now - datetime.timedelta(minutes=back)
-        for sec in ["00", "01", "11", "30", "50", "41"]:
+        for sec in ["00", "01", "10", "11", "20", "30", "40", "41", "50", "59"]:  # 秒を増やす
             ts = t_base.strftime("%Y%m%d%H%M") + sec
             for ext in ["webp", "jpg"]:
                 url = f"https://gvs.weathernews.jp/livecam/{camera_id}/640/{ts}.{ext}"
@@ -371,7 +371,9 @@ def main():
                 poems, model = fallback_poems(name, loc.get("lat"), loc.get("lon")), "fallback-hourly"
                 poem_slot = existing.get("poem_slot")
                 print(f"{key}: fallback poems (no existing)")
-        data["locations"][key] = {"image": out, "poems": poems, "model": model, "updated_at": now, "status": status, "poem_date": now[:10], "poem_slot": poem_slot, "weathernews_id": loc["weathernews_id"]}
+        # 画像が古いままなら、updated_at も古いまま (新しいように見せない)
+        _img_updated = now if status != "keep-old-image" else existing.get("updated_at", now)
+        data["locations"][key] = {"image": out, "poems": poems, "model": model, "updated_at": _img_updated, "status": status, "poem_date": now[:10], "poem_slot": poem_slot, "weathernews_id": loc["weathernews_id"]}
         print(f"{key}: {status} {model}")
         time.sleep(20)  # 地点ごとに20秒待つ (3ヶ所だけなので合計1分) (429回避: 一気に作らない) (8秒だと9分超える)
     Path("data.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
