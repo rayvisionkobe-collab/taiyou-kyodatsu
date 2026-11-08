@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-08T18:39:35.134464+09:00",
+  "updated_at": "2026-11-08T20:30:02.738508+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -18,8 +18,8 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-08T15:16:59.928443+09:00",
-      "status": "keep-old-image",
+      "updated_at": "2026-11-08T20:30:02.738508+09:00",
+      "status": "weathernews-page-fallback",
       "poem_date": "2026-11-08",
       "poem_slot": "morning",
       "weathernews_id": "410001361"
@@ -40,9 +40,9 @@
           "3": "東京の夕暮れ、眩い晴れわたる空に南十字の幻を見る。冷たい風は黄道光の粉をまき散らし、鉄塔の尖端は銀河のひとつの電信柱のように屹立して、見えない音楽をひそやかに奏でながら夜の底へと沈んでいく。(102文字)"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-08T15:16:59.928443+09:00",
-      "status": "keep-old-image",
+      "model": "cached",
+      "updated_at": "2026-11-08T20:30:02.738508+09:00",
+      "status": "weathernews-page-fallback",
       "poem_date": "2026-11-08",
       "poem_slot": "evening",
       "weathernews_id": "410000116"
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-08T18:39:35.134464+09:00",
+      "updated_at": "2026-11-08T20:30:02.738508+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-08",
       "poem_slot": "morning",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-08T18:39:35.134464+09:00",
+      "updated_at": "2026-11-08T20:30:02.738508+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-08",
       "poem_slot": "morning",
@@ -109,8 +109,8 @@
           "3": "すべての透明な夜の風と雲のなかから、神戸の街は美しく青く光つていつた。夕方の地平線は遠く遠く、銀河のきらめきが橋のワイヤーに降りそそぐ。わたくしは冷たい空気をいっぱいに吸ひこみ、ただまっすぐに歩いてゆく、あの星のまばゆい方角へ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-08T18:39:35.134464+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-08T20:30:02.738508+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-08",
       "poem_slot": "evening",
@@ -132,8 +132,8 @@
           "3": "烏の渡る大阪の夜、西の空は曇り果てて冷たい風が吹いてゐる。銀河の裾野のごときビル街の灯に照らされ、ひとすじの雨が街を打つ。すべてのいのちが静かに眠る前の、美しい夕暮れの幻影よ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-08T18:39:35.134464+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-08T20:30:02.738508+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-08",
       "poem_slot": "evening",
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-08T18:39:35.134464+09:00",
+      "updated_at": "2026-11-08T20:30:02.738508+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-08",
       "poem_slot": "morning",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-08T18:39:35.134464+09:00",
+      "updated_at": "2026-11-08T20:30:02.738508+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-08",
       "poem_slot": "morning",
@@ -202,8 +202,8 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-08T15:16:59.928443+09:00",
-      "status": "keep-old-image",
+      "updated_at": "2026-11-08T20:30:02.738508+09:00",
+      "status": "weathernews-page",
       "poem_date": "2026-11-08",
       "poem_slot": "morning",
       "weathernews_id": "7CDDE908C8DC"
