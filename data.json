@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-09T06:26:49.346578+09:00",
+  "updated_at": "2026-11-09T07:27:52.857030+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-09T06:26:49.346578+09:00",
+      "updated_at": "2026-11-09T07:27:52.857030+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-09",
       "poem_slot": "morning",
@@ -40,8 +40,8 @@
           "3": "東京の曇り空の向こうで、朝焼けの星たちが静かに瞬いている。南無阿弥陀仏と風が呟き、冷たい朝の光がビルを洗う。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-09T06:26:49.346578+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-09T07:27:52.857030+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-09",
       "poem_slot": "morning",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-09T06:26:49.346578+09:00",
+      "updated_at": "2026-11-09T07:27:52.857030+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-09",
       "poem_slot": "morning",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-09T06:26:49.346578+09:00",
+      "updated_at": "2026-11-09T07:27:52.857030+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-09",
       "poem_slot": "morning",
@@ -109,8 +109,8 @@
           "3": "凍えそうな朝、神戸の野原。まっしろな霜柱をふみしめながら、美しい朝焼けの透明な光をあびて歩く。遠くの空には美しい晴れのオーラがみちて、ぼくらの新しい風が銀河の底から吹き寄せるのだ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-09T06:26:49.346578+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-09T07:27:52.857030+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-09",
       "poem_slot": "morning",
@@ -132,8 +132,8 @@
           "3": "すべての曇った気圏と冷たい風に満ちた大阪の朝、遥かな電線の上に朝焼けの淡い虹いろの粉が降り注ぐ。イーハトーブの青い透きとおった底で、銀河の回路とこの街がみちびく新しい光の讃歌を、ぼくは風といっしょにいつまでも歌い続ける。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-09T06:26:49.346578+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-09T07:27:52.857030+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-09",
       "poem_slot": "morning",
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-09T06:26:49.346578+09:00",
+      "updated_at": "2026-11-09T07:27:52.857030+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-09",
       "poem_slot": "morning",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-09T06:26:49.346578+09:00",
+      "updated_at": "2026-11-09T07:27:52.857030+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-09",
       "poem_slot": "morning",
@@ -202,7 +202,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-09T06:26:49.346578+09:00",
+      "updated_at": "2026-11-09T07:27:52.857030+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-09",
       "poem_slot": "morning",
