@@ -76,9 +76,6 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 <div class="poem-wrap" id="poemWrap">
   <div class="poem-card">
     <div class="poem-main" id="poemMain">読み込み中…</div>
-    <div style="font-size:11px;color:#a8a29e;margin-top:8px" id="poemSub"></div>
-    <button class="share-btn" id="shareBtn">↗ シェアする</button>
-    <div style="font-size:11px;color:#a8a29e;margin-top:6px">今開いている画面の詩と画像をシェアします</div>
   </div>
   <!-- シェアモーダル -->
   <div class="share-modal" id="shareModal">
@@ -123,6 +120,8 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
   </div>
   <div id="livePoem" style="margin-top:10px;padding:14px;background:#231e1b;border-radius:8px;font-family:'Yuji Syuku',cursive;font-size:19px;line-height:1.7;white-space:pre-wrap;display:none;"></div>
   <div id="livePoemNote" style="font-size:11px;color:#a8a29e;margin-top:6px;display:none;">AIがライブ画像から自動生成した詩です。上の温墨イラストはトップのままです。</div>
+  <button class="share-btn" id="shareBtn" style="margin-top:14px">↗ シェアする</button>
+  <div style="font-size:11px;color:#a8a29e;margin-top:6px;text-align:center">今開いている画面の詩と画像をシェアします</div>
 </div>
 <div class="controls" id="bottomControls" style="margin-top:18px;border-top:1px solid #44403c;padding-top:14px;">
   <div class="toggle" id="poetToggle">
@@ -191,7 +190,6 @@ async function updateAll(){
   document.getElementById('poemMain').textContent = getPoem(place, poet, level);
   const placeName = loc.name;
   const isAI = !!liveData?.locations?.[place]?.poems;
-  (document.getElementById('poemSub')||{}).textContent = `${poet==='kyodatsu'?'虚脱の空':'太陽の涙'} / ${levels[level]} / ${placeName} ${isAI ? '・ AI生成' : '・ テンプレート'}`;
   document.getElementById('practical').textContent = '天気を取得中… ' + placeName;
   const w = await fetchWeather(loc.lat, loc.lon);
   document.getElementById('practical').textContent = w + ' ' + placeName;
@@ -405,8 +403,8 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
     ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
   }catch(e){ ctx.fillStyle='#1c1917'; ctx.fillRect(0,0,1080,1350); }
   // 上に暗いグラデーション (詩が読めるように) – 下じゃなく、上に
-  const g = ctx.createLinearGradient(0, 0, 0, 700);
-  g.addColorStop(0, 'rgba(0,0,0,0.75)');
+  const g = ctx.createLinearGradient(0, 180, 0, 880);
+  g.addColorStop(0, 'rgba(0,0,0,0.78)');
   g.addColorStop(0.6, 'rgba(0,0,0,0.45)');
   g.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = g; ctx.fillRect(0,0,1080,700);
@@ -418,14 +416,34 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   // 詩 – 全文じゃなく、最初の 3行まで (14文字で折り返して、両端が切れないように)
   ctx.fillStyle = '#fff';
   ctx.textAlign = 'center';
-  // SNS画像だけ – 「。」2つまでで切る + 13文字で折り返す
+  // SNS画像だけ – 「。」2つまでで切る + 禁則処理つきで13文字で折り返す
   const raw = cutAt2Maru(d.poemFull);
   const wrapped = [];
-  for(let i=0; i<raw.length; i+=13){
-    wrapped.push(raw.slice(i, i+13));
+  {
+    // 禁則: 行頭に来てはいけない文字 (句読点・閉じ括弧など) は、前の行にくっつける
+    const noStart = new Set(['。','、','」','』','）','］','｝','〜','ー','…','・']);
+    // 行末に来てはいけない文字 (開き括弧) は、次の行に送る
+    const noEnd = new Set(['「','『','（','［','｛','〈','《']);
+    let cur = '';
+    for(let i=0; i<raw.length; i++){
+      const ch = raw[i];
+      // 行末禁則: 開き括弧で終わりそうなら、次へ
+      if(noEnd.has(ch) && cur.length >= 13){
+        wrapped.push(cur); cur = ch; continue;
+      }
+      cur += ch;
+      // 13文字になったら、次が禁則文字なら、それも一緒にくっつける
+      if(cur.length >= 13){
+        while(i+1 < raw.length && noStart.has(raw[i+1])){
+          i++; cur += raw[i];
+        }
+        wrapped.push(cur); cur = '';
+      }
+    }
+    if(cur) wrapped.push(cur);
   }
   ctx.font = '600 48px "Yuji Syuku", serif';
-  let y = 140; // 上から
+  let y = 276; // 今の3行目の位置から (少し下)
   wrapped.forEach(line=>{
     ctx.fillText(line, 540, y); y += 68;
   });
