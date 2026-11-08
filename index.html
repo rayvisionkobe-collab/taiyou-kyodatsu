@@ -87,6 +87,7 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
         <button data-tab="bluesky">Bluesky</button>
         <button data-tab="x">X</button>
       </div>
+      <div style="font-size:11px;color:#a8a29e;margin-bottom:6px" id="shareTabLabel">今は Instagram 用です</div>
       <div class="share-preview" id="sharePreview"></div>
       <div class="share-actions">
         <button class="copy-btn" id="copyBtn">📋 テキストをコピー</button>
@@ -336,7 +337,11 @@ function buildShareText(tab){
   // Threads / Bluesky / X はリンクが押せる
   return intro + '\n続きはここから → ' + APP_URL + '\n' + tags;
 }
+function getActiveTab(){
+  return document.querySelector('#shareTabs button.active')?.dataset.tab || 'instagram';
+}
 function renderShare(){
+  shareTab = getActiveTab();
   const text = buildShareText(shareTab);
   document.getElementById('sharePreview').textContent = text;
   const notes = {
@@ -346,6 +351,9 @@ function renderShare(){
     x: 'X: テキストをコピー → Xで貼る。140字を超えると切れるので、短めにしてあります。'
   };
   document.getElementById('shareNote').textContent = notes[shareTab] || '';
+  const labelMap = {instagram:'今は Instagram 用です', threads:'今は Threads 用です', bluesky:'今は Bluesky 用です', x:'今は X 用です'};
+  const lbl = document.getElementById('shareTabLabel');
+  if(lbl) lbl.textContent = labelMap[shareTab] || '';
 }
 document.getElementById('shareBtn')?.addEventListener('click', ()=>{
   renderShare();
@@ -358,12 +366,22 @@ document.getElementById('shareModal')?.addEventListener('click', (e)=>{
   if(e.target.id==='shareModal') e.target.classList.remove('open');
 });
 document.getElementById('shareTabs')?.addEventListener('click', (e)=>{
-  if(e.target.tagName==='BUTTON'){
+  const btn = e.target.closest ? e.target.closest('button') : null;
+  if(btn && btn.dataset.tab){
     document.querySelectorAll('#shareTabs button').forEach(b=>b.classList.remove('active'));
-    e.target.classList.add('active');
-    shareTab = e.target.dataset.tab;
+    btn.classList.add('active');
+    shareTab = btn.dataset.tab;
     renderShare();
   }
+});
+// タブボタンに、直接 onclick も付けて、二重に確実に
+document.querySelectorAll('#shareTabs button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('#shareTabs button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    shareTab = b.dataset.tab;
+    renderShare();
+  });
 });
 document.getElementById('copyBtn')?.addEventListener('click', async ()=>{
   const text = buildShareText(shareTab);
