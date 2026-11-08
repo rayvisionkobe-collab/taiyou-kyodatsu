@@ -307,8 +307,7 @@ function getShareData(){
   const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
   const level = parseInt(document.getElementById('level').value || 1);
   const poemFull = document.getElementById('poemMain')?.textContent || '';
-  const lines = poemFull.split('\n').filter(Boolean);
-  const short = lines.slice(0,2).join('\n'); // 本体・シェアテキストは、元通り2行。切らない
+  const short = cutAt2Maru(poemFull); // SNSテキストも、画像と同じ「。」2つ。本体 (poemMain) は切らない
   const poetName = poet==='kyodatsu' ? '虚脱の空' : '太陽の涙';
   const placeName = loc?.name || place;
   return {place, placeName, poet, poetName, level, poemFull, short};
@@ -328,16 +327,14 @@ function cutAt2Maru(text){
 function buildShareText(tab){
   const d = getShareData();
   const tags = '#太陽の涙虚脱の空 #AI詩 #' + d.placeName;
+  const intro = '今日の' + d.placeName + 'の天気を詩にしました。';
+  // 詩入り画像で投稿するなら、テキストに詩は入れない (ダブるから)
   if(tab==='instagram'){
     // Instagram はリンクが押せない → プロフィールのリンクから
-    return d.short + '…\n\n続きはプロフィールのリンクから\n太陽の涙、虚脱の空\n' + tags;
+    return intro + '\n続きはプロフィールのリンクから\n' + tags;
   }
-  if(tab==='x'){
-    // X は短く
-    return d.short + '…\n続きはここから → ' + APP_URL + '\n' + tags;
-  }
-  // Threads / Bluesky はリンクが押せる
-  return d.short + '…\n\n続きはここから → ' + APP_URL + '\n太陽の涙、虚脱の空\n' + tags;
+  // Threads / Bluesky / X はリンクが押せる
+  return intro + '\n続きはここから → ' + APP_URL + '\n' + tags;
 }
 function renderShare(){
   const text = buildShareText(shareTab);
