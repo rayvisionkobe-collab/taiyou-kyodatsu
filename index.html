@@ -95,6 +95,15 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
         <button class="copy-btn" id="copyBtn">📋 テキストをコピー</button>
         <button class="img-btn" id="imgBtn">🖼️ 画像を保存</button>
       </div>
+      <button id="poemImgBtn" style="width:100%;margin-top:8px;padding:11px;background:#f5f1e8;color:#1c1917;border:none;border-radius:10px;font-size:13px;font-weight:700">✨ 詩入り画像を作る</button>
+      <div id="poemImgWrap" style="display:none;margin-top:10px">
+        <canvas id="poemCanvas" width="1080" height="1350" style="width:100%;border-radius:12px;background:#111"></canvas>
+        <div class="share-actions" style="margin-top:8px">
+          <button class="copy-btn" id="poemImgSave">💾 詩入り画像を保存</button>
+          <button class="img-btn" id="poemImgShare">📱 詩入り画像でシェア</button>
+        </div>
+        <div style="font-size:11px;color:#a8a29e;margin-top:6px">Instagramは、この画像をそのまま投稿できます。詩が画像に入っているので、キャプションは短くてOKです。</div>
+      </div>
       <button class="share-actions" id="osShareBtn" style="width:100%;margin-top:8px;padding:10px;background:#f5f1e8;color:#1c1917;border-radius:10px;border:none;font-size:13px;font-weight:600">📱 スマホのシェアで送る</button>
       <div class="share-note" id="shareNote"></div>
       <button class="close-btn" id="shareClose">閉じる</button>
@@ -363,6 +372,79 @@ document.getElementById('imgBtn')?.addEventListener('click', async ()=>{
     const a = document.createElement('a'); a.href = URL.createObjectURL(b);
     const d = getShareData(); a.download = d.place + '-' + d.poet + '.jpg'; a.click();
   }catch(e){ window.open(url, '_blank'); }
+});
+// ---- 詩入り画像 ----
+document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
+  const d = getShareData();
+  const imgEl = document.getElementById('liveImg');
+  const wrap = document.getElementById('poemImgWrap');
+  wrap.style.display = 'block';
+  const canvas = document.getElementById('poemCanvas');
+  const ctx = canvas.getContext('2d');
+  // 背景: ライブ画像
+  try{
+    const img = new Image(); img.crossOrigin = 'anonymous';
+    img.src = imgEl?.src || 'hero.jpg';
+    await new Promise((res, rej)=>{ img.onload=res; img.onerror=res; });
+    // 1080x1350 (Instagram 縦 4:5) に、画像をカバーで描く
+    const cw=1080, ch=1350;
+    const scale = Math.max(cw/img.width, ch/img.height);
+    const w = img.width*scale, h = img.height*scale;
+    ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
+  }catch(e){ ctx.fillStyle='#1c1917'; ctx.fillRect(0,0,1080,1350); }
+  // 下に暗いグラデーション (詩が読めるように)
+  const g = ctx.createLinearGradient(0, 650, 0, 1350);
+  g.addColorStop(0, 'rgba(0,0,0,0)');
+  g.addColorStop(0.35, 'rgba(0,0,0,0.55)');
+  g.addColorStop(1, 'rgba(0,0,0,0.85)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,1080,1350);
+  // 詩 (2行だけ、大きく)
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  const lines = d.short.split('\n');
+  ctx.font = '600 54px "Yuji Syuku", serif';
+  let y = 950;
+  lines.forEach(line=>{
+    // 長い行は折り返す
+    if(line.length > 14){
+      const mid = Math.ceil(line.length/2);
+      ctx.fillText(line.slice(0,mid), 540, y); y+=72;
+      ctx.fillText(line.slice(mid), 540, y); y+=72;
+    } else {
+      ctx.fillText(line, 540, y); y+=72;
+    }
+  });
+  ctx.font = '28px "Shippori Mincho B1", serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.fillText('…', 540, y+10);
+  // 下に、場所とアプリ名
+  ctx.font = '30px "Shippori Mincho B1", serif';
+  ctx.fillStyle = '#fff';
+  ctx.fillText(d.placeName + ' ・ ' + d.poetName, 540, 1220);
+  ctx.font = '24px sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.fillText('太陽の涙、虚脱の空', 540, 1270);
+  ctx.fillText('recompose tilt 3° uncertain light perfect world', 540, 1305);
+});
+document.getElementById('poemImgSave')?.addEventListener('click', ()=>{
+  const canvas = document.getElementById('poemCanvas');
+  const a = document.createElement('a');
+  const d = getShareData();
+  a.download = d.place + '-' + d.poet + '-poem.jpg';
+  a.href = canvas.toDataURL('image/jpeg', 0.9);
+  a.click();
+});
+document.getElementById('poemImgShare')?.addEventListener('click', async ()=>{
+  const canvas = document.getElementById('poemCanvas');
+  try{
+    const blob = await new Promise(res=>canvas.toBlob(res, 'image/jpeg', 0.9));
+    const f = new File([blob], 'poem.jpg', {type:'image/jpeg'});
+    if(navigator.share && navigator.canShare({files:[f]})){
+      await navigator.share({text: buildShareText(shareTab), files:[f]});
+    } else {
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='poem.jpg'; a.click();
+    }
+  }catch(e){ console.log(e); }
 });
 document.getElementById('osShareBtn')?.addEventListener('click', async ()=>{
   const text = buildShareText(shareTab);
