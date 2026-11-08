@@ -86,7 +86,7 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
                     print(f"age check fail {camera_id}: {_e}")
             if found:
                 rr = requests.get(latest, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
-                if rr.status_code == 200 and len(rr.content) > 3000:
+                if rr.status_code == 200 and len(rr.content) > 1000:
                     if Image:
                         try:
                             img = Image.open(BytesIO(rr.content)).convert("RGB")
@@ -114,7 +114,7 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
                 url = f"https://gvs.weathernews.jp/livecam/{camera_id}/{_size}/{ts}.{ext}"
                 try:
                     r = requests.get(url, timeout=5, headers={"User-Agent": "Mozilla/5.0"})
-                    if r.status_code == 200 and len(r.content) > 3000:
+                    if r.status_code == 200 and len(r.content) > 1000:
                         if Image:
                             try:
                                 img = Image.open(BytesIO(r.content)).convert("RGB")
@@ -132,7 +132,7 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
     if _fb:
         try:
             rr = requests.get(_fb, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
-            if rr.status_code == 200 and len(rr.content) > 3000:
+            if rr.status_code == 200 and len(rr.content) > 1000:
                 if Image:
                     try:
                         img = Image.open(BytesIO(rr.content)).convert("RGB")
