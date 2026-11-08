@@ -2,11 +2,11 @@ name: update weather + poems
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "*/30 * * * *"  # 30分おき (詩の時間に遅れても、次の30分で拾える)
   workflow_dispatch:
     inputs:
       force_poem:
-        description: "1にすると今すぐ詩を作り直す (那覇だけ朝のままの時に使う)"
+        description: "1にすると今すぐ詩を作り直す"
         required: false
         default: "0"
 
