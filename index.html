@@ -310,10 +310,22 @@ function getShareData(){
   const level = parseInt(document.getElementById('level').value || 1);
   const poemFull = document.getElementById('poemMain')?.textContent || '';
   const lines = poemFull.split('\n').filter(Boolean);
-  const short = lines.slice(0,2).join('\n');
+  const short = lines.slice(0,2).join('\n'); // 本体・シェアテキストは、元通り2行。切らない
   const poetName = poet==='kyodatsu' ? '虚脱の空' : '太陽の涙';
   const placeName = loc?.name || place;
   return {place, placeName, poet, poetName, level, poemFull, short};
+}
+// SNS画像専用 – 「。」2つまでで切る (「、」は数えない。本体の詩は切らない)
+function cutAt2Maru(text){
+  const clean = (text||'').replace(/\n/g, '');
+  let count = 0;
+  for(let i=0; i<clean.length; i++){
+    if(clean[i]==='。'){
+      count++;
+      if(count >= 2) return clean.slice(0, i+1);
+    }
+  }
+  return clean;
 }
 function buildShareText(tab){
   const d = getShareData();
@@ -392,39 +404,46 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
     const w = img.width*scale, h = img.height*scale;
     ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
   }catch(e){ ctx.fillStyle='#1c1917'; ctx.fillRect(0,0,1080,1350); }
-  // 下に暗いグラデーション (詩が読めるように)
-  const g = ctx.createLinearGradient(0, 650, 0, 1350);
-  g.addColorStop(0, 'rgba(0,0,0,0)');
-  g.addColorStop(0.35, 'rgba(0,0,0,0.55)');
-  g.addColorStop(1, 'rgba(0,0,0,0.85)');
-  ctx.fillStyle = g; ctx.fillRect(0,0,1080,1350);
-  // 詩 (2行だけ、大きく)
+  // 上に暗いグラデーション (詩が読めるように) – 下じゃなく、上に
+  const g = ctx.createLinearGradient(0, 0, 0, 700);
+  g.addColorStop(0, 'rgba(0,0,0,0.75)');
+  g.addColorStop(0.6, 'rgba(0,0,0,0.45)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,1080,700);
+  // 下にも、うっすら (アプリ名が読めるように)
+  const g2 = ctx.createLinearGradient(0, 1150, 0, 1350);
+  g2.addColorStop(0, 'rgba(0,0,0,0)');
+  g2.addColorStop(1, 'rgba(0,0,0,0.6)');
+  ctx.fillStyle = g2; ctx.fillRect(0,1150,1080,200);
+  // 詩 – 全文じゃなく、最初の 3行まで (14文字で折り返して、両端が切れないように)
   ctx.fillStyle = '#fff';
   ctx.textAlign = 'center';
-  const lines = d.short.split('\n');
-  ctx.font = '600 54px "Yuji Syuku", serif';
-  let y = 950;
-  lines.forEach(line=>{
-    // 長い行は折り返す
-    if(line.length > 14){
-      const mid = Math.ceil(line.length/2);
-      ctx.fillText(line.slice(0,mid), 540, y); y+=72;
-      ctx.fillText(line.slice(mid), 540, y); y+=72;
-    } else {
-      ctx.fillText(line, 540, y); y+=72;
-    }
+  // SNS画像だけ – 「。」2つまでで切る + 13文字で折り返す
+  const raw = cutAt2Maru(d.poemFull);
+  const wrapped = [];
+  for(let i=0; i<raw.length; i+=13){
+    wrapped.push(raw.slice(i, i+13));
+  }
+  ctx.font = '600 48px "Yuji Syuku", serif';
+  let y = 140; // 上から
+  wrapped.forEach(line=>{
+    ctx.fillText(line, 540, y); y += 68;
   });
+  // 句読点2つで切ったので、必ず続きがある → …を出す
   ctx.font = '28px "Shippori Mincho B1", serif';
   ctx.fillStyle = 'rgba(255,255,255,0.85)';
-  ctx.fillText('…', 540, y+10);
-  // 下に、場所とアプリ名
+  ctx.fillText('…', 540, y+10); y+=50;
+  // 場所と詩風 – 詩の下 (上側)
   ctx.font = '30px "Shippori Mincho B1", serif';
   ctx.fillStyle = '#fff';
-  ctx.fillText(d.placeName + ' ・ ' + d.poetName, 540, 1220);
+  ctx.fillText(d.placeName + ' ・ ' + d.poetName, 540, y+50);
+  // 下に、アプリ名だけ
   ctx.font = '24px sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.fillText('太陽の涙、虚脱の空', 540, 1270);
-  ctx.fillText('recompose tilt 3° uncertain light perfect world', 540, 1305);
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.fillText('太陽の涙、虚脱の空', 540, 1280);
+  ctx.font = '20px sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.55)';
+  ctx.fillText('recompose tilt 3° uncertain light perfect world', 540, 1310);
 });
 document.getElementById('poemImgSave')?.addEventListener('click', ()=>{
   const canvas = document.getElementById('poemCanvas');
