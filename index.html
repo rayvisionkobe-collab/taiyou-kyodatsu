@@ -32,6 +32,21 @@ header h1{font-family:"Shippori Mincho B1",serif;font-size:14px;letter-spacing:0
 .labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
 .real{max-width:768px;margin:0 auto;padding:16px}
 .real-card{aspect-ratio:16/9;background:linear-gradient(180deg,#2a3a5a,#1c1917);border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+/* シェアボタン */
+.share-btn{width:100%;margin-top:14px;padding:11px;background:#f5f1e8;color:#1c1917;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
+.share-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.share-modal.open{display:flex}
+.share-sheet{width:100%;max-width:520px;background:#231e1b;border-radius:16px 16px 0 0;padding:16px;max-height:85vh;overflow:auto}
+.share-tabs{display:flex;gap:6px;margin-bottom:12px}
+.share-tabs button{flex:1;padding:8px 4px;border-radius:10px;border:1px solid #444;background:transparent;color:#f5f1e8;font-size:12px}
+.share-tabs button.active{background:#f5f1e8;color:#1c1917}
+.share-preview{white-space:pre-wrap;background:#111;padding:12px;border-radius:10px;font-size:13px;line-height:1.7;min-height:120px}
+.share-actions{display:flex;gap:8px;margin-top:12px}
+.share-actions button{flex:1;padding:10px;border-radius:10px;border:none;font-size:13px;cursor:pointer}
+.copy-btn{background:#f5f1e8;color:#1c1917;font-weight:600}
+.img-btn{background:#333;color:#f5f1e8}
+.close-btn{background:transparent;color:#a8a29e;font-size:12px;margin-top:8px;width:100%;border:none;padding:8px}
+.share-note{font-size:11px;color:#a8a29e;margin-top:8px;line-height:1.5}
 footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 /* v24: 詩をメインに */
 .poem-main{font-size:26px !important;line-height:1.9 !important;}
@@ -61,7 +76,29 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 <div class="poem-wrap" id="poemWrap">
   <div class="poem-card">
     <div class="poem-main" id="poemMain">読み込み中…</div>
-    
+    <div style="font-size:11px;color:#a8a29e;margin-top:8px" id="poemSub"></div>
+    <button class="share-btn" id="shareBtn">↗ シェアする</button>
+    <div style="font-size:11px;color:#a8a29e;margin-top:6px">今開いている画面の詩と画像をシェアします</div>
+  </div>
+  <!-- シェアモーダル -->
+  <div class="share-modal" id="shareModal">
+    <div class="share-sheet">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">シェアする</div>
+      <div class="share-tabs" id="shareTabs">
+        <button data-tab="instagram" class="active">Instagram</button>
+        <button data-tab="threads">Threads</button>
+        <button data-tab="bluesky">Bluesky</button>
+        <button data-tab="x">X</button>
+      </div>
+      <div class="share-preview" id="sharePreview"></div>
+      <div class="share-actions">
+        <button class="copy-btn" id="copyBtn">📋 テキストをコピー</button>
+        <button class="img-btn" id="imgBtn">🖼️ 画像を保存</button>
+      </div>
+      <button class="share-actions" id="osShareBtn" style="width:100%;margin-top:8px;padding:10px;background:#f5f1e8;color:#1c1917;border-radius:10px;border:none;font-size:13px;font-weight:600">📱 スマホのシェアで送る</button>
+      <div class="share-note" id="shareNote"></div>
+      <button class="close-btn" id="shareClose">閉じる</button>
+    </div>
   </div>
   <div class="controls">
     <select id="placeSelect" class="select"></select>
@@ -254,6 +291,94 @@ document.getElementById('poetToggle').addEventListener('click', e=>{
 });
 document.getElementById('sp').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='390px';document.getElementById('sp').classList.add('active');document.getElementById('tab').classList.remove('active')};
 document.getElementById('tab').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='768px';document.getElementById('tab').classList.add('active');document.getElementById('sp').classList.remove('active')};
+// ---- シェア ----
+let shareTab = 'instagram';
+const APP_URL = 'https://rayvisionkobe-collab.github.io/taiyou-kyodatsu/';
+function getShareData(){
+  const place = document.getElementById('placeSelect').value;
+  const loc = LOCATIONS.find(l=>l.id===place);
+  const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
+  const level = parseInt(document.getElementById('level').value || 1);
+  const poemFull = document.getElementById('poemMain')?.textContent || '';
+  const lines = poemFull.split('\n').filter(Boolean);
+  const short = lines.slice(0,2).join('\n');
+  const poetName = poet==='kyodatsu' ? '虚脱の空' : '太陽の涙';
+  const placeName = loc?.name || place;
+  return {place, placeName, poet, poetName, level, poemFull, short};
+}
+function buildShareText(tab){
+  const d = getShareData();
+  const tags = '#太陽の涙虚脱の空 #AI詩 #' + d.placeName;
+  if(tab==='instagram'){
+    // Instagram はリンクが押せない → プロフィールのリンクから
+    return d.short + '…\n\n続きはプロフィールのリンクから\n太陽の涙、虚脱の空\n' + tags;
+  }
+  if(tab==='x'){
+    // X は短く
+    return d.short + '…\n続きはここから → ' + APP_URL + '\n' + tags;
+  }
+  // Threads / Bluesky はリンクが押せる
+  return d.short + '…\n\n続きはここから → ' + APP_URL + '\n太陽の涙、虚脱の空\n' + tags;
+}
+function renderShare(){
+  const text = buildShareText(shareTab);
+  document.getElementById('sharePreview').textContent = text;
+  const notes = {
+    instagram: 'Instagram: テキストをコピー → Instagramで画像を選んで貼る。リンクは押せないので「プロフィールのリンクから」と書いてあります。プロフィールにアプリのURLを貼っておいてください。',
+    threads: 'Threads: テキストをコピー → Threadsで貼る。リンクは押せます。',
+    bluesky: 'Bluesky: テキストをコピー → Blueskyで貼る。リンクは押せます。',
+    x: 'X: テキストをコピー → Xで貼る。140字を超えると切れるので、短めにしてあります。'
+  };
+  document.getElementById('shareNote').textContent = notes[shareTab] || '';
+}
+document.getElementById('shareBtn')?.addEventListener('click', ()=>{
+  renderShare();
+  document.getElementById('shareModal').classList.add('open');
+});
+document.getElementById('shareClose')?.addEventListener('click', ()=>{
+  document.getElementById('shareModal').classList.remove('open');
+});
+document.getElementById('shareModal')?.addEventListener('click', (e)=>{
+  if(e.target.id==='shareModal') e.target.classList.remove('open');
+});
+document.getElementById('shareTabs')?.addEventListener('click', (e)=>{
+  if(e.target.tagName==='BUTTON'){
+    document.querySelectorAll('#shareTabs button').forEach(b=>b.classList.remove('active'));
+    e.target.classList.add('active');
+    shareTab = e.target.dataset.tab;
+    renderShare();
+  }
+});
+document.getElementById('copyBtn')?.addEventListener('click', async ()=>{
+  const text = buildShareText(shareTab);
+  try{ await navigator.clipboard.writeText(text); alert('コピーしました。' + (shareTab==='instagram'?'Instagramで貼ってください':'貼ってください')); }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); alert('コピーしました'); }
+});
+document.getElementById('imgBtn')?.addEventListener('click', async ()=>{
+  const img = document.getElementById('liveImg');
+  const url = img?.src;
+  if(!url){ alert('画像がありません'); return; }
+  try{
+    const r = await fetch(url); const b = await r.blob();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(b);
+    const d = getShareData(); a.download = d.place + '-' + d.poet + '.jpg'; a.click();
+  }catch(e){ window.open(url, '_blank'); }
+});
+document.getElementById('osShareBtn')?.addEventListener('click', async ()=>{
+  const text = buildShareText(shareTab);
+  const img = document.getElementById('liveImg');
+  try{
+    let files = [];
+    if(img?.src && navigator.canShare){
+      const r = await fetch(img.src); const b = await r.blob();
+      const f = new File([b], 'live.jpg', {type:'image/jpeg'});
+      if(navigator.canShare({files:[f]})) files=[f];
+    }
+    if(navigator.share){
+      await navigator.share({text, files: files.length?files:undefined});
+    } else { await navigator.clipboard.writeText(text); alert('コピーしました'); }
+  }catch(e){ console.log('share cancel', e); }
+});
 document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
