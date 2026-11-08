@@ -50,7 +50,7 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
     # 1. ページから最新のURLを探す (一番大きい枠 = 自分のIDが入ったURLだけ)
     if page_url:
         try:
-            r = requests.get(page_url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+            r = requests.get(page_url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
             html = r.text
             # 自分のIDだけを拾う。周辺カメラ(別のID)は無視する
             pattern = re.compile(r"https://gvs\.weathernews\.jp/livecam/" + re.escape(camera_id) + r"/640/\d+\.(?:webp|jpg)")
@@ -84,7 +84,7 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
                 except Exception as _e:
                     print(f"age check fail {camera_id}: {_e}")
             if found:
-                rr = requests.get(latest, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+                rr = requests.get(latest, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
                 if rr.status_code == 200 and len(rr.content) > 3000:
                     if Image:
                         try:
@@ -102,16 +102,16 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
             print(f"page parse fail {camera_id}: {e}")
     # 2. ページから取れなければ、時刻推測でバックアップ
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
-    max_back = 120  # 名古屋は30分以上遅れることがあるので、2時間前まで探す (13分だとすぐFAILEDになる)
+    max_back = 30  # 120分だと3360回試して7時間かかる → 30分で十分 (30分より古い画像は要らない)
     step = 1  # 410系も1分刻み (5分刻みだと拾えない)
     for back in range(0, max_back + 1, step):
         t_base = now - datetime.timedelta(minutes=back)
-        for sec in ["00", "01", "10", "11", "12", "20", "30", "40", "41", "50", "55", "57", "58", "59"]:  # 秒を増やす
+        for sec in ["00", "30", "50", "59"]:  # 14個だと遅すぎる → 4個に  # 秒を増やす
             ts = t_base.strftime("%Y%m%d%H%M") + sec
             for ext in ["webp", "jpg"]:
                 url = f"https://gvs.weathernews.jp/livecam/{camera_id}/640/{ts}.{ext}"
                 try:
-                    r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+                    r = requests.get(url, timeout=5, headers={"User-Agent": "Mozilla/5.0"})
                     if r.status_code == 200 and len(r.content) > 3000:
                         if Image:
                             try:
