@@ -65,6 +65,25 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
                 found = sorted(set(found))
                 latest = found[-1]
                 print(f"page parse {camera_id} found {len(found)} -> latest {latest}")
+                # 古さチェック: 410系(古いカメラ)はHTMLが数時間遅れることがある
+                # ページの画像が2時間以上古かったら、ページを信じずに時間推測へ行く
+                try:
+                    import re as _re2
+                    _m = _re2.search(r"(\d{14})\.(?:webp|jpg)", latest)
+                    if _m:
+                        _ts = datetime.datetime.strptime(_m.group(1), "%Y%m%d%H%M%S").replace(tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
+                        _now2 = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+                        _age_min = (_now2 - _ts).total_seconds() / 60
+                        print(f"page image age {camera_id}: {_age_min:.0f} min old (latest={_m.group(1)})")
+                        if _age_min > 120:
+                            print(f"page image too old {camera_id} ({_age_min:.0f} min) -> try guess instead of page")
+                            # ページは使わず、下の時間推測へ行く (found を空にする)
+                            found = []
+                        else:
+                            pass
+                except Exception as _e:
+                    print(f"age check fail {camera_id}: {_e}")
+            if found:
                 rr = requests.get(latest, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
                 if rr.status_code == 200 and len(rr.content) > 3000:
                     if Image:
@@ -84,10 +103,10 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
     # 2. ページから取れなければ、時刻推測でバックアップ
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
     max_back = 120  # 名古屋は30分以上遅れることがあるので、2時間前まで探す (13分だとすぐFAILEDになる)
-    step = 5 if camera_id.startswith("410") else 1
+    step = 1  # 410系も1分刻み (5分刻みだと拾えない)
     for back in range(0, max_back + 1, step):
         t_base = now - datetime.timedelta(minutes=back)
-        for sec in ["00", "01", "10", "11", "20", "30", "40", "41", "50", "59"]:  # 秒を増やす
+        for sec in ["00", "01", "10", "11", "12", "20", "30", "40", "41", "50", "55", "57", "58", "59"]:  # 秒を増やす
             ts = t_base.strftime("%Y%m%d%H%M") + sec
             for ext in ["webp", "jpg"]:
                 url = f"https://gvs.weathernews.jp/livecam/{camera_id}/640/{ts}.{ext}"
