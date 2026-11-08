@@ -13,10 +13,18 @@ Path("images").mkdir(exist_ok=True)
 POEM_HOURS = [6, 7, 12, 18]  # 朝6・7時、昼12時、晩18時の4回
 # 詩の生成を4回に分ける (朝・晩の混雑時間は3ヶ所以内)
 POEM_SCHEDULE = {
-    6:  {"slot": "morning", "targets": ["kobe", "osaka", "tokyo"]},   # 朝6時: 神戸・大阪・東京 (3ヶ所)
-    7:  {"slot": "morning", "targets": ["nagoya", "fukuoka"]},      # 朝7時: 名古屋・福岡 (2ヶ所)
-    12: {"slot": "noon",    "targets": ["sapporo", "sendai", "hiroshima", "naha"]},  # 昼12時: 札幌・仙台・広島・那覇 (4ヶ所、昼は空いている)
-    18: {"slot": "evening", "targets": ["kobe", "osaka", "tokyo"]},   # 晩18時: 神戸・大阪・東京 (3ヶ所)
+    6:  {"slot": "morning", "targets": ["kobe", "osaka", "tokyo"]},
+    7:  {"slot": "morning", "targets": ["nagoya", "fukuoka"]},
+    8:  {"slot": "morning", "targets": ["kobe", "osaka", "tokyo", "nagoya", "fukuoka"]},  # 遅れ・再試行: 8時でも朝
+    9:  {"slot": "morning", "targets": ["kobe", "osaka", "tokyo", "nagoya", "fukuoka"]},  # 遅れ・再試行: 9時でも朝
+    10: {"slot": "morning", "targets": ["kobe", "osaka", "tokyo", "nagoya", "fukuoka"]}, # 遅れ・再試行: 10時でも朝
+    12: {"slot": "noon",    "targets": ["sapporo", "sendai", "hiroshima", "naha"]},
+    13: {"slot": "noon",    "targets": ["sapporo", "sendai", "hiroshima", "naha"]},  # 12時が429でも、13時で再試行
+    14: {"slot": "noon",    "targets": ["sapporo", "sendai", "hiroshima", "naha"]},  # 12・13時が429でも、14時で再試行
+    17: {"slot": "noon",    "targets": ["sapporo", "sendai", "hiroshima", "naha"]},  # 15・16時は忙しいので避けて、17時で再試行
+    18: {"slot": "evening", "targets": ["kobe", "osaka", "tokyo"]},
+    19: {"slot": "evening", "targets": ["kobe", "osaka", "tokyo"]},
+    20: {"slot": "evening", "targets": ["kobe", "osaka", "tokyo"]},  # 18・19時が429でも、20時で再試行
 }
 BUSY_HOURS = [15, 16]  # 15-16時はGeminiを使わない (429/503回避)
 
@@ -161,12 +169,12 @@ GEMINI_MODELS = [
 ]  # 2.5-flash は 404 なので外す  # 7つだと404ばかりで時間がかかるので、確実にある3つだけに絞る
 
 def current_poem_slot(hour):
-    # 6・7時台->朝, 12時台->昼, 18時台->晩。それ以外は None (作らない)
-    if hour in (6, 7):
+    # GitHubの遅れ・429再試行: 6-10時->朝, 12-14・17時->昼, 18-20時->晩
+    if hour in (6, 7, 8, 9, 10):
         return "morning"
-    if hour == 12:
+    if hour in (12, 13, 14, 17):
         return "noon"
-    if hour == 18:
+    if hour in (18, 19, 20):
         return "evening"
     return None
 
