@@ -183,9 +183,11 @@ def fallback_poems(place_name, lat=None, lon=None):
 # ---- Gemini 設定: 忙しい時間とモデル回遊 ----
 # 3.8だけだと429で止まるので、広げて回遊する。404なら次へ、429/503なら少し待って次へ
 GEMINI_MODELS = [
-    "gemini-3.8-flash",
-    "gemini-3.5-flash",
-]  # 2.5-flash は 404 なので外す  # 7つだと404ばかりで時間がかかるので、確実にある3つだけに絞る
+    "gemini-2.0-flash",       # 無料枠が大きい (15 RPM) → まずこれを試す
+    "gemini-2.5-flash",       # 2番目
+    "gemini-3.5-flash",       # 3番目
+    "gemini-3.8-flash",       # 4番目 (枠が小さいので最後)
+]  # 3.8/3.5 だけだと 429 ばかりになるので、2.0 を先に使う
 
 def current_poem_slot(hour):
     # GitHubの遅れ・429再試行: 6-10時->朝, 12-14・17時->昼, 18-20時->晩
@@ -257,17 +259,17 @@ TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感�
     for mi, model in enumerate(models):
         try:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
-            payload = {"contents":[{"parts":[{"text":prompt},{"inline_data":{"mime_type":"image/jpeg","data":b64}}]}], "generationConfig":{"temperature":0.9,"maxOutputTokens":1200}}
-            r = requests.post(url, json=payload, timeout=60)
+            payload = {"contents":[{"parts":[{"text":prompt},{"inline_data":{"mime_type":"image/jpeg","data":b64}}]}], "generationConfig":{"temperature":0.9,"maxOutputTokens":900}}
+            r = requests.post(url, json=payload, timeout=90)
             if r.status_code == 404:
                 print(f"gemini {model} 404 NotFound {place_name}: 次のモデルへ")
                 last_err = "404"
                 continue
             if r.status_code == 429:
-                print(f"gemini {model} 429 TooManyRequests {place_name}: 2つ目は試さない (同じ上限に当たるだけ) -> この場所はスキップして古い詩を残す")
+                print(f"gemini {model} 429 TooManyRequests {place_name}: 20秒待って次のモデルへ (モデルごとに枠が別)")
                 last_err = "429"
-                # 429は待っても直らない。次の場所でまた叩くと悪化するので、ここで打ち切る
-                break
+                time.sleep(20)  # 20秒待つと、次のモデルの枠が空くことがある
+                continue
             if r.status_code == 503:
                 print(f"gemini {model} 503 ServiceUnavailable {place_name}: 5秒待って次のモデルへ")
                 last_err = "503"
