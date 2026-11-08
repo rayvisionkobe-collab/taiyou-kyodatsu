@@ -50,14 +50,14 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
     # 1. ページから最新のURLを探す (一番大きい枠 = 自分のIDが入ったURLだけ)
     if page_url:
         try:
-            r = requests.get(page_url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+            r = requests.get(page_url + ("&" if "?" in page_url else "?") + "v=" + str(int(datetime.datetime.now().timestamp())), timeout=10, headers={"User-Agent": "Mozilla/5.0", "Cache-Control": "no-cache"})
             html = r.text
             # 自分のIDだけを拾う。周辺カメラ(別のID)は無視する
-            pattern = re.compile(r"https://gvs\.weathernews\.jp/livecam/" + re.escape(camera_id) + r"/640/\d+\.(?:webp|jpg)")
+            pattern = re.compile(r"https://gvs\.weathernews\.jp/livecam/" + re.escape(camera_id) + r"/\d+/\d+\.(?:webp|jpg)")
             found = pattern.findall(html)
             # HTMLエスケープや // になっている場合も拾う
             if not found:
-                pattern2 = re.compile(r"gvs\.weathernews\.jp/livecam/" + re.escape(camera_id) + r"/640/\d+\.(?:webp|jpg)")
+                pattern2 = re.compile(r"gvs\.weathernews\.jp/livecam/" + re.escape(camera_id) + r"/\d+/\d+\.(?:webp|jpg)")
                 found2 = pattern2.findall(html)
                 found = ["https://" + u for u in found2]
             if found:
@@ -76,9 +76,10 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
                         _age_min = (_now2 - _ts).total_seconds() / 60
                         print(f"page image age {camera_id}: {_age_min:.0f} min old (latest={_m.group(1)})")
                         if _age_min > 120:
-                            print(f"page image too old {camera_id} ({_age_min:.0f} min) -> try guess instead of page")
-                            # ページは使わず、下の時間推測へ行く (found を空にする)
-                            found = []
+                            print(f"page image too old {camera_id} ({_age_min:.0f} min) -> try guess first, if guess fails use page image as fallback")
+                            # v39 は捨てていたが、ウェザーニュース自体が止まっている時は、古くても使うしかない
+                            globals().setdefault("_page_fallback", {})[camera_id] = latest
+                            found = []  # まず guess を試す
                         else:
                             pass
                 except Exception as _e:
@@ -106,10 +107,11 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
     step = 1  # 410系も1分刻み (5分刻みだと拾えない)
     for back in range(0, max_back + 1, step):
         t_base = now - datetime.timedelta(minutes=back)
-        for sec in ["00", "30", "50", "59"]:  # 14個だと遅すぎる → 4個に  # 秒を増やす
+        for sec in ["00", "30", "50", "59"]:
             ts = t_base.strftime("%Y%m%d%H%M") + sec
             for ext in ["webp", "jpg"]:
-                url = f"https://gvs.weathernews.jp/livecam/{camera_id}/640/{ts}.{ext}"
+              for _size in ["640", "800", "1280"]:
+                url = f"https://gvs.weathernews.jp/livecam/{camera_id}/{_size}/{ts}.{ext}"
                 try:
                     r = requests.get(url, timeout=5, headers={"User-Agent": "Mozilla/5.0"})
                     if r.status_code == 200 and len(r.content) > 3000:
@@ -121,10 +123,28 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
                                 Path(out_path).write_bytes(r.content)
                         else:
                             Path(out_path).write_bytes(r.content)
-                        print(f"weathernews ok {camera_id} via guess {ts}.{ext} {len(r.content)} bytes")
+                        print(f"weathernews ok {camera_id} via guess {_size}/{ts}.{ext} {len(r.content)} bytes")
                         return "weathernews"
                 except Exception:
                     continue
+    # guess も失敗したら、ページの古い画像でも使う (ウェザーニュースが止まっている時は、それしかない)
+    _fb = globals().get("_page_fallback", {}).get(camera_id)
+    if _fb:
+        try:
+            rr = requests.get(_fb, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+            if rr.status_code == 200 and len(rr.content) > 3000:
+                if Image:
+                    try:
+                        img = Image.open(BytesIO(rr.content)).convert("RGB")
+                        img.save(out_path, "JPEG", quality=88)
+                    except:
+                        Path(out_path).write_bytes(rr.content)
+                else:
+                    Path(out_path).write_bytes(rr.content)
+                print(f"weathernews ok {camera_id} via page-fallback (old but latest) {_fb}")
+                return "weathernews-page-fallback"
+        except Exception as e:
+            print(f"page fallback fail {camera_id}: {e}")
     print(f"weathernews FAILED {camera_id}")
     return None
 
