@@ -491,31 +491,31 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   // practical に、すでに場所が入っているなら、場所を2回付けない (仙台 仙台 にならないように)
   const weatherLine = weatherText ? (weatherText.includes(d.placeName) ? weatherText : weatherText + ' ' + d.placeName) : d.placeName;
   // 枠のサイズ
-  ctx.font = '400 28px "Shippori Mincho B1", serif';
+  ctx.font = '400 22px "Shippori Mincho B1", serif'; // 28 → 22 小さく
   const titleW = ctx.measureText(titleText).width;
-  ctx.font = '400 24px "Shippori Mincho B1", serif';
+  ctx.font = '400 18px "Shippori Mincho B1", serif'; // 24 → 18 小さく
   const weatherW = ctx.measureText(weatherLine).width;
-  const boxW = Math.max(titleW, weatherW) + 90; // 左右に余白
-  const boxH = 125; // 上下に余白
-  const boxX = 1280 - boxW - 90; // 右から260px → 90px 左上と対角に、右に寄せる
-  const boxY = 455; // 445 → 455 もう少し下に、でも下端 580 で建物の上 (空の部分)
+  const boxW = Math.max(titleW, weatherW) + 50; // 90 → 50 左右を詰める
+  const boxH = 82; // 125 → 82 上下を詰めてコンパクトに
+  const boxX = 1280 - boxW - 90; // 右から90px 対角はそのまま
+  const boxY = 470; // 455 → 470 下端 552 で建物の上
   const boxCenterX = boxX + boxW / 2;
-  // 右下だけ 0.12 – 天気は読めないと困るので、詩より少し濃く
-  ctx.fillStyle = 'rgba(0,0,0,0.12)';
+  // 目立たないように、詩と同じくらい薄く (影で読めるので)
+  ctx.fillStyle = 'rgba(0,0,0,0.07)'; // 0.12 → 0.07
   roundRect(boxX, boxY, boxW, boxH, 16);
   ctx.fill();
   // タイトルと天気は、枠の中で中央寄せ – 字体も明朝で細く
   ctx.textAlign = 'center';
   try{ ctx.letterSpacing = '1px'; }catch(e){}
-  ctx.shadowColor = 'rgba(0,0,0,0.5)';
-  ctx.shadowBlur = 8;
+  ctx.shadowColor = 'rgba(0,0,0,0.35)'; // 0.5 → 0.35 影も弱く
+  ctx.shadowBlur = 5; // 8 → 5
   ctx.shadowOffsetY = 1;
-  ctx.font = '400 28px "Shippori Mincho B1", serif'; // 30px 太め → 28px 細く
+  ctx.font = '400 22px "Shippori Mincho B1", serif'; // 28 → 22
   ctx.fillStyle = '#fff';
-  ctx.fillText(titleText, boxCenterX, 508);
-  ctx.font = '400 24px "Shippori Mincho B1", serif'; // sans-serif → 明朝
+  ctx.fillText(titleText, boxCenterX, 505); // 508 → 505
+  ctx.font = '400 18px "Shippori Mincho B1", serif'; // 24 → 18
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
-  ctx.fillText(weatherLine, boxCenterX, 550);
+  ctx.fillText(weatherLine, boxCenterX, 532); // 550 → 532 行間 42 → 27 詰める
   ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
   try{ ctx.letterSpacing = '0px'; }catch(e){}
   ctx.textAlign = 'left';
