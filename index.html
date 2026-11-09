@@ -18,8 +18,8 @@ header h1{font-family:"Shippori Mincho B1",serif;font-size:14px;letter-spacing:0
 .hero img{width:100%;height:auto;max-height:85vh;object-fit:contain;object-position:center}
 @media(max-width:430px){.hero img{aspect-ratio:4/3;}}
 .poem-wrap{max-width:768px;margin:0 auto;padding:24px 16px;background:rgba(28,25,23,0.78);backdrop-filter:blur(12px)}
-.poem-card{padding:28px 20px;text-align:center}
-.poem-main{font-family:"Yuji Syuku",cursive;font-size:26px;line-height:1.6;letter-spacing:0.04em;white-space:pre-wrap}
+.poem-card{padding:28px 20px;text-align:left}
+.poem-main{font-family:"Yuji Syuku",cursive;font-size:26px;line-height:1.9;letter-spacing:0.04em;white-space:pre-wrap;text-align:left}
 .poem-sub{margin-top:12px;font-size:13px;color:var(--muted);font-family:"Shippori Mincho B1",serif}
 .practical{margin-top:16px;padding:10px 14px;background:#1e1e1e;border-radius:8px;color:var(--text);font-size:13px;line-height:1.5}
 .controls{margin-top:20px;display:flex;flex-direction:column;gap:12px}
@@ -49,7 +49,7 @@ header h1{font-family:"Shippori Mincho B1",serif;font-size:14px;letter-spacing:0
 .share-note{font-size:11px;color:#a8a29e;margin-top:8px;line-height:1.5}
 footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 /* v24: 詩をメインに */
-.poem-main{font-size:26px !important;line-height:1.9 !important;}
+.poem-main{font-size:26px !important;line-height:1.9 !important;text-align:left !important;}
 @media(min-width:768px){
   .poem-main{font-size:34px !important;line-height:2.0 !important;}
   .poem-wrap{max-width:720px;margin:0 auto;}
@@ -119,7 +119,7 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
     <img id="liveImg" src="hero.jpg" alt="ライブ静止画" style="width:100%;height:100%;object-fit:cover;display:none;">
     <div id="livePlaceholder" style="text-align:center;padding:20px;">ライブ静止画を取得中…<br><span id="time"></span></div>
   </div>
-  <div id="livePoem" style="margin-top:10px;padding:14px;background:#231e1b;border-radius:8px;font-family:'Yuji Syuku',cursive;font-size:19px;line-height:1.7;white-space:pre-wrap;display:none;"></div>
+  <div id="livePoem" style="margin-top:10px;padding:14px;background:#231e1b;border-radius:8px;font-family:'Yuji Syuku',cursive;font-size:19px;line-height:1.9;white-space:pre-wrap;text-align:left;display:none;"></div>
   <div id="livePoemNote" style="font-size:11px;color:#a8a29e;margin-top:6px;display:none;">AIがライブ画像から自動生成した詩です。上の温墨イラストはトップのままです。</div>
   <button class="share-btn" id="shareBtn" style="margin-top:14px">↗ シェアする</button>
   <div style="font-size:11px;color:#a8a29e;margin-top:6px;text-align:center">今開いている画面の詩と画像をシェアします</div>
@@ -136,6 +136,12 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 </div>
 <footer>出典：ウェザーニュース / Myライブカメラ © rayvisionkobe-collab / PWA template v1 / 背景は生成り #1c1917 温墨</footer>
 <script>
+// 「。」で改行 + 左寄せ用 – 「。」の後で改行する (最後の「。」の後は改行しない)
+function breakByMaru(text){
+  if(!text) return text;
+  // すでに改行がある場合は、それを残して、「。」でも改行
+  return text.replace(/\n/g, '').replace(/。(?!$)/g, '。\n');
+}
 const LOCATIONS = [
   {id:"kobe", name:"神戸", lat:34.69, lon:135.19, weathernews_id:"7CDDE9067E16"},
   {id:"osaka", name:"大阪", lat:34.69, lon:135.50, weathernews_id:"7CDDE906F8CE"},
@@ -188,7 +194,7 @@ async function updateAll(){
   const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
   const level = parseInt(document.getElementById('level').value);
   const levels = ["からっと","ほどよく","こいめ","仙人級"];
-  document.getElementById('poemMain').textContent = getPoem(place, poet, level);
+  document.getElementById('poemMain').textContent = breakByMaru( getPoem(place, poet, level)));
   const placeName = loc.name;
   const isAI = !!liveData?.locations?.[place]?.poems;
   document.getElementById('practical').textContent = '天気を取得中… ' + placeName;
@@ -307,7 +313,7 @@ function getShareData(){
   const loc = LOCATIONS.find(l=>l.id===place);
   const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
   const level = parseInt(document.getElementById('level').value || 1);
-  const poemFull = document.getElementById('poemMain')?.textContent || '';
+  const poemFull = document.getElementById('poemMain')?.textContent || ''));
   const short = cutAt2Maru(poemFull); // SNSテキストも、画像と同じ「。」2つ。本体 (poemMain) は切らない
   const poetName = poet==='kyodatsu' ? '虚脱の空' : '太陽の涙';
   const placeName = loc?.name || place;
@@ -418,65 +424,69 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
     ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
   }catch(e){ ctx.fillStyle='#1c1917'; ctx.fillRect(0,0,1080,1350); }
   // 上に暗いグラデーション (詩が読めるように) – 下じゃなく、上に
-  const g = ctx.createLinearGradient(0, 180, 0, 880);
+  const g = ctx.createLinearGradient(0, 60, 0, 650);
   g.addColorStop(0, 'rgba(0,0,0,0.78)');
   g.addColorStop(0.6, 'rgba(0,0,0,0.45)');
   g.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = g; ctx.fillRect(0,0,1080,700);
+  ctx.fillStyle = g; ctx.fillRect(0,0,1080,650);
   // 下にも、うっすら (アプリ名が読めるように)
-  const g2 = ctx.createLinearGradient(0, 1150, 0, 1350);
+  const g2 = ctx.createLinearGradient(0, 1050, 0, 1350);
   g2.addColorStop(0, 'rgba(0,0,0,0)');
   g2.addColorStop(1, 'rgba(0,0,0,0.6)');
   ctx.fillStyle = g2; ctx.fillRect(0,1150,1080,200);
-  // 詩 – 全文じゃなく、最初の 3行まで (14文字で折り返して、両端が切れないように)
+  // 詩 – 左上・左寄せ・「。」で改行
   ctx.fillStyle = '#fff';
-  ctx.textAlign = 'center';
-  // SNS画像だけ – 「。」2つまでで切る + 禁則処理つきで13文字で折り返す
+  ctx.textAlign = 'left';
+  // SNS画像だけ – 「。」2つまでで切る
   const raw = cutAt2Maru(d.poemFull);
+  // 「。」で文に分けて、1文ごとに改行。長い文は12文字で折り返す (禁則つき)
   const wrapped = [];
   {
-    // 禁則: 行頭に来てはいけない文字 (句読点・閉じ括弧など) は、前の行にくっつける
     const noStart = new Set(['。','、','」','』','）','］','｝','〜','ー','…','・']);
-    // 行末に来てはいけない文字 (開き括弧) は、次の行に送る
     const noEnd = new Set(['「','『','（','［','｛','〈','《']);
-    let cur = '';
-    for(let i=0; i<raw.length; i++){
-      const ch = raw[i];
-      // 行末禁則: 開き括弧で終わりそうなら、次へ
-      if(noEnd.has(ch) && cur.length >= 13){
-        wrapped.push(cur); cur = ch; continue;
-      }
-      cur += ch;
-      // 13文字になったら、次が禁則文字なら、それも一緒にくっつける
-      if(cur.length >= 13){
-        while(i+1 < raw.length && noStart.has(raw[i+1])){
-          i++; cur += raw[i];
+    const sentences = raw.split('。').filter(s=>s.trim()!=='').map(s=>s+'。');
+    sentences.forEach(sent=>{
+      let cur = '';
+      for(let i=0; i<sent.length; i++){
+        const ch = sent[i];
+        if(noEnd.has(ch) && cur.length >= 12){ wrapped.push(cur); cur = ch; continue; }
+        cur += ch;
+        // 「。」が来たら、そこで改行
+        if(ch === '。'){ wrapped.push(cur); cur = ''; continue; }
+        // 12文字で折り返し (禁則: 次が「。」や「、」なら一緒に)
+        if(cur.length >= 12){
+          while(i+1 < sent.length && noStart.has(sent[i+1]) && sent[i+1] !== '。'){
+            i++; cur += sent[i];
+          }
+          wrapped.push(cur); cur = '';
         }
-        wrapped.push(cur); cur = '';
       }
-    }
-    if(cur) wrapped.push(cur);
+      if(cur) wrapped.push(cur);
+    });
   }
-  ctx.font = '600 48px "Yuji Syuku", serif';
-  let y = 276; // 今の3行目の位置から (少し下)
+  ctx.font = '600 52px "Yuji Syuku", serif';
+  let y = 140; // 左上から
+  const leftX = 90;
   wrapped.forEach(line=>{
-    ctx.fillText(line, 540, y); y += 68;
+    ctx.fillText(line, leftX, y); y += 72;
   });
-  // 句読点2つで切ったので、必ず続きがある → …を出す
-  ctx.font = '28px "Shippori Mincho B1", serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
-  ctx.fillText('…', 540, y+10); y+=50;
-  // 場所と詩風 – 詩の下 (上側)
-  ctx.font = '30px "Shippori Mincho B1", serif';
+  // 右下に、タイトルと天気 – 右寄せ
+  ctx.textAlign = 'right';
+  const rightX = 990;
+  // 天気を、アプリの practical から取る (例: 小雨 13℃ / 13℃ 降水0.1mm 風8m)
+  let weatherText = document.getElementById('practical')?.textContent?.trim() || '';
+  // practical には、天気 + 場所などが入っているので、そのまま使う。長すぎたら、最初の行だけ
+  weatherText = weatherText.split('\n')[0].trim();
+  // 右下: タイトル
+  ctx.font = '32px "Shippori Mincho B1", serif';
   ctx.fillStyle = '#fff';
-  ctx.fillText(d.placeName + ' ・ ' + d.poetName, 540, y+50);
-  // 下に、アプリ名だけ
-  ctx.font = '24px sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.75)';
-  ctx.fillText('太陽の涙、虚脱の空', 540, 1280);
-  ctx.font = '20px sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.55)';
-  ctx.fillText('recompose tilt 3° uncertain light perfect world', 540, 1310);
+  ctx.fillText('－太陽の涙、虚脱の空－', rightX, 1150);
+  // 右下: 天気 (例: 小雨 13℃ / 13℃ 降水0.1mm 風8m 神戸)
+  ctx.font = '26px sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  const weatherLine = weatherText ? (weatherText + ' ' + d.placeName) : d.placeName;
+  ctx.fillText(weatherLine, rightX, 1200);
+  ctx.textAlign = 'left';
 });
 document.getElementById('poemImgSave')?.addEventListener('click', ()=>{
   const canvas = document.getElementById('poemCanvas');
