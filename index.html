@@ -475,10 +475,15 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   ctx.fillStyle = '#fff';
   ctx.font = '400 40px "Shippori Mincho B1", serif'; // 42 → 40px 小さく
   try{ ctx.letterSpacing = '3px'; }catch(e){}
+  // 文字に、うっすら影 – 明るい背景でも読めるように (箱は薄いまま)
+  ctx.shadowColor = 'rgba(0,0,0,0.45)';
+  ctx.shadowBlur = 10;
+  ctx.shadowOffsetY = 2;
   let y = poemTop + 26;
   wrapped.forEach(line=>{
     ctx.fillText(line, leftX, y); y += poemLineH;
   });
+  ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
   // 右下に、タイトルと天気 – 枠の中で中央寄せ・建物にかからないように、もう少し上に
   let weatherText = document.getElementById('practical')?.textContent?.trim() || '';
   weatherText = weatherText.split('\n')[0].trim();
@@ -495,18 +500,23 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   const boxX = 1280 - boxW - 90; // 右から260px → 90px 左上と対角に、右に寄せる
   const boxY = 455; // 445 → 455 もう少し下に、でも下端 580 で建物の上 (空の部分)
   const boxCenterX = boxX + boxW / 2;
-  ctx.fillStyle = 'rgba(0,0,0,0.06)'; // 0.10 → 0.06 もっと薄く
+  // 右下だけ 0.12 – 天気は読めないと困るので、詩より少し濃く
+  ctx.fillStyle = 'rgba(0,0,0,0.12)';
   roundRect(boxX, boxY, boxW, boxH, 16);
   ctx.fill();
   // タイトルと天気は、枠の中で中央寄せ – 字体も明朝で細く
   ctx.textAlign = 'center';
   try{ ctx.letterSpacing = '1px'; }catch(e){}
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 8;
+  ctx.shadowOffsetY = 1;
   ctx.font = '400 28px "Shippori Mincho B1", serif'; // 30px 太め → 28px 細く
   ctx.fillStyle = '#fff';
   ctx.fillText(titleText, boxCenterX, 508);
   ctx.font = '400 24px "Shippori Mincho B1", serif'; // sans-serif → 明朝
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
   ctx.fillText(weatherLine, boxCenterX, 550);
+  ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
   try{ ctx.letterSpacing = '0px'; }catch(e){}
   ctx.textAlign = 'left';
 });
