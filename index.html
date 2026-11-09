@@ -461,20 +461,21 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
       if(cur) wrapped.push(cur);
     });
   }
-  // 詩の下に、薄い図形を透過で置く – 上下左右に余白を、黒は薄く
-  const leftX = 70;
-  const poemTop = 80;
-  const poemLineH = 62;
-  const poemH = wrapped.length * poemLineH + 60; // 上下に余白
+  // 詩の下に、薄い図形 – お手本通り、ほぼ透明に、位置は内側に
+  const leftX = 145; // 70 → 145 お手本は左から 11% くらい内側
+  const poemTop = 145; // 80 → 145 お手本は上から 20% くらい内側
+  const poemLineH = 72; // 62 → 72 行間を広く、お手本通り
+  const poemH = wrapped.length * poemLineH + 70; // 上下に余白
   let maxLen = 0; wrapped.forEach(l=>{ if(l.length>maxLen) maxLen=l.length; });
-  const poemW = Math.min(1280-140, maxLen * 46 + 90); // 左右に余白
-  ctx.fillStyle = 'rgba(0,0,0,0.20)'; // 0.32 → 0.20 薄く
-  roundRect(leftX-35, poemTop-55, poemW, poemH, 18);
+  const poemW = Math.min(1280-140, maxLen * 44 + 110); // 左右に余白
+  ctx.fillStyle = 'rgba(0,0,0,0.10)'; // 0.20 → 0.10 ほぼ透明、お手本通り
+  roundRect(leftX-55, poemTop-55, poemW, poemH, 18);
   ctx.fill();
   // 詩を描く
   ctx.fillStyle = '#fff';
-  ctx.font = '600 44px "Yuji Syuku", serif';
-  let y = poemTop + 25;
+  ctx.font = '400 42px "Shippori Mincho B1", serif'; // Yuji Syuku 太い筆文字 → 明朝 細く、お手本通り
+  try{ ctx.letterSpacing = '3px'; }catch(e){}
+  let y = poemTop + 28;
   wrapped.forEach(line=>{
     ctx.fillText(line, leftX, y); y += poemLineH;
   });
@@ -485,26 +486,28 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   // practical に、すでに場所が入っているなら、場所を2回付けない (仙台 仙台 にならないように)
   const weatherLine = weatherText ? (weatherText.includes(d.placeName) ? weatherText : weatherText + ' ' + d.placeName) : d.placeName;
   // 枠のサイズ
-  ctx.font = '30px "Shippori Mincho B1", serif';
+  ctx.font = '400 28px "Shippori Mincho B1", serif';
   const titleW = ctx.measureText(titleText).width;
-  ctx.font = '24px sans-serif';
+  ctx.font = '400 24px "Shippori Mincho B1", serif';
   const weatherW = ctx.measureText(weatherLine).width;
-  const boxW = Math.max(titleW, weatherW) + 80; // 左右に余白
-  const boxH = 125; // 上下に余白
-  const boxX = 1280 - boxW - 40; // 右から40px
-  const boxY = 430;
+  const boxW = Math.max(titleW, weatherW) + 90; // 左右に余白
+  const boxH = 130; // 上下に余白
+  const boxX = 1280 - boxW - 260; // 右から40px → 260px お手本は右端から内側 (右端が 80% くらい)
+  const boxY = 445;
   const boxCenterX = boxX + boxW / 2;
-  ctx.fillStyle = 'rgba(0,0,0,0.20)'; // 薄く
+  ctx.fillStyle = 'rgba(0,0,0,0.10)'; // 0.20 → 0.10 ほぼ透明
   roundRect(boxX, boxY, boxW, boxH, 16);
   ctx.fill();
-  // タイトルと天気は、枠の中で中央寄せ
+  // タイトルと天気は、枠の中で中央寄せ – 字体も明朝で細く
   ctx.textAlign = 'center';
-  ctx.font = '30px "Shippori Mincho B1", serif';
+  try{ ctx.letterSpacing = '1px'; }catch(e){}
+  ctx.font = '400 28px "Shippori Mincho B1", serif'; // 30px 太め → 28px 細く
   ctx.fillStyle = '#fff';
-  ctx.fillText(titleText, boxCenterX, 485);
-  ctx.font = '24px sans-serif';
+  ctx.fillText(titleText, boxCenterX, 500);
+  ctx.font = '400 24px "Shippori Mincho B1", serif'; // sans-serif → 明朝
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
-  ctx.fillText(weatherLine, boxCenterX, 530);
+  ctx.fillText(weatherLine, boxCenterX, 545);
+  try{ ctx.letterSpacing = '0px'; }catch(e){}
   ctx.textAlign = 'left';
 });
 document.getElementById('poemImgSave')?.addEventListener('click', ()=>{
