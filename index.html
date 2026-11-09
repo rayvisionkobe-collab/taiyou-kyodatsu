@@ -95,7 +95,7 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
       </div>
       <button id="poemImgBtn" style="width:100%;margin-top:8px;padding:11px;background:#f5f1e8;color:#1c1917;border:none;border-radius:10px;font-size:13px;font-weight:700">✨ 詩入り画像を作る</button>
       <div id="poemImgWrap" style="display:none;margin-top:10px">
-        <canvas id="poemCanvas" width="1080" height="1350" style="width:100%;border-radius:12px;background:#111"></canvas>
+        <canvas id="poemCanvas" width="1280" height="720" style="width:100%;border-radius:12px;background:#111"></canvas>
         <div class="share-actions" style="margin-top:8px">
           <button class="copy-btn" id="poemImgSave">💾 詩入り画像を保存</button>
           <button class="img-btn" id="poemImgShare">📱 詩入り画像でシェア</button>
@@ -412,34 +412,30 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   wrap.style.display = 'block';
   const canvas = document.getElementById('poemCanvas');
   const ctx = canvas.getContext('2d');
-  // 背景: ライブ画像
+  // 背景: ライブ画像 (横長 1280x720 – ライブ静止画と同じ)
   try{
     const img = new Image(); img.crossOrigin = 'anonymous';
     img.src = imgEl?.src || 'hero.jpg';
     await new Promise((res, rej)=>{ img.onload=res; img.onerror=res; });
-    // 1080x1350 (Instagram 縦 4:5) に、画像をカバーで描く
-    const cw=1080, ch=1350;
+    const cw=1280, ch=720;
     const scale = Math.max(cw/img.width, ch/img.height);
     const w = img.width*scale, h = img.height*scale;
     ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
-  }catch(e){ ctx.fillStyle='#1c1917'; ctx.fillRect(0,0,1080,1350); }
-  // 上に暗いグラデーション (詩が読めるように) – 下じゃなく、上に
-  const g = ctx.createLinearGradient(0, 60, 0, 650);
-  g.addColorStop(0, 'rgba(0,0,0,0.78)');
-  g.addColorStop(0.6, 'rgba(0,0,0,0.45)');
-  g.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = g; ctx.fillRect(0,0,1080,650);
-  // 下にも、うっすら (アプリ名が読めるように)
-  const g2 = ctx.createLinearGradient(0, 1050, 0, 1350);
-  g2.addColorStop(0, 'rgba(0,0,0,0)');
-  g2.addColorStop(1, 'rgba(0,0,0,0.6)');
-  ctx.fillStyle = g2; ctx.fillRect(0,1150,1080,200);
+  }catch(e){ ctx.fillStyle='#1c1917'; ctx.fillRect(0,0,1280,720); }
+  // 薄い図形を透過で置くためのヘルパー (角丸)
+  function roundRect(x, y, w, h, r){
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
+  }
   // 詩 – 左上・左寄せ・「。」で改行
   ctx.fillStyle = '#fff';
   ctx.textAlign = 'left';
-  // SNS画像だけ – 「。」2つまでで切る
   const raw = cutAt2Maru(d.poemFull);
-  // 「。」で文に分けて、1文ごとに改行。長い文は12文字で折り返す (禁則つき)
   const wrapped = [];
   {
     const noStart = new Set(['。','、','」','』','）','］','｝','〜','ー','…','・']);
@@ -451,9 +447,7 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
         const ch = sent[i];
         if(noEnd.has(ch) && cur.length >= 12){ wrapped.push(cur); cur = ch; continue; }
         cur += ch;
-        // 「。」が来たら、そこで改行
         if(ch === '。'){ wrapped.push(cur); cur = ''; continue; }
-        // 12文字で折り返し (禁則: 次が「。」や「、」なら一緒に)
         if(cur.length >= 12){
           while(i+1 < sent.length && noStart.has(sent[i+1]) && sent[i+1] !== '。'){
             i++; cur += sent[i];
@@ -464,28 +458,51 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
       if(cur) wrapped.push(cur);
     });
   }
-  ctx.font = '600 52px "Yuji Syuku", serif';
-  let y = 140; // 左上から
-  const leftX = 90;
-  wrapped.forEach(line=>{
-    ctx.fillText(line, leftX, y); y += 72;
-  });
-  // 右下に、タイトルと天気 – 右寄せ
-  ctx.textAlign = 'right';
-  const rightX = 990;
-  // 天気を、アプリの practical から取る (例: 小雨 13℃ / 13℃ 降水0.1mm 風8m)
-  let weatherText = document.getElementById('practical')?.textContent?.trim() || '';
-  // practical には、天気 + 場所などが入っているので、そのまま使う。長すぎたら、最初の行だけ
-  weatherText = weatherText.split('\n')[0].trim();
-  // 右下: タイトル
-  ctx.font = '32px "Shippori Mincho B1", serif';
+  // 詩の下に、薄い図形を透過で置く (背景で見えづらくならないように) – 例の画像通り
+  const leftX = 70;
+  const poemTop = 80;
+  const poemLineH = 62;
+  const poemH = wrapped.length * poemLineH + 40;
+  // 詩の幅は、一番長い行で決める (大体 12文字 x 44px)
+  let maxLen = 0; wrapped.forEach(l=>{ if(l.length>maxLen) maxLen=l.length; });
+  const poemW = Math.min(1280-140, maxLen * 46 + 60);
+  ctx.fillStyle = 'rgba(0,0,0,0.32)';
+  roundRect(leftX-20, poemTop-40, poemW, poemH, 18);
+  ctx.fill();
+  // 詩を描く
   ctx.fillStyle = '#fff';
-  ctx.fillText('－太陽の涙、虚脱の空－', rightX, 1150);
-  // 右下: 天気 (例: 小雨 13℃ / 13℃ 降水0.1mm 風8m 神戸)
-  ctx.font = '26px sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.font = '600 44px "Yuji Syuku", serif';
+  let y = poemTop + 20;
+  wrapped.forEach(line=>{
+    ctx.fillText(line, leftX, y); y += poemLineH;
+  });
+  // 右下に、タイトルと天気 – 右寄せ・建物にかからないように、もう少し上に (空の部分)
+  ctx.textAlign = 'right';
+  const rightX = 1210;
+  let weatherText = document.getElementById('practical')?.textContent?.trim() || '';
+  weatherText = weatherText.split('\n')[0].trim();
+  const titleText = '－太陽の涙、虚脱の空－';
   const weatherLine = weatherText ? (weatherText + ' ' + d.placeName) : d.placeName;
-  ctx.fillText(weatherLine, rightX, 1200);
+  // タイトルと天気の下にも、薄い図形を透過で置く
+  ctx.font = '30px "Shippori Mincho B1", serif';
+  const titleW = ctx.measureText(titleText).width;
+  ctx.font = '24px sans-serif';
+  const weatherW = ctx.measureText(weatherLine).width;
+  const boxW = Math.max(titleW, weatherW) + 50;
+  const boxH = 110;
+  const boxX = rightX - boxW + 20;
+  const boxY = 440;
+  ctx.fillStyle = 'rgba(0,0,0,0.32)';
+  roundRect(boxX, boxY, boxW, boxH, 16);
+  ctx.fill();
+  // タイトル
+  ctx.font = '30px "Shippori Mincho B1", serif';
+  ctx.fillStyle = '#fff';
+  ctx.fillText(titleText, rightX, 490);
+  // 天気
+  ctx.font = '24px sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.92)';
+  ctx.fillText(weatherLine, rightX, 530);
   ctx.textAlign = 'left';
 });
 document.getElementById('poemImgSave')?.addEventListener('click', ()=>{
