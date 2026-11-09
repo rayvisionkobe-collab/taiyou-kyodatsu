@@ -449,8 +449,11 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
         cur += ch;
         if(ch === '。'){ wrapped.push(cur); cur = ''; continue; }
         if(cur.length >= 12){
-          while(i+1 < sent.length && noStart.has(sent[i+1]) && sent[i+1] !== '。'){
+          // 禁則: 次が「。」や「、」なら、一緒にくっつける (「。」が次の行に1つだけ残らないように)
+          while(i+1 < sent.length && noStart.has(sent[i+1])){
             i++; cur += sent[i];
+            // 「。」が来たら、そこで文が終わるので、すぐ改行
+            if(sent[i] === '。') break;
           }
           wrapped.push(cur); cur = '';
         }
@@ -458,51 +461,50 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
       if(cur) wrapped.push(cur);
     });
   }
-  // 詩の下に、薄い図形を透過で置く (背景で見えづらくならないように) – 例の画像通り
+  // 詩の下に、薄い図形を透過で置く – 上下左右に余白を、黒は薄く
   const leftX = 70;
   const poemTop = 80;
   const poemLineH = 62;
-  const poemH = wrapped.length * poemLineH + 40;
-  // 詩の幅は、一番長い行で決める (大体 12文字 x 44px)
+  const poemH = wrapped.length * poemLineH + 60; // 上下に余白
   let maxLen = 0; wrapped.forEach(l=>{ if(l.length>maxLen) maxLen=l.length; });
-  const poemW = Math.min(1280-140, maxLen * 46 + 60);
-  ctx.fillStyle = 'rgba(0,0,0,0.32)';
-  roundRect(leftX-20, poemTop-40, poemW, poemH, 18);
+  const poemW = Math.min(1280-140, maxLen * 46 + 90); // 左右に余白
+  ctx.fillStyle = 'rgba(0,0,0,0.20)'; // 0.32 → 0.20 薄く
+  roundRect(leftX-35, poemTop-55, poemW, poemH, 18);
   ctx.fill();
   // 詩を描く
   ctx.fillStyle = '#fff';
   ctx.font = '600 44px "Yuji Syuku", serif';
-  let y = poemTop + 20;
+  let y = poemTop + 25;
   wrapped.forEach(line=>{
     ctx.fillText(line, leftX, y); y += poemLineH;
   });
-  // 右下に、タイトルと天気 – 右寄せ・建物にかからないように、もう少し上に (空の部分)
-  ctx.textAlign = 'right';
-  const rightX = 1210;
+  // 右下に、タイトルと天気 – 枠の中で中央寄せ・建物にかからないように、もう少し上に
   let weatherText = document.getElementById('practical')?.textContent?.trim() || '';
   weatherText = weatherText.split('\n')[0].trim();
   const titleText = '－太陽の涙、虚脱の空－';
-  const weatherLine = weatherText ? (weatherText + ' ' + d.placeName) : d.placeName;
-  // タイトルと天気の下にも、薄い図形を透過で置く
+  // practical に、すでに場所が入っているなら、場所を2回付けない (仙台 仙台 にならないように)
+  const weatherLine = weatherText ? (weatherText.includes(d.placeName) ? weatherText : weatherText + ' ' + d.placeName) : d.placeName;
+  // 枠のサイズ
   ctx.font = '30px "Shippori Mincho B1", serif';
   const titleW = ctx.measureText(titleText).width;
   ctx.font = '24px sans-serif';
   const weatherW = ctx.measureText(weatherLine).width;
-  const boxW = Math.max(titleW, weatherW) + 50;
-  const boxH = 110;
-  const boxX = rightX - boxW + 20;
-  const boxY = 440;
-  ctx.fillStyle = 'rgba(0,0,0,0.32)';
+  const boxW = Math.max(titleW, weatherW) + 80; // 左右に余白
+  const boxH = 125; // 上下に余白
+  const boxX = 1280 - boxW - 40; // 右から40px
+  const boxY = 430;
+  const boxCenterX = boxX + boxW / 2;
+  ctx.fillStyle = 'rgba(0,0,0,0.20)'; // 薄く
   roundRect(boxX, boxY, boxW, boxH, 16);
   ctx.fill();
-  // タイトル
+  // タイトルと天気は、枠の中で中央寄せ
+  ctx.textAlign = 'center';
   ctx.font = '30px "Shippori Mincho B1", serif';
   ctx.fillStyle = '#fff';
-  ctx.fillText(titleText, rightX, 490);
-  // 天気
+  ctx.fillText(titleText, boxCenterX, 485);
   ctx.font = '24px sans-serif';
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
-  ctx.fillText(weatherLine, rightX, 530);
+  ctx.fillText(weatherLine, boxCenterX, 530);
   ctx.textAlign = 'left';
 });
 document.getElementById('poemImgSave')?.addEventListener('click', ()=>{
