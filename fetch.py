@@ -421,7 +421,9 @@ def main():
                 print(f"{key}: fallback poems (no existing)")
         # 画像が古いままなら、updated_at も古いまま (新しいように見せない)
         _img_updated = now if status != "keep-old-image" else existing.get("updated_at", now)
-        data["locations"][key] = {"image": out, "poems": poems, "model": model, "updated_at": _img_updated, "status": status, "poem_date": now[:10], "poem_slot": poem_slot, "weathernews_id": loc["weathernews_id"]}
+        # poem_date は、新しく作ったときだけ今日にする。使い回しのときは、古い日付のまま (6時に名古屋の日付を今日にすると、7時に「もう作った」と思って作らないバグ)
+        _poem_date = now[:10] if do_gen and model not in ("cached-keep",) else existing.get("poem_date", now[:10])
+        data["locations"][key] = {"image": out, "poems": poems, "model": model, "updated_at": _img_updated, "status": status, "poem_date": _poem_date, "poem_slot": poem_slot, "weathernews_id": loc["weathernews_id"]}
         print(f"{key}: {status} {model}")
         time.sleep(10)  # 地点ごとに10秒待つ (2.0-flash は枠が大きい) (429回避: 一気に作らない) (8秒だと9分超える)
     Path("data.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
