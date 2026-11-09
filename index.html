@@ -194,7 +194,7 @@ async function updateAll(){
   const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
   const level = parseInt(document.getElementById('level').value);
   const levels = ["からっと","ほどよく","こいめ","仙人級"];
-  document.getElementById('poemMain').textContent = breakByMaru( getPoem(place, poet, level)));
+  document.getElementById('poemMain').textContent = breakByMaru(getPoem(place, poet, level));
   const placeName = loc.name;
   const isAI = !!liveData?.locations?.[place]?.poems;
   document.getElementById('practical').textContent = '天気を取得中… ' + placeName;
@@ -313,7 +313,7 @@ function getShareData(){
   const loc = LOCATIONS.find(l=>l.id===place);
   const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
   const level = parseInt(document.getElementById('level').value || 1);
-  const poemFull = document.getElementById('poemMain')?.textContent || ''));
+  const poemFull = document.getElementById('poemMain')?.textContent || '';
   const short = cutAt2Maru(poemFull); // SNSテキストも、画像と同じ「。」2つ。本体 (poemMain) は切らない
   const poetName = poet==='kyodatsu' ? '虚脱の空' : '太陽の涙';
   const placeName = loc?.name || place;
