@@ -432,6 +432,22 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
     ctx.arcTo(x, y, x+w, y, r);
     ctx.closePath();
   }
+  // 空の明るさを測る – 朝(明るい)と夜(暗い)で、箱の濃さを変える
+  function getBrightness(x, y, w, h){
+    try{
+      const d = ctx.getImageData(Math.max(0, x|0), Math.max(0, y|0), Math.max(1, w|0), Math.max(1, h|0)).data;
+      let sum = 0, n = 0;
+      for(let i=0; i<d.length; i+=16){ sum += (d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114); n++; }
+      return n ? sum/n : 100;
+    }catch(e){ return 100; }
+  }
+  function alphaForBrightness(b){
+    // 明るいほど、濃く (朝: 0.35 / 昼: 0.22 / 夕: 0.12 / 夜: 0.06)
+    if(b > 170) return 0.38;
+    if(b > 130) return 0.25;
+    if(b > 80) return 0.14;
+    return 0.07;
+  }
   // 詩 – 左上・左寄せ・「。」で改行
   ctx.fillStyle = '#fff';
   ctx.textAlign = 'left';
@@ -468,16 +484,20 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   const poemH = wrapped.length * poemLineH + 70; // 上下に余白
   let maxLen = 0; wrapped.forEach(l=>{ if(l.length>maxLen) maxLen=l.length; });
   const poemW = Math.min(1280-140, maxLen * 42 + 110); // 40pxに合わせて 44 → 42
-  ctx.fillStyle = 'rgba(0,0,0,0.06)'; // 0.10 → 0.06 もっと薄く、詩の印象を壊さない
+  const poemBright = getBrightness(leftX-55, poemTop-55, poemW, poemH);
+  const poemAlpha = alphaForBrightness(poemBright); // 朝は濃く、夜は薄く
+  ctx.fillStyle = 'rgba(0,0,0,' + poemAlpha + ')';
   roundRect(leftX-55, poemTop-55, poemW, poemH, 18);
   ctx.fill();
   // 詩を描く
   ctx.fillStyle = '#fff';
   ctx.font = '400 40px "Shippori Mincho B1", serif'; // 42 → 40px 小さく
   try{ ctx.letterSpacing = '3px'; }catch(e){}
-  // 文字に、うっすら影 – 明るい背景でも読めるように (箱は薄いまま)
-  ctx.shadowColor = 'rgba(0,0,0,0.45)';
-  ctx.shadowBlur = 10;
+  // 文字に影 – 朝(明るい)は強く、夜(暗い)は弱く
+  const poemShadow = poemBright > 130 ? 0.65 : 0.4;
+  const poemBlur = poemBright > 130 ? 14 : 8;
+  ctx.shadowColor = 'rgba(0,0,0,' + poemShadow + ')';
+  ctx.shadowBlur = poemBlur;
   ctx.shadowOffsetY = 2;
   let y = poemTop + 26;
   wrapped.forEach(line=>{
@@ -500,15 +520,17 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   const boxX = 1280 - boxW - 90; // 右から90px 対角はそのまま
   const boxY = 470; // 455 → 470 下端 552 で建物の上
   const boxCenterX = boxX + boxW / 2;
-  // 目立たないように、詩と同じくらい薄く (影で読めるので)
-  ctx.fillStyle = 'rgba(0,0,0,0.07)'; // 0.12 → 0.07
+  // 右下も、明るさで変える – 朝は濃く、夜は薄く (コンパクトはそのまま)
+  const bottomBright = getBrightness(boxX, boxY, boxW, boxH);
+  const bottomAlpha = alphaForBrightness(bottomBright);
+  ctx.fillStyle = 'rgba(0,0,0,' + bottomAlpha + ')';
   roundRect(boxX, boxY, boxW, boxH, 16);
   ctx.fill();
   // タイトルと天気は、枠の中で中央寄せ – 字体も明朝で細く
   ctx.textAlign = 'center';
   try{ ctx.letterSpacing = '1px'; }catch(e){}
-  ctx.shadowColor = 'rgba(0,0,0,0.35)'; // 0.5 → 0.35 影も弱く
-  ctx.shadowBlur = 5; // 8 → 5
+  ctx.shadowColor = bottomBright > 130 ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.35)';
+  ctx.shadowBlur = bottomBright > 130 ? 10 : 5;
   ctx.shadowOffsetY = 1;
   ctx.font = '400 22px "Shippori Mincho B1", serif'; // 28 → 22
   ctx.fillStyle = '#fff';
