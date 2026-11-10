@@ -423,14 +423,22 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
     const cw=1280, ch=720;
     const scale = Math.max(cw/img.width, ch/img.height);
     const w = img.width*scale, h = img.height*scale;
-    // シネマ風に、色を整える – 地味なグレー → 少し温かく、コントラストを上げる
-    try{ ctx.filter = 'contrast(1.15) saturate(1.30) brightness(1.08)'; }catch(e){}
+    // 詩の背景として、静かにする – 目立たせるのと逆
+    // 明るさ 0.88 / 彩度 0.75 / コントラスト 0.95 / ぼかし 2px
+    // 写真の主張を弱くして、詩を主役に。ぼかしで、640の粗さも目立たなくなる
+    try{ ctx.filter = 'brightness(0.88) saturate(0.75) contrast(0.95) blur(2px)'; }catch(e){}
     ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
     try{ ctx.filter = 'none'; }catch(e){}
+    // 全体に、うっすら黒をかける – 詩が読める背景に
+    const bg = ctx.createLinearGradient(0, 0, 0, 720);
+    bg.addColorStop(0, 'rgba(0,0,0,0.28)');
+    bg.addColorStop(0.5, 'rgba(0,0,0,0.10)');
+    bg.addColorStop(1, 'rgba(0,0,0,0.30)');
+    ctx.fillStyle = bg; ctx.fillRect(0,0,1280,720);
     // 周りを、少し暗くして、詩を立たせる (ビネット)
     const vig = ctx.createRadialGradient(640, 360, 320, 640, 360, 820);
     vig.addColorStop(0, 'rgba(0,0,0,0)');
-    vig.addColorStop(1, 'rgba(0,0,0,0.32)');
+    vig.addColorStop(1, 'rgba(0,0,0,0.22)');
     ctx.fillStyle = vig; ctx.fillRect(0,0,1280,720);
   }catch(e){ ctx.fillStyle='#1c1917'; ctx.fillRect(0,0,1280,720); }
   // 薄い図形を透過で置くためのヘルパー (角丸)
