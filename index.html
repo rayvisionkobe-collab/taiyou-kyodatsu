@@ -558,11 +558,7 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   ctx.strokeStyle = 'rgba(255,255,255,0.20)';
   ctx.lineWidth = 1;
   ctx.strokeRect(26, 26, 1228, 668);
-  // アクセント – 左上の詩の上に、アプリのピンクと青の線
-  ctx.fillStyle = '#FF6B9D';
-  ctx.fillRect(leftX-55, poemTop-78, 56, 3);
-  ctx.fillStyle = '#4CC9F0';
-  ctx.fillRect(leftX+3, poemTop-78, 56, 3);
+  // アクセント線は、消す – マーカーみたいに見えるので
   ctx.textAlign = 'left';
 });
 document.getElementById('poemImgSave')?.addEventListener('click', ()=>{
