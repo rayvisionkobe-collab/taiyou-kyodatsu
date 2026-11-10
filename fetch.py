@@ -85,7 +85,22 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
                 except Exception as _e:
                     print(f"age check fail {camera_id}: {_e}")
             if found:
-                rr = requests.get(latest, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+                # シェア画像の画質のため、同じ時刻の1280を試す (ダメなら640のまま)
+                _try_1280 = latest.replace("/640/", "/1280/")
+                if _try_1280 != latest:
+                    try:
+                        _r1280 = requests.get(_try_1280, timeout=8, headers={"User-Agent": "Mozilla/5.0"})
+                        if _r1280.status_code == 200 and len(_r1280.content) > 1000:
+                            print(f"upgrade 1280 ok {camera_id} {_try_1280} {len(_r1280.content)} bytes")
+                            latest = _try_1280
+                            rr = _r1280
+                        else:
+                            print(f"upgrade 1280 fail {camera_id} -> keep 640")
+                            rr = requests.get(latest, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+                    except Exception:
+                        rr = requests.get(latest, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+                else:
+                    rr = requests.get(latest, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
                 if rr.status_code == 200 and len(rr.content) > 1000:
                     if Image:
                         try:
@@ -110,7 +125,7 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
         for sec in ["00", "30"]:  # 4つだと遅い → 2つに
             ts = t_base.strftime("%Y%m%d%H%M") + sec
             for ext in ["webp", "jpg"]:
-              for _size in ["640"]:  # 3サイズだと3倍遅い → 640だけ (7CDは640が基本)
+              for _size in ["1280", "640"]:  # シェア画質のため、1280を先に (ダメなら640)
                 url = f"https://gvs.weathernews.jp/livecam/{camera_id}/{_size}/{ts}.{ext}"
                 try:
                     r = requests.get(url, timeout=5, headers={"User-Agent": "Mozilla/5.0"})
