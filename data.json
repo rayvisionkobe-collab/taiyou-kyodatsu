@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-11T06:31:27.080935+09:00",
+  "updated_at": "2026-11-11T07:31:56.318954+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-11T06:31:27.080935+09:00",
+      "updated_at": "2026-11-11T07:31:56.318954+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-10",
       "poem_slot": "noon",
@@ -40,8 +40,8 @@
           "3": "東京の朝が透明な星屑を脱ぎ捨てて、冷たい晴れわたる光の風が大地をめぐる。夜明けの地平線から清らかな朝焼けが萌えい出て、美しい銀河の呼吸がビル街のすみずみまで満ちていく。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-11T06:31:27.080935+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-11T07:31:56.318954+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "morning",
@@ -63,8 +63,8 @@
           "3": "福岡に、曇りの光が落ちている。夜明け、海の向こうで風が渡ろうとしている。肌寒い光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "cached",
-      "updated_at": "2026-11-11T06:31:27.080935+09:00",
+      "model": "cached-keep",
+      "updated_at": "2026-11-11T07:31:56.318954+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-10",
       "poem_slot": "morning",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-11T06:31:27.080935+09:00",
+      "updated_at": "2026-11-11T07:31:56.318954+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-10",
       "poem_slot": "noon",
@@ -109,8 +109,8 @@
           "3": "すきとおる風が吹く神戸の朝、東の空の朝焼けは銀河のしずくをこぼし、すべての草木が青くめざめる、大いなる光のゆりかごがこの街をそっと抱きしめている。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-11T06:31:27.080935+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-11T07:31:56.318954+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "morning",
@@ -132,8 +132,8 @@
           "3": "霧の晴れた朝、大阪の街の上の冷たい青ぞらをとおく見つければ、銀河のてんとてんがつむぎだす美しい朝焼けの光とすきとおる風がぼくらの小さな胸をうるわしくふるわせるのだった。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-11T06:31:27.080935+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-11T07:31:56.318954+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "morning",
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-11T06:31:27.080935+09:00",
+      "updated_at": "2026-11-11T07:31:56.318954+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-10",
       "poem_slot": "noon",
@@ -178,8 +178,8 @@
           "3": "名古屋の朝、遥かな電離層を突き抜けて、白い雲のすきまから無数の光が降り注ぐ。イーハトーブの青い風が、この街の新しい夜明けの野原を駆け抜け、すべてを讃えるように銀河の拍手が響く。"
         }
       },
-      "model": "cached",
-      "updated_at": "2026-11-11T06:31:27.080935+09:00",
+      "model": "cached-keep",
+      "updated_at": "2026-11-11T07:31:56.318954+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-10",
       "poem_slot": "morning",
