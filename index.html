@@ -412,15 +412,26 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   wrap.style.display = 'block';
   const canvas = document.getElementById('poemCanvas');
   const ctx = canvas.getContext('2d');
-  // 背景: ライブ画像 (横長 1280x720 – ライブ静止画と同じ)
+  // 背景: ライブ画像 – シェアだけ、1280px を試す (640だと、引き伸ばしてぼやける)
   try{
     const img = new Image(); img.crossOrigin = 'anonymous';
-    img.src = imgEl?.src || 'hero.jpg';
+    let _src = imgEl?.src || 'hero.jpg';
+    // weathernews は、/640/ の代わりに /1280/ があるので、シェアだけ高画質に
+    if(_src.includes('/640/')) _src = _src.replace('/640/', '/1280/');
+    img.src = _src;
     await new Promise((res, rej)=>{ img.onload=res; img.onerror=res; });
     const cw=1280, ch=720;
     const scale = Math.max(cw/img.width, ch/img.height);
     const w = img.width*scale, h = img.height*scale;
+    // シネマ風に、色を整える – 地味なグレー → 少し温かく、コントラストを上げる
+    try{ ctx.filter = 'contrast(1.15) saturate(1.30) brightness(1.08)'; }catch(e){}
     ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
+    try{ ctx.filter = 'none'; }catch(e){}
+    // 周りを、少し暗くして、詩を立たせる (ビネット)
+    const vig = ctx.createRadialGradient(640, 360, 320, 640, 360, 820);
+    vig.addColorStop(0, 'rgba(0,0,0,0)');
+    vig.addColorStop(1, 'rgba(0,0,0,0.32)');
+    ctx.fillStyle = vig; ctx.fillRect(0,0,1280,720);
   }catch(e){ ctx.fillStyle='#1c1917'; ctx.fillRect(0,0,1280,720); }
   // 薄い図形を透過で置くためのヘルパー (角丸)
   function roundRect(x, y, w, h, r){
@@ -540,6 +551,18 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   ctx.fillText(weatherLine, boxCenterX, 532); // 550 → 532 行間 42 → 27 詰める
   ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
   try{ ctx.letterSpacing = '0px'; }catch(e){}
+  // 額縁 – 外から 20px に、白の細い線 (ポストカードみたいに、地味に見えないように)
+  ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(20, 20, 1240, 680);
+  ctx.strokeStyle = 'rgba(255,255,255,0.20)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(26, 26, 1228, 668);
+  // アクセント – 左上の詩の上に、アプリのピンクと青の線
+  ctx.fillStyle = '#FF6B9D';
+  ctx.fillRect(leftX-55, poemTop-78, 56, 3);
+  ctx.fillStyle = '#4CC9F0';
+  ctx.fillRect(leftX+3, poemTop-78, 56, 3);
   ctx.textAlign = 'left';
 });
 document.getElementById('poemImgSave')?.addEventListener('click', ()=>{
