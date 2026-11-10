@@ -551,13 +551,7 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   ctx.fillText(weatherLine, boxCenterX, 532); // 550 → 532 行間 42 → 27 詰める
   ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
   try{ ctx.letterSpacing = '0px'; }catch(e){}
-  // 額縁 – 外から 20px に、白の細い線 (ポストカードみたいに、地味に見えないように)
-  ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(20, 20, 1240, 680);
-  ctx.strokeStyle = 'rgba(255,255,255,0.20)';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(26, 26, 1228, 668);
+  // 額縁は、やめる – 雰囲気を壊すので
   // アクセント線は、消す – マーカーみたいに見えるので
   ctx.textAlign = 'left';
 });
