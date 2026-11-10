@@ -270,7 +270,7 @@ TAIYOU1: {place_name}を入れた2行の詩、宮沢賢治風、比喩少し【�
 TAIYOU2: {place_name}を入れた3行の詩、宮沢賢治風、主観濃く【合計55文字以内】
 TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感じる【90〜120文字】
 ---
-条件: 各詩に天気の言葉(晴れ・曇り・雨・風・雪など)を1つだけ入れる。温度の数字(℃)は入れない。代わりに体感(熱い・過ごしやすい・涼しい・肌寒い・凍えそうなど)を使う。改行は詩の中では使わず、1行で書く。0番(からっと)は絶対に長くしない。20文字を超えたら切り捨てること。
+条件: 各詩に天気の言葉(晴れ・曇り・雨・風・雪など)を1つだけ入れる。温度の数字(℃)は入れない。代わりに体感(熱い・過ごしやすい・涼しい・肌寒い・凍えそうなど)を使う。改行は詩の中では使わず、1行で書く。0番(からっと)は絶対に長くしない。20文字を超えたら切り捨てること。文字数の注釈(19文字)や【】や※は、絶対に付けないこと。詩だけで、説明は付けないこと。
 """
     # 場所ごとに開始モデルをずらして、1つのモデルに集中しない (429分散)
     models = GEMINI_MODELS[loc_index % len(GEMINI_MODELS):] + GEMINI_MODELS[:loc_index % len(GEMINI_MODELS)]
@@ -302,15 +302,46 @@ TAIYOU3: {place_name}を入れた長めの1段落、宮沢賢治風、宇宙感�
             txt = r.json()["candidates"][0]["content"]["parts"][0]["text"]
             data = {"kyodatsu":{}, "taiyou":{}}
             import re as _re
-            # KYODATSU0: / KYODATSU 0: / KYODATSU-0: / **KYODATSU0** など全部拾う
-            for m in _re.finditer(r"(KYODATSU|TAIYOU)[\s\*\-\:]*([0-3])\s*[:：]\s*(.+)", txt, _re.IGNORECASE):
-                poet = "kyodatsu" if m.group(1).upper() == "KYODATSU" else "taiyou"
-                lvl = m.group(2)
-                val = m.group(3).strip().strip("*").strip()
-                # 改行が混ざっていたら1行にする
-                val = val.replace("\n", " ").strip()
+            # 行ごとに拾う – Gemini が途中で改行しても、次ヘッダーまで全部つなげる (札幌「昼の」だけバグの直し)
+            # KYODATSU0: / **KYODATSU0** / ・KYODATSU 1: など全部拾う
+            _header_re = _re.compile(r"^\s*(?:[\*・\-\s]*)(KYODATSU|TAIYOU)[\s\*\-\:]*([0-3])\s*[:：]\s*(.*)$", _re.IGNORECASE)
+            _cur = None  # (poet, lvl, parts)
+            def _flush():
+                if not _cur: return
+                poet, lvl, parts = _cur
+                val = " ".join(parts).strip().strip("*").strip()
+                # 先頭の「・」や引用符を取る
+                val = val.lstrip("・* \"'" + '"').strip()
+                # 末尾の注釈を取る – 福岡「(19文字)」バグの直し
+                val = _re.sub(r"\s*[（\(]\s*\d+\s*文字\s*[）\)]\s*$", "", val)
+                val = _re.sub(r"\s*【[^】]*】\s*$", "", val)
+                val = _re.sub(r"\s*\d+\s*文字\s*$", "", val)
+                val = _re.sub(r"\s*※.*$", "", val).strip()
+                # 風のラベルだけなら、詩として拾わない (大阪で起きた)
+                _clean = val.replace("・", "").replace(" ", "").strip()
+                if _clean in ("中原中也風", "宮沢賢治風", "中原中也風、", "宮沢賢治風、", "中原中也", "宮沢賢治"):
+                    print(f"skip {place_name} {poet}{lvl}: style label only '{val}'")
+                    return
+                # 短すぎて、地名も天気も無いものは、詩じゃないので拾わない
+                if len(val) < 8 and place_name not in val:
+                    print(f"skip {place_name} {poet}{lvl}: too short no place '{val}'")
+                    return
                 if val:
                     data[poet][lvl] = val
+            for _line in txt.splitlines():
+                _m = _header_re.match(_line.strip())
+                if _m:
+                    _flush()
+                    _poet = "kyodatsu" if _m.group(1).upper() == "KYODATSU" else "taiyou"
+                    _lvl = _m.group(2)
+                    _rest = _m.group(3).strip()
+                    _cur = (_poet, _lvl, [_rest] if _rest else [])
+                elif _cur:
+                    _t = _line.strip()
+                    # 次ヘッダーじゃない、空じゃない行は、続きとしてつなげる
+                    if _t and not _t.startswith("---"):
+                        _cur[2].append(_t)
+            _flush()
             # 0番が長い場合の切り詰め: からっとは短く (20文字+句点まで)
             for _poet in ["kyodatsu", "taiyou"]:
                 if data[_poet].get("0") and len(data[_poet]["0"]) > 28:
