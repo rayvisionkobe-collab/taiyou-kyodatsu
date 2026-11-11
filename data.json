@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-11T12:44:22.414147+09:00",
+  "updated_at": "2026-11-11T13:49:11.128034+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -17,8 +17,8 @@
           "3": "札幌の昼、まぶしい晴れ間の下で冷たい風が透明な大気をふるわせている。はるかな成層圏の果てまでひろがる青と白い雲の群れは、まぎれもなく銀河のひとひらの記憶であり、私たちはこのただなかに立ちつくしている。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-11T12:44:22.414147+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-11T13:49:11.128034+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "noon",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-11T12:44:22.414147+09:00",
+      "updated_at": "2026-11-11T13:49:11.128034+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "morning",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-11T12:44:22.414147+09:00",
+      "updated_at": "2026-11-11T13:49:11.128034+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "morning",
@@ -86,8 +86,8 @@
           "3": "那覇の昼下がり。天頂から降り注ぐ熱い光のシャワーのなかで、雲の破片が白く輝きながら太平洋の青い地平へと急ぐ。晴れ渡った大気の底を巨大な風の馬車が走り抜け、ぼくたちの頭上の無限の蒼穹から、宇宙の音楽が透明な波のように絶えず響いてくる。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-11T12:44:22.414147+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-11T13:49:11.128034+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "noon",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-11T12:44:22.414147+09:00",
+      "updated_at": "2026-11-11T13:49:11.128034+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "morning",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-11T12:44:22.414147+09:00",
+      "updated_at": "2026-11-11T13:49:11.128034+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "morning",
@@ -155,8 +155,8 @@
           "3": "仙台に、曇りの光が落ちている。昼下がり、海の向こうで風が渡ろうとしている。肌寒い光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "gemini-3.8-flash",
-      "updated_at": "2026-11-11T12:44:22.414147+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-11T13:49:11.128034+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-11T12:44:22.414147+09:00",
+      "updated_at": "2026-11-11T13:49:11.128034+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "morning",
@@ -201,8 +201,8 @@
           "3": "広島の晴れわたった昼、空の青は底知れぬ海のようだ。熱い風が吹き抜け、雲の綿毛が銀河の遠くへ流れていく。ぼくは大地に立ち、この美しすぎる光と風のなかで、大いなる宇宙の鼓動を全身に聴いている。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-11T12:44:22.414147+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-11T13:49:11.128034+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "noon",
