@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-12T07:43:07.521540+09:00",
+  "updated_at": "2026-11-12T08:41:15.378869+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-12T07:43:07.521540+09:00",
+      "updated_at": "2026-11-12T08:41:15.378869+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "noon",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-12T07:43:07.521540+09:00",
+      "updated_at": "2026-11-12T08:41:15.378869+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "morning",
@@ -63,8 +63,8 @@
           "3": "すがすがしい朝の風が吹き抜ける福岡の上空、夜明けの晴れわたった大気は黄金のりんぷんを散らし、ぼくたちはみんな星屑の子供としてこの明るい地上に立っているのだという透明なよろこびが、どうしようもなくあふれてくるのであります。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-12T07:43:07.521540+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-12T08:41:15.378869+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "morning",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-12T07:43:07.521540+09:00",
+      "updated_at": "2026-11-12T08:41:15.378869+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "noon",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-12T07:43:07.521540+09:00",
+      "updated_at": "2026-11-12T08:41:15.378869+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "morning",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-12T07:43:07.521540+09:00",
+      "updated_at": "2026-11-12T08:41:15.378869+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "morning",
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-12T07:43:07.521540+09:00",
+      "updated_at": "2026-11-12T08:41:15.378869+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "noon",
@@ -178,8 +178,8 @@
           "3": "名古屋の朝焼けが東の空から透明な光を放ち、冷たい風が稲の葉を揺らすなかで、ぼくは銀河のすきまを見上げる、すべての命が新しい朝を迎えるよろこびに満ちて、この大地の底から美しいうたが湧き上がるのだ"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-12T07:43:07.521540+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-12T08:41:15.378869+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "morning",
@@ -202,7 +202,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-12T07:43:07.521540+09:00",
+      "updated_at": "2026-11-12T08:41:15.378869+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-11",
       "poem_slot": "noon",
