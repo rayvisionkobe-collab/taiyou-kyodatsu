@@ -363,8 +363,10 @@ function cutAt2Maru(text){
 }
 function buildShareText(tab){
   const d = getShareData();
-  const tags = '#太陽の涙虚脱の空 #AI詩 #' + d.placeName;
-  const intro = '今日の' + d.placeName + 'の天気を詩にしました。';
+  // 2026-11-13 指定文面 – Instagram はこのまま、他はリンクが押せるので第2行だけ変える
+  // 場所は開いている場所に合わせる (神戸を開いていれば #神戸 になる)
+  const tags = '#太陽の涙虚脱の空 #詩 #天気 #' + d.placeName;
+  const intro = '今日のそらと僕のこころ…詩にしてみました。';
   // 詩入り画像で投稿するなら、テキストに詩は入れない (ダブるから)
   if(tab==='instagram'){
     // Instagram はリンクが押せない → プロフィールのリンクから
