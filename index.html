@@ -482,28 +482,46 @@ async function renderPoemImage(){
     if(_isNight || _isCloudy) _touch = 'mono'; // 夜・曇り → モノクロ + 粒子で、わざと
     // やまと絵風 – 西洋水彩の滲みじゃなく、ベタッと平らに、色を残す、汚くしない
     function _watercolorDraw(touch){
-      // 1) 1/3までしか小さくしない + 64刻み – 汚いベタにならない
+      // 1) 1/3までしか小さくしない – 汚いベタにならない
       const tmp = document.createElement('canvas');
       tmp.width = Math.max(1, Math.round(img.width/3)); tmp.height = Math.max(1, Math.round(img.height/3));
       const tctx = tmp.getContext('2d');
-      // モノクロにしない – 夜・曇りも、色を残す (彩度だけ少し落とす)
+      // 夜は、新版画の青と、灯りの黄に – モノクロにしない
       let _f = 'saturate(1.18) contrast(1.02) brightness(1.05)';
-      if(touch==='mono') _f = 'saturate(0.55) contrast(1.04) brightness(1.08)';
+      if(touch==='mono') _f = 'saturate(1.10) contrast(1.08) brightness(1.10)';
       if(touch==='vivid') _f = 'saturate(1.30) contrast(1.05) brightness(1.05)';
       try{ tctx.filter = _f; }catch(e){}
       tctx.drawImage(img, 0, 0, tmp.width, tmp.height);
       try{
         const id = tctx.getImageData(0,0,tmp.width,tmp.height);
         const d = id.data;
+        const _step = touch==='mono' ? 48 : 64;
         for(let i=0;i<d.length;i+=4){
-          // 64刻み – ベタすぎず、階調は残す
-          d[i]   = Math.round(d[i]/64)*64;
-          d[i+1] = Math.round(d[i+1]/64)*64;
-          d[i+2] = Math.round(d[i+2]/64)*64;
-          // やまと絵の色 – 青は少し群青に、肌・灯りは金に寄せる
-          // 青系なら、青を少し強く、赤系なら、赤を少し温かく
-          if(d[2] > d[0] + 20) d[2] = Math.min(255, d[2] + 12);
-          if(d[0] > 160 && d[1] > 120) { d[0] = Math.min(255, d[0] + 10); d[1] = Math.min(255, d[1] + 6); }
+          let r = Math.round(d[i]/_step)*_step;
+          let g = Math.round(d[i+1]/_step)*_step;
+          let b = Math.round(d[i+2]/_step)*_step;
+          if(touch==='mono'){
+            // 新版画の夜 – 明るさで、色を置き換える
+            const y = (r*0.299 + g*0.587 + b*0.114);
+            if(y > 175){
+              // 灯り・月 – 温かい黄に (窓・街灯・月が、黄色く光る)
+              r = 255; g = 208; b = 105;
+            } else if(y > 115){
+              // 中間 – 青緑がかった、くすんだ青
+              r = Math.round(r*0.55 + 45); g = Math.round(g*0.55 + 85); b = Math.round(b*0.55 + 130);
+            } else if(y > 55){
+              // 暗い空・建物 – 深い藍
+              r = Math.round(r*0.45 + 18); g = Math.round(g*0.45 + 38); b = Math.round(b*0.45 + 92);
+            } else {
+              // ほぼ黒 – 藍黒
+              r = Math.round(r*0.35 + 10); g = Math.round(g*0.35 + 18); b = Math.round(b*0.35 + 48);
+            }
+          } else {
+            // 昼・夕は、やまと絵の色 – 青は群青に、灯りは金に
+            if(b > r + 20) b = Math.min(255, b + 12);
+            if(r > 160 && g > 120) { r = Math.min(255, r + 10); g = Math.min(255, g + 6); }
+          }
+          d[i]=r; d[i+1]=g; d[i+2]=b;
         }
         tctx.putImageData(id, 0, 0);
       }catch(e){}
@@ -517,7 +535,16 @@ async function renderPoemImage(){
         ctx.drawImage(tmp, _drawX+1, _drawY+1, w, h);
         ctx.globalAlpha = 1; ctx.filter = 'none';
       }catch(e){ try{ ctx.globalAlpha = 1; ctx.filter = 'none'; }catch(e2){} }
-      // 4) 金泥っぽい、うっすら金 – 上から下に、ほんのり
+      // 4) 夜は、空に藍を重ねる – 新版画の空の深さ
+      if(touch==='mono'){
+        try{
+          const sky = ctx.createLinearGradient(0, 0, 0, ch*0.62);
+          sky.addColorStop(0, 'rgba(18,32,78,0.42)');
+          sky.addColorStop(1, 'rgba(18,32,78,0)');
+          ctx.fillStyle = sky; ctx.fillRect(0,0,cw,ch*0.62);
+        }catch(e){}
+      }
+      // 金泥っぽい、うっすら金 – 上から下に、ほんのり
       try{
         const gold = ctx.createLinearGradient(0, 0, 0, ch);
         gold.addColorStop(0, 'rgba(212,175,55,0.10)');
@@ -525,6 +552,14 @@ async function renderPoemImage(){
         gold.addColorStop(1, 'rgba(212,175,55,0.06)');
         ctx.fillStyle = gold; ctx.fillRect(0,0,cw,ch);
       }catch(e){}
+      // 木版の横線 – 版画の刷り目、ごく薄く
+      if(touch==='mono'){
+        try{
+          ctx.globalAlpha = 0.05; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1;
+          for(let yy=0; yy<ch; yy+=7){ ctx.beginPath(); ctx.moveTo(0, yy); ctx.lineTo(cw, yy); ctx.stroke(); }
+          ctx.globalAlpha = 1;
+        }catch(e){ try{ ctx.globalAlpha = 1; }catch(e2){} }
+      }
       // 5) 和紙は、ごく薄く – 白ノイズじゃなく、温かいベージュで、汚くしない
       try{
         const paper = document.createElement('canvas'); paper.width = 256; paper.height = 256;
