@@ -32,6 +32,7 @@ header h1{font-family:"Shippori Mincho B1",serif;font-size:14px;letter-spacing:0
 .labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
 .real{max-width:768px;margin:0 auto;padding:16px}
 .real-card{aspect-ratio:16/9;background:linear-gradient(180deg,#2a3a5a,#1c1917);border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+
 /* シェアボタン */
 .share-btn{width:100%;margin-top:14px;padding:11px;background:#f5f1e8;color:#1c1917;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
 .share-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:flex-end;justify-content:center;z-index:50}
@@ -48,6 +49,7 @@ header h1{font-family:"Shippori Mincho B1",serif;font-size:14px;letter-spacing:0
 .close-btn{background:transparent;color:#a8a29e;font-size:12px;margin-top:8px;width:100%;border:none;padding:8px}
 .share-note{font-size:11px;color:#a8a29e;margin-top:8px;line-height:1.5}
 footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
+
 /* v24: 詩をメインに */
 .poem-main{font-size:26px !important;line-height:1.9 !important;text-align:left !important;}
 @media(min-width:768px){
@@ -72,7 +74,9 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 <h1>太陽の涙、虚脱の空</h1>
 <div class="device"><button id="sp" class="active">スマホ</button><button id="tab">タブレット</button></div>
 </header>
+
 <div class="hero"><img src="hero.jpg" alt="hero"></div>
+
 <div class="poem-wrap" id="poemWrap">
   <div class="poem-card">
     <div class="poem-main" id="poemMain">読み込み中…</div>
@@ -95,7 +99,17 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
       </div>
       <button id="poemImgBtn" style="width:100%;margin-top:8px;padding:11px;background:#f5f1e8;color:#1c1917;border:none;border-radius:10px;font-size:13px;font-weight:700">✨ 詩入り画像を作る</button>
       <div id="poemImgWrap" style="display:none;margin-top:10px">
-        <canvas id="poemCanvas" width="1280" height="720" style="width:100%;border-radius:12px;background:#111"></canvas>
+        <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+          <div style="display:flex;background:#111;border-radius:20px;padding:3px;flex:1">
+            <button id="sizeInsta" style="flex:1;padding:7px 10px;border-radius:16px;border:none;background:#f5f1e8;color:#1c1917;font-size:12px;font-weight:700">インスタ縦 4:5</button>
+            <button id="sizeX" style="flex:1;padding:7px 10px;border-radius:16px;border:none;background:transparent;color:#a8a29e;font-size:12px">X / Threads 横</button>
+          </div>
+          <div style="display:flex;background:#111;border-radius:20px;padding:3px">
+            <button id="waterOn" style="padding:7px 12px;border-radius:16px;border:none;background:#f5f1e8;color:#1c1917;font-size:12px;font-weight:700">水彩 ON</button>
+            <button id="waterOff" style="padding:7px 12px;border-radius:16px;border:none;background:transparent;color:#a8a29e;font-size:12px">OFF</button>
+          </div>
+        </div>
+        <canvas id="poemCanvas" width="1080" height="1350" style="width:100%;border-radius:12px;background:#111"></canvas>
         <div class="share-actions" style="margin-top:8px">
           <button class="copy-btn" id="poemImgSave">💾 詩入り画像を保存</button>
           <button class="img-btn" id="poemImgShare">📱 詩入り画像でシェア</button>
@@ -107,12 +121,14 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
       <button class="close-btn" id="shareClose">閉じる</button>
     </div>
   </div>
+
   <div class="controls">
     <select id="placeSelect" class="select"></select>
     <div class="practical" id="practical">天気を取得中…</div>
     <div id="weatherTime" style="font-size:11px;color:#a8a29e;margin-top:2px;"></div>
   </div>
 </div>
+
 <div class="real">
   <div style="font-size:12px;color:#a8a29e;margin-bottom:6px;">ライブ静止画 ・ 30分おきに更新 <span id="liveUpdated"></span></div>
   <div class="real-card" id="realCard">
@@ -124,6 +140,8 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
   <button class="share-btn" id="shareBtn" style="margin-top:14px">↗ シェアする</button>
   <div style="font-size:11px;color:#a8a29e;margin-top:6px;text-align:center">今開いている画面の詩と画像をシェアします</div>
 </div>
+
+
 <div class="controls" id="bottomControls" style="margin-top:18px;border-top:1px solid #44403c;padding-top:14px;">
   <div class="toggle" id="poetToggle">
     <button data-poet="kyodatsu" class="active">虚脱の空</button>
@@ -134,8 +152,11 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
     <div class="labels"><span>からっと</span><span>ほどよく</span><span>こいめ</span><span>仙人級</span></div>
   </div>
 </div>
+
 <footer>出典：ウェザーニュース / Myライブカメラ © rayvisionkobe-collab / PWA template v1 / 背景は生成り #1c1917 温墨</footer>
+
 <script>
+
 // 「。」で改行 + 左寄せ用 – 「。」の後で改行する (最後の「。」の後は改行しない)
 function breakByMaru(text){
   if(!text) return text;
@@ -305,6 +326,7 @@ document.getElementById('poetToggle').addEventListener('click', e=>{
 });
 document.getElementById('sp').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='390px';document.getElementById('sp').classList.add('active');document.getElementById('tab').classList.remove('active')};
 document.getElementById('tab').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='768px';document.getElementById('tab').classList.add('active');document.getElementById('sp').classList.remove('active')};
+
 // ---- シェア ----
 let shareTab = 'instagram';
 const APP_URL = 'https://rayvisionkobe-collab.github.io/taiyou-kyodatsu/';
@@ -404,14 +426,21 @@ document.getElementById('imgBtn')?.addEventListener('click', async ()=>{
     const d = getShareData(); a.download = d.place + '-' + d.poet + '.jpg'; a.click();
   }catch(e){ window.open(url, '_blank'); }
 });
+
 // ---- 詩入り画像 ----
-document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
+let _shareSize = 'insta'; // insta: 1080x1350, x: 1280x720
+let _watercolor = true; // 軽い水彩 ON がデフォルト
+async function renderPoemImage(){
   const d = getShareData();
   const imgEl = document.getElementById('liveImg');
   const wrap = document.getElementById('poemImgWrap');
   wrap.style.display = 'block';
   const canvas = document.getElementById('poemCanvas');
   const ctx = canvas.getContext('2d');
+  const isVertical = _shareSize === 'insta';
+  const cw = isVertical ? 1080 : 1280;
+  const ch = isVertical ? 1350 : 720;
+  canvas.width = cw; canvas.height = ch;
   // 背景: ライブ画像 – シェアだけ、1280px を試す (640だと、引き伸ばしてぼやける)
   try{
     const img = new Image(); img.crossOrigin = 'anonymous';
@@ -420,26 +449,44 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
     if(_src.includes('/640/')) _src = _src.replace('/640/', '/1280/');
     img.src = _src;
     await new Promise((res, rej)=>{ img.onload=res; img.onerror=res; });
-    const cw=1280, ch=720;
     const scale = Math.max(cw/img.width, ch/img.height);
     const w = img.width*scale, h = img.height*scale;
-    // 詩の背景として、静かにする – 目立たせるのと逆
-    // 明るさ 0.88 / 彩度 0.75 / コントラスト 0.95 / ぼかし 2px
-    // 写真の主張を弱くして、詩を主役に。ぼかしで、640の粗さも目立たなくなる
-    try{ ctx.filter = 'brightness(0.88) saturate(0.75) contrast(0.95) blur(2px)'; }catch(e){}
-    ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
-    try{ ctx.filter = 'none'; }catch(e){}
+    // 水彩 ON: 軽く柔らかく – 低画質の粗さを、水彩の滲みに変える
+    // 水彩 OFF: 今までの静かな背景
+    if(_watercolor){
+      // 1) 小さく描いて、大きく戻す – 色を平らにして、絵っぽくする
+      const tmp = document.createElement('canvas');
+      tmp.width = Math.max(1, img.width/4|0); tmp.height = Math.max(1, img.height/4|0);
+      const tctx = tmp.getContext('2d');
+      try{ tctx.filter = 'brightness(1.02) saturate(1.25) contrast(1.02)'; }catch(e){}
+      tctx.drawImage(img, 0, 0, tmp.width, tmp.height);
+      try{ ctx.filter = 'brightness(0.92) saturate(0.95) contrast(0.98) blur(3px)'; }catch(e){}
+      ctx.drawImage(tmp, (cw-w)/2, (ch-h)/2, w, h);
+      try{ ctx.filter = 'none'; }catch(e){}
+      // 2) 紙の質感 – うっすらノイズで、水彩紙っぽく
+      try{
+        const paper = document.createElement('canvas'); paper.width = 256; paper.height = 256;
+        const pctx = paper.getContext('2d'); const id = pctx.createImageData(256,256);
+        for(let i=0;i<id.data.length;i+=4){ const v = 235 + Math.random()*20; id.data[i]=v; id.data[i+1]=v; id.data[i+2]=v-4; id.data[i+3]=14; }
+        pctx.putImageData(id, 0, 0);
+        const pat = ctx.createPattern(paper, 'repeat'); ctx.globalAlpha = 0.5; ctx.fillStyle = pat; ctx.fillRect(0,0,cw,ch); ctx.globalAlpha = 1;
+      }catch(e){}
+    } else {
+      try{ ctx.filter = 'brightness(0.88) saturate(0.75) contrast(0.95) blur(2px)'; }catch(e){}
+      ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
+      try{ ctx.filter = 'none'; }catch(e){}
+    }
     // 全体に、うっすら黒をかける – 詩が読める背景に
-    const bg = ctx.createLinearGradient(0, 0, 0, 720);
+    const bg = ctx.createLinearGradient(0, 0, 0, ch);
     bg.addColorStop(0, 'rgba(0,0,0,0.28)');
     bg.addColorStop(0.5, 'rgba(0,0,0,0.10)');
     bg.addColorStop(1, 'rgba(0,0,0,0.30)');
-    ctx.fillStyle = bg; ctx.fillRect(0,0,1280,720);
+    ctx.fillStyle = bg; ctx.fillRect(0,0,cw,ch);
     // 周りを、少し暗くして、詩を立たせる (ビネット)
-    const vig = ctx.createRadialGradient(640, 360, 320, 640, 360, 820);
+    const vig = ctx.createRadialGradient(cw/2, ch/2, Math.min(cw,ch)*0.35, cw/2, ch/2, Math.max(cw,ch)*0.75);
     vig.addColorStop(0, 'rgba(0,0,0,0)');
     vig.addColorStop(1, 'rgba(0,0,0,0.22)');
-    ctx.fillStyle = vig; ctx.fillRect(0,0,1280,720);
+    ctx.fillStyle = vig; ctx.fillRect(0,0,cw,ch);
   }catch(e){ ctx.fillStyle='#1c1917'; ctx.fillRect(0,0,1280,720); }
   // 薄い図形を透過で置くためのヘルパー (角丸)
   function roundRect(x, y, w, h, r){
@@ -467,10 +514,15 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
     if(b > 80) return 0.14;
     return 0.07;
   }
-  // 詩 – 左上・左寄せ・「。」で改行
+  // 詩 – 縦は大きく、横は今まで通り
   ctx.fillStyle = '#fff';
   ctx.textAlign = 'left';
   const raw = cutAt2Maru(d.poemFull);
+  const _poemFont = isVertical ? 48 : 40;
+  const _lineH = isVertical ? 78 : 68;
+  const _poemTop = isVertical ? 150 : 110;
+  const _leftX = isVertical ? 90 : 110;
+  const _maxChars = isVertical ? 11 : 12;
   const wrapped = [];
   {
     const noStart = new Set(['。','、','」','』','）','］','｝','〜','ー','…','・']);
@@ -483,7 +535,7 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
         if(noEnd.has(ch) && cur.length >= 12){ wrapped.push(cur); cur = ch; continue; }
         cur += ch;
         if(ch === '。'){ wrapped.push(cur); cur = ''; continue; }
-        if(cur.length >= 12){
+        if(cur.length >= _maxChars){
           // 禁則: 次が「。」や「、」なら、一緒にくっつける (「。」が次の行に1つだけ残らないように)
           while(i+1 < sent.length && noStart.has(sent[i+1])){
             i++; cur += sent[i];
@@ -496,13 +548,13 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
       if(cur) wrapped.push(cur);
     });
   }
-  // 詩の下に、薄い図形 – お手本通り、ほぼ透明に、位置は内側に
-  const leftX = 145; // 左上はそのまま
-  const poemTop = 145; // 上はそのまま
-  const poemLineH = 68; // 72 → 68 40pxに合わせて
-  const poemH = wrapped.length * poemLineH + 70; // 上下に余白
+  // 詩の下に、薄い図形 – 縦は大きく、横は今まで通り
+  const leftX = _leftX + 55;
+  const poemTop = _poemTop;
+  const poemLineH = _lineH;
+  const poemH = wrapped.length * poemLineH + 70;
   let maxLen = 0; wrapped.forEach(l=>{ if(l.length>maxLen) maxLen=l.length; });
-  const poemW = Math.min(1280-140, maxLen * 42 + 110); // 40pxに合わせて 44 → 42
+  const poemW = Math.min(cw-140, maxLen * (_poemFont+2) + 110);
   const poemBright = getBrightness(leftX-55, poemTop-55, poemW, poemH);
   const poemAlpha = alphaForBrightness(poemBright); // 朝は濃く、夜は薄く
   ctx.fillStyle = 'rgba(0,0,0,' + poemAlpha + ')';
@@ -510,7 +562,7 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   ctx.fill();
   // 詩を描く
   ctx.fillStyle = '#fff';
-  ctx.font = '400 40px "Shippori Mincho B1", serif'; // 42 → 40px 小さく
+  ctx.font = '400 ' + _poemFont + 'px "Shippori Mincho B1", serif';
   try{ ctx.letterSpacing = '3px'; }catch(e){}
   // 文字に影 – 朝(明るい)は強く、夜(暗い)は弱く
   const poemShadow = poemBright > 130 ? 0.65 : 0.4;
@@ -534,10 +586,10 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   const titleW = ctx.measureText(titleText).width;
   ctx.font = '400 18px "Shippori Mincho B1", serif'; // 24 → 18 小さく
   const weatherW = ctx.measureText(weatherLine).width;
-  const boxW = Math.max(titleW, weatherW) + 50; // 90 → 50 左右を詰める
-  const boxH = 82; // 125 → 82 上下を詰めてコンパクトに
-  const boxX = 1280 - boxW - 90; // 右から90px 対角はそのまま
-  const boxY = 470; // 455 → 470 下端 552 で建物の上
+  const boxW = Math.max(titleW, weatherW) + 50;
+  const boxH = 82;
+  const boxX = cw - boxW - (isVertical ? 70 : 90);
+  const boxY = isVertical ? ch - 220 : 470;
   const boxCenterX = boxX + boxW / 2;
   // 右下も、明るさで変える – 朝は濃く、夜は薄く (コンパクトはそのまま)
   const bottomBright = getBrightness(boxX, boxY, boxW, boxH);
@@ -553,16 +605,31 @@ document.getElementById('poemImgBtn')?.addEventListener('click', async ()=>{
   ctx.shadowOffsetY = 1;
   ctx.font = '400 22px "Shippori Mincho B1", serif'; // 28 → 22
   ctx.fillStyle = '#fff';
-  ctx.fillText(titleText, boxCenterX, 505); // 508 → 505
-  ctx.font = '400 18px "Shippori Mincho B1", serif'; // 24 → 18
+  ctx.fillText(titleText, boxCenterX, boxY + 35);
+  ctx.font = '400 18px "Shippori Mincho B1", serif';
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
-  ctx.fillText(weatherLine, boxCenterX, 532); // 550 → 532 行間 42 → 27 詰める
+  ctx.fillText(weatherLine, boxCenterX, boxY + 62);
   ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
   try{ ctx.letterSpacing = '0px'; }catch(e){}
   // 額縁は、やめる – 雰囲気を壊すので
   // アクセント線は、消す – マーカーみたいに見えるので
   ctx.textAlign = 'left';
-});
+}
+document.getElementById('poemImgBtn')?.addEventListener('click', ()=>{ renderPoemImage(); });
+function _setSizeBtn(){
+  const insta = document.getElementById('sizeInsta'), x = document.getElementById('sizeX');
+  if(!insta||!x) return;
+  const on = {background:'#f5f1e8', color:'#1c1917', fontWeight:'700'};
+  const off = {background:'transparent', color:'#a8a29e', fontWeight:'400'};
+  Object.assign(insta.style, _shareSize==='insta'?on:off);
+  Object.assign(x.style, _shareSize==='x'?on:off);
+  const won = document.getElementById('waterOn'), woff = document.getElementById('waterOff');
+  if(won&&woff){ Object.assign(won.style, _watercolor?on:off); Object.assign(woff.style, _watercolor?off:on); }
+}
+document.getElementById('sizeInsta')?.addEventListener('click', ()=>{ _shareSize='insta'; _setSizeBtn(); renderPoemImage(); });
+document.getElementById('sizeX')?.addEventListener('click', ()=>{ _shareSize='x'; _setSizeBtn(); renderPoemImage(); });
+document.getElementById('waterOn')?.addEventListener('click', ()=>{ _watercolor=true; _setSizeBtn(); renderPoemImage(); });
+document.getElementById('waterOff')?.addEventListener('click', ()=>{ _watercolor=false; _setSizeBtn(); renderPoemImage(); });
 document.getElementById('poemImgSave')?.addEventListener('click', ()=>{
   const canvas = document.getElementById('poemCanvas');
   const a = document.createElement('a');
@@ -583,6 +650,7 @@ document.getElementById('poemImgShare')?.addEventListener('click', async ()=>{
     }
   }catch(e){ console.log(e); }
 });
+
 document.getElementById('osShareBtn')?.addEventListener('click', async ()=>{
   const text = buildShareText(shareTab);
   const img = document.getElementById('liveImg');
@@ -598,7 +666,14 @@ document.getElementById('osShareBtn')?.addEventListener('click', async ()=>{
     } else { await navigator.clipboard.writeText(text); alert('コピーしました'); }
   }catch(e){ console.log('share cancel', e); }
 });
+
 document.addEventListener('DOMContentLoaded', init);
 </script>
+
+
+
+
+
+
 </body>
 </html>
