@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-13T07:37:51.945706+09:00",
+  "updated_at": "2026-11-13T08:34:16.347636+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T07:37:51.945706+09:00",
+      "updated_at": "2026-11-13T08:34:16.347636+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "noon",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T07:37:51.945706+09:00",
+      "updated_at": "2026-11-13T08:34:16.347636+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "morning",
@@ -63,8 +63,8 @@
           "3": "福岡の朝、曇り空の彼方から冷たい風が透明な光を運んでくる。夜明けの海原は銀貨のようにきらめき、電線は琴の弦のように鳴り響く。すべての命が朝焼けのなかで目覚め、歓喜のうたをうたい始めるのだ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-13T07:37:51.945706+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-13T08:34:16.347636+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "morning",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T07:37:51.945706+09:00",
+      "updated_at": "2026-11-13T08:34:16.347636+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "noon",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T07:37:51.945706+09:00",
+      "updated_at": "2026-11-13T08:34:16.347636+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "morning",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T07:37:51.945706+09:00",
+      "updated_at": "2026-11-13T08:34:16.347636+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "morning",
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T07:37:51.945706+09:00",
+      "updated_at": "2026-11-13T08:34:16.347636+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "noon",
@@ -178,8 +178,8 @@
           "3": "名古屋の朝、雲の群れは銀河の牧場の羊たちの群れ。晴れた青空のそのまた向こうから、透明な風が地球を撫で、すべての命に熱い祈りの種を蒔いていく"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-13T07:37:51.945706+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-13T08:34:16.347636+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "morning",
@@ -202,7 +202,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T07:37:51.945706+09:00",
+      "updated_at": "2026-11-13T08:34:16.347636+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "noon",
