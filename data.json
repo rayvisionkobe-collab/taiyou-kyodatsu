@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-12T12:43:54.673217+09:00",
+  "updated_at": "2026-11-12T13:49:27.491577+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -17,8 +17,8 @@
           "3": "札幌に、曇りの光が落ちている。昼下がり、海の向こうで風が渡ろうとしている。肌寒い光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-12T12:43:54.673217+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-12T13:49:27.491577+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "noon",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-12T12:43:54.673217+09:00",
+      "updated_at": "2026-11-12T13:49:27.491577+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "morning",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-12T12:43:54.673217+09:00",
+      "updated_at": "2026-11-12T13:49:27.491577+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "morning",
@@ -86,8 +86,8 @@
           "3": "那覇に、曇りの光が落ちている。昼下がり、海の向こうで風が渡ろうとしている。肌寒い光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "gemini-3.5-flash",
-      "updated_at": "2026-11-12T12:43:54.673217+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-12T13:49:27.491577+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "noon",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-12T12:43:54.673217+09:00",
+      "updated_at": "2026-11-12T13:49:27.491577+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "morning",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-12T12:43:54.673217+09:00",
+      "updated_at": "2026-11-12T13:49:27.491577+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "morning",
@@ -155,8 +155,8 @@
           "3": "仙台の曇った昼下がり、冷たい風が透明な光を運んでくる。大空の雲のすき間から、遠い星屑の記憶のような光が地上に降り注ぎ、街の屋根を銀色に染め上げる。風はどこまでも吹き抜け、すべての草木を優しく揺らしながら、永遠の時間を紡ぎだすのだ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-12T12:43:54.673217+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-12T13:49:27.491577+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-12T12:43:54.673217+09:00",
+      "updated_at": "2026-11-12T13:49:27.491577+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "morning",
@@ -201,8 +201,8 @@
           "3": "広島の昼下がり、澄んだ晴れ間の底から宇宙の匂いがする。熱い太陽の網目を通って、すべての命の粒がみんないきいきと跳ね回る。南十字の星座はみえないけれど、ぼくらはみんなひとつの大きな光の子供なのだ"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-12T12:43:54.673217+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-12T13:49:27.491577+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-12",
       "poem_slot": "noon",
