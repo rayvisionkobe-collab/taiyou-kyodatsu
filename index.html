@@ -451,28 +451,41 @@ async function renderPoemImage(){
     await new Promise((res, rej)=>{ img.onload=res; img.onerror=res; });
     const scale = Math.max(cw/img.width, ch/img.height);
     const w = img.width*scale, h = img.height*scale;
-    // 水彩 ON: 軽く柔らかく – 低画質の粗さを、水彩の滲みに変える
-    // 水彩 OFF: 今までの静かな背景
-    if(_watercolor){
-      // 1) 小さく描いて、大きく戻す – 色を平らにして、絵っぽくする
-      const tmp = document.createElement('canvas');
-      tmp.width = Math.max(1, img.width/4|0); tmp.height = Math.max(1, img.height/4|0);
-      const tctx = tmp.getContext('2d');
-      try{ tctx.filter = 'brightness(1.02) saturate(1.25) contrast(1.02)'; }catch(e){}
-      tctx.drawImage(img, 0, 0, tmp.width, tmp.height);
-      try{ ctx.filter = 'brightness(0.92) saturate(0.95) contrast(0.98) blur(3px)'; }catch(e){}
-      ctx.drawImage(tmp, (cw-w)/2, (ch-h)/2, w, h);
+    // タッチを、天気・時間で変える – 1つのフィルターで、全部同じにしない
+    const _hour = new Date().getHours();
+    const _weatherTxt = (document.getElementById('practical')?.textContent || '');
+    const _isSunset = (_hour >= 16 && _hour <= 19) || (_hour >= 5 && _hour <= 7);
+    const _isNight = _hour >= 20 || _hour <= 4;
+    const _isCloudy = _weatherTxt.includes('曇') || _weatherTxt.includes('雨');
+    let _touch = 'bright'; // 晴・青空
+    if(_isSunset) _touch = 'vivid'; // 朝焼け・夕焼け
+    if(_isNight || _isCloudy) _touch = 'mono'; // 夜・曇り → モノクロ + 粒子で、わざと
+    // 水彩 OFF なら、旧来の静かな背景 (比較用)
+    if(!_watercolor){
+      try{ ctx.filter = 'brightness(0.88) saturate(0.75) contrast(0.95) blur(2px)'; }catch(e){}
+      ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
       try{ ctx.filter = 'none'; }catch(e){}
-      // 2) 紙の質感 – うっすらノイズで、水彩紙っぽく
+    } else if(_touch === 'vivid'){
+      // 朝焼け・夕焼け: 鮮やかに、ぼかし弱く – オレンジと青を、はっきり
+      try{ ctx.filter = 'saturate(1.45) contrast(1.15) brightness(1.05) blur(1px)'; }catch(e){}
+      ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
+      try{ ctx.filter = 'none'; }catch(e){}
+    } else if(_touch === 'mono'){
+      // 夜・曇り: モノクロ + 粒子 – グレーだから仕方なく、じゃなくて、わざとモノクロ
+      try{ ctx.filter = 'grayscale(1) contrast(1.12) brightness(0.92) blur(1px)'; }catch(e){}
+      ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
+      try{ ctx.filter = 'none'; }catch(e){}
+      // フィルムの粒子
       try{
-        const paper = document.createElement('canvas'); paper.width = 256; paper.height = 256;
-        const pctx = paper.getContext('2d'); const id = pctx.createImageData(256,256);
-        for(let i=0;i<id.data.length;i+=4){ const v = 235 + Math.random()*20; id.data[i]=v; id.data[i+1]=v; id.data[i+2]=v-4; id.data[i+3]=14; }
-        pctx.putImageData(id, 0, 0);
-        const pat = ctx.createPattern(paper, 'repeat'); ctx.globalAlpha = 0.5; ctx.fillStyle = pat; ctx.fillRect(0,0,cw,ch); ctx.globalAlpha = 1;
+        const gr = document.createElement('canvas'); gr.width = 256; gr.height = 256;
+        const gctx = gr.getContext('2d'); const id = gctx.createImageData(256,256);
+        for(let i=0;i<id.data.length;i+=4){ const v = Math.random()*255; id.data[i]=v; id.data[i+1]=v; id.data[i+2]=v; id.data[i+3]=10; }
+        gctx.putImageData(id, 0, 0);
+        const pat = ctx.createPattern(gr, 'repeat'); ctx.globalAlpha = 0.6; ctx.fillStyle = pat; ctx.fillRect(0,0,cw,ch); ctx.globalAlpha = 1;
       }catch(e){}
     } else {
-      try{ ctx.filter = 'brightness(0.88) saturate(0.75) contrast(0.95) blur(2px)'; }catch(e){}
+      // 晴・青空: 明るく、青を残す
+      try{ ctx.filter = 'saturate(1.25) brightness(1.08) contrast(1.05) blur(1px)'; }catch(e){}
       ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
       try{ ctx.filter = 'none'; }catch(e){}
     }
@@ -518,6 +531,8 @@ async function renderPoemImage(){
   ctx.fillStyle = '#fff';
   ctx.textAlign = 'left';
   const raw = cutAt2Maru(d.poemFull);
+  // フレーズ改行: 「。」と「、」で切る – 11文字で割らない
+  // 例: 「誰にも知られず、泣いた / 夜がある。」みたいに、言葉で切る
   const _poemFont = isVertical ? 48 : 40;
   const _lineH = isVertical ? 78 : 68;
   const _poemTop = isVertical ? 150 : 110;
@@ -548,6 +563,27 @@ async function renderPoemImage(){
       if(cur) wrapped.push(cur);
     });
   }
+  // フレーズ改行に、上書き – 長い文は「、」で分け、短い文はそのまま
+  {
+    const _phrases = [];
+    raw.split('。').filter(s=>s.trim()!=='').forEach(sent=>{
+      const s = sent + '。';
+      // 「、」で分けて、14文字くらいまで、くっつける
+      const parts = s.split('、');
+      let cur = '';
+      parts.forEach((p, idx)=>{
+        const add = (idx===0? '' : '、') + p + (idx===parts.length-1? '' : '');
+        // 最後の文は「。」が既に入ってるので、調整
+        let piece = (idx===0? '' : '、') + p;
+        if(idx===parts.length-1) piece += '。';
+        if((cur + piece).length <= 14 || cur===''){ cur += piece; }
+        else { _phrases.push(cur); cur = piece; }
+      });
+      if(cur) _phrases.push(cur);
+    });
+    // _phrases ができたら、wrapped を置き換える
+    if(_phrases.length){ wrapped.length = 0; _phrases.forEach(p=>wrapped.push(p)); }
+  }
   // 詩の下に、薄い図形 – 縦は大きく、横は今まで通り
   const leftX = _leftX + 55;
   const poemTop = _poemTop;
@@ -556,10 +592,9 @@ async function renderPoemImage(){
   let maxLen = 0; wrapped.forEach(l=>{ if(l.length>maxLen) maxLen=l.length; });
   const poemW = Math.min(cw-140, maxLen * (_poemFont+2) + 110);
   const poemBright = getBrightness(leftX-55, poemTop-55, poemW, poemH);
-  const poemAlpha = alphaForBrightness(poemBright); // 朝は濃く、夜は薄く
-  ctx.fillStyle = 'rgba(0,0,0,' + poemAlpha + ')';
-  roundRect(leftX-55, poemTop-55, poemW, poemH, 18);
-  ctx.fill();
+  // 箱は、消す – 5枚の参考通り、文字に影だけで、写真の上に直接載せる
+  // const poemAlpha = alphaForBrightness(poemBright);
+  // roundRect(...); ctx.fill();
   // 詩を描く
   ctx.fillStyle = '#fff';
   ctx.font = '400 ' + _poemFont + 'px "Shippori Mincho B1", serif';
