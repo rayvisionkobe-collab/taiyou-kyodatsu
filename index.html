@@ -105,7 +105,7 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
             <button id="sizeX" style="flex:1;padding:7px 10px;border-radius:16px;border:none;background:transparent;color:#a8a29e;font-size:12px">X / Threads 横</button>
           </div>
           <div style="display:flex;background:#111;border-radius:20px;padding:3px">
-            <button id="waterOn" style="padding:7px 12px;border-radius:16px;border:none;background:#f5f1e8;color:#1c1917;font-size:12px;font-weight:700">水彩 ON</button>
+            <button id="waterOn" style="padding:7px 12px;border-radius:16px;border:none;background:#f5f1e8;color:#1c1917;font-size:12px;font-weight:700">やまと絵 ON</button>
             <button id="waterOff" style="padding:7px 12px;border-radius:16px;border:none;background:transparent;color:#a8a29e;font-size:12px">OFF</button>
           </div>
         </div>
@@ -480,45 +480,61 @@ async function renderPoemImage(){
     let _touch = 'bright'; // 晴・青空
     if(_isSunset) _touch = 'vivid'; // 朝焼け・夕焼け
     if(_isNight || _isCloudy) _touch = 'mono'; // 夜・曇り → モノクロ + 粒子で、わざと
-    // 水彩を、もっと水彩っぽく – 色を減らす + 滲ませる + 紙の質感を強く
+    // やまと絵風 – 西洋水彩の滲みじゃなく、ベタッと平らに、色を残す、汚くしない
     function _watercolorDraw(touch){
-      // 1) 小さくして、色数を減らす (ポスタライズ) – ベタッとした水彩の色に
+      // 1) 1/3までしか小さくしない + 64刻み – 汚いベタにならない
       const tmp = document.createElement('canvas');
-      tmp.width = Math.max(1, Math.round(img.width/6)); tmp.height = Math.max(1, Math.round(img.height/6));
+      tmp.width = Math.max(1, Math.round(img.width/3)); tmp.height = Math.max(1, Math.round(img.height/3));
       const tctx = tmp.getContext('2d');
-      try{ tctx.filter = touch==='mono' ? 'grayscale(1) contrast(1.05) brightness(0.95)' : 'saturate(1.3) contrast(1.02) brightness(1.04)'; }catch(e){}
+      // モノクロにしない – 夜・曇りも、色を残す (彩度だけ少し落とす)
+      let _f = 'saturate(1.18) contrast(1.02) brightness(1.05)';
+      if(touch==='mono') _f = 'saturate(0.55) contrast(1.04) brightness(1.08)';
+      if(touch==='vivid') _f = 'saturate(1.30) contrast(1.05) brightness(1.05)';
+      try{ tctx.filter = _f; }catch(e){}
       tctx.drawImage(img, 0, 0, tmp.width, tmp.height);
       try{
         const id = tctx.getImageData(0,0,tmp.width,tmp.height);
         const d = id.data;
         for(let i=0;i<d.length;i+=4){
-          // 32刻みに減らす – 色がベタになる
-          d[i]   = Math.round(d[i]/32)*32;
-          d[i+1] = Math.round(d[i+1]/32)*32;
-          d[i+2] = Math.round(d[i+2]/32)*32;
+          // 64刻み – ベタすぎず、階調は残す
+          d[i]   = Math.round(d[i]/64)*64;
+          d[i+1] = Math.round(d[i+1]/64)*64;
+          d[i+2] = Math.round(d[i+2]/64)*64;
+          // やまと絵の色 – 青は少し群青に、肌・灯りは金に寄せる
+          // 青系なら、青を少し強く、赤系なら、赤を少し温かく
+          if(d[2] > d[0] + 20) d[2] = Math.min(255, d[2] + 12);
+          if(d[0] > 160 && d[1] > 120) { d[0] = Math.min(255, d[0] + 10); d[1] = Math.min(255, d[1] + 6); }
         }
         tctx.putImageData(id, 0, 0);
       }catch(e){}
-      // 2) 大きく戻すときに、ぼかして、滲ませる
-      try{ ctx.filter = 'blur(2.5px) ' + (touch==='mono' ? 'grayscale(1) brightness(1.02)' : 'saturate(1.35) brightness(1.05) contrast(0.98)'); }catch(e){}
+      // 2) ぼかしは、ほんの少し (0.8px) – 輪郭を残す、やまと絵は平らで、輪郭がはっきり
+      try{ ctx.filter = 'blur(0.8px) ' + (touch==='mono' ? 'saturate(0.60) brightness(1.06)' : 'saturate(1.20) brightness(1.05) contrast(0.99)'); }catch(e){}
       ctx.drawImage(tmp, _drawX, _drawY, w, h);
       try{ ctx.filter = 'none'; }catch(e){}
-      // 3) もう1回、ずらして薄く重ねる – 水彩の滲み
+      // 3) 滲みは、ごく薄く – 1pxずらして、0.10だけ
       try{
-        ctx.globalAlpha = 0.28; ctx.filter = 'blur(6px)';
-        ctx.drawImage(tmp, _drawX+3, _drawY+2, w, h);
+        ctx.globalAlpha = 0.10; ctx.filter = 'blur(3px)';
+        ctx.drawImage(tmp, _drawX+1, _drawY+1, w, h);
         ctx.globalAlpha = 1; ctx.filter = 'none';
       }catch(e){ try{ ctx.globalAlpha = 1; ctx.filter = 'none'; }catch(e2){} }
-      // 4) 紙の質感を、強く – 白っぽいノイズで、水彩紙に
+      // 4) 金泥っぽい、うっすら金 – 上から下に、ほんのり
+      try{
+        const gold = ctx.createLinearGradient(0, 0, 0, ch);
+        gold.addColorStop(0, 'rgba(212,175,55,0.10)');
+        gold.addColorStop(0.25, 'rgba(212,175,55,0.03)');
+        gold.addColorStop(1, 'rgba(212,175,55,0.06)');
+        ctx.fillStyle = gold; ctx.fillRect(0,0,cw,ch);
+      }catch(e){}
+      // 5) 和紙は、ごく薄く – 白ノイズじゃなく、温かいベージュで、汚くしない
       try{
         const paper = document.createElement('canvas'); paper.width = 256; paper.height = 256;
         const pctx = paper.getContext('2d'); const pid = pctx.createImageData(256,256);
         for(let i=0;i<pid.data.length;i+=4){
-          const v = 240 + Math.random()*22; pid.data[i]=v; pid.data[i+1]=v; pid.data[i+2]=v-6; pid.data[i+3]=28;
+          const v = 246 + Math.random()*8; pid.data[i]=v; pid.data[i+1]=v-4; pid.data[i+2]=v-18; pid.data[i+3]=12;
         }
         pctx.putImageData(pid, 0, 0);
         const pat = ctx.createPattern(paper, 'repeat');
-        ctx.globalAlpha = 0.55; ctx.fillStyle = pat; ctx.fillRect(0,0,cw,ch); ctx.globalAlpha = 1;
+        ctx.globalAlpha = 0.28; ctx.fillStyle = pat; ctx.fillRect(0,0,cw,ch); ctx.globalAlpha = 1;
       }catch(e){}
     }
     if(!_watercolor){
