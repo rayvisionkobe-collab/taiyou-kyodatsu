@@ -350,7 +350,8 @@ function getShareData(){
 }
 // SNS画像専用 – 「。」2つまでで切る (「、」は数えない。本体の詩は切らない)
 function cutAt2Maru(text){
-  const clean = (text||'').replace(/\n/g, '');
+  // 「。。」を1つと数える – 「歩く。。」で、2文と数えないように
+  const clean = (text||'').replace(/\n/g, '').replace(/。\s*。+/g, '。').replace(/、\s*、+/g, '、');
   let count = 0;
   for(let i=0; i<clean.length; i++){
     if(clean[i]==='。'){
@@ -594,8 +595,10 @@ async function renderPoemImage(){
         if(cur){ _phrases.push(cur); cur=''; }
       };
       parts.forEach((p, idx)=>{
-        // piece = フレーズ + (最後以外は「、」を付ける)
-        let piece = p + (idx < parts.length-1 ? '、' : '。');
+        // piece = フレーズ + (最後以外は「、」を付ける) – 最後は、既に「。」があるなら、付けない (「。。」の原因)
+        let piece = p;
+        if(idx < parts.length-1) piece += '、';
+        else if(!piece.endsWith('。')) piece += '。';
         // piece 自体が長すぎたら、_max で切る – 「、」「。」が頭に来ないように
         while(piece.length > _max){
           const take = _max - cur.length;
