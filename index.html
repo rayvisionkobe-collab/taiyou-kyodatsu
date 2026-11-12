@@ -563,26 +563,55 @@ async function renderPoemImage(){
       if(cur) wrapped.push(cur);
     });
   }
-  // フレーズ改行に、上書き – 長い文は「、」で分け、短い文はそのまま
+  // フレーズ改行に、上書き – 「、」は行頭に来ない、「。」は1つだけ、右端で切れない
   {
+    // 1) クリーニング: 「。。」→「。」、「、、」→「、」
+    const clean = raw.replace(/。+/g, '。').replace(/、+/g, '、');
     const _phrases = [];
-    raw.split('。').filter(s=>s.trim()!=='').forEach(sent=>{
+    const _max = _maxChars; // 縦11 / 横12
+    // 2) まず「。」で文に分け、次に「、」でフレーズに分け、14文字を超えたら、さらに切る
+    clean.split('。').filter(s=>s.trim()!=='').forEach(sent=>{
       const s = sent + '。';
-      // 「、」で分けて、14文字くらいまで、くっつける
+      // 「、」で分ける – 「、」は前のフレーズの末尾に残す
       const parts = s.split('、');
       let cur = '';
+      const pushCur = ()=>{
+        if(cur){ _phrases.push(cur); cur=''; }
+      };
       parts.forEach((p, idx)=>{
-        const add = (idx===0? '' : '、') + p + (idx===parts.length-1? '' : '');
-        // 最後の文は「。」が既に入ってるので、調整
-        let piece = (idx===0? '' : '、') + p;
-        if(idx===parts.length-1) piece += '。';
-        if((cur + piece).length <= 14 || cur===''){ cur += piece; }
-        else { _phrases.push(cur); cur = piece; }
+        // piece = フレーズ + (最後以外は「、」を付ける)
+        let piece = p + (idx < parts.length-1 ? '、' : '。');
+        // piece 自体が長すぎたら、_max で切る – 「、」「。」が頭に来ないように
+        while(piece.length > _max){
+          const take = _max - cur.length;
+          if(take <= 0){ pushCur(); continue; }
+          let chunk = piece.slice(0, take);
+          // 禁則: chunk の最後が「「『（」なら、1つ手前で切る
+          while(chunk.length>1 && ['「','『','（','［','｛'].includes(chunk[chunk.length-1])) chunk = chunk.slice(0,-1);
+          cur += chunk; piece = piece.slice(chunk.length);
+          pushCur();
+        }
+        if((cur + piece).length <= _max){ cur += piece; }
+        else { pushCur(); cur = piece; }
       });
-      if(cur) _phrases.push(cur);
+      pushCur();
     });
-    // _phrases ができたら、wrapped を置き換える
     if(_phrases.length){ wrapped.length = 0; _phrases.forEach(p=>wrapped.push(p)); }
+    // 3) 念のため、幅でチェック – 測って、はみ出たら、切る
+    try{
+      const _cw2 = isVertical ? 1080 : 1280;
+      const _limit = _cw2 - 180;
+      for(let i=0;i<wrapped.length;i++){
+        while(ctx.measureText(wrapped[i]).width > _limit && wrapped[i].length > 1){
+          const over = wrapped[i];
+          // 後ろから、_max まで戻して、次の行へ
+          const cut = over.slice(0, _max);
+          wrapped[i] = cut;
+          wrapped.splice(i+1, 0, over.slice(_max));
+          i++; break;
+        }
+      }
+    }catch(e){}
   }
   // 詩の下に、薄い図形 – 縦は大きく、横は今まで通り
   const leftX = _leftX + 55;
