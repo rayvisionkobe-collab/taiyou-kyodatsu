@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-13T12:44:46.477508+09:00",
+  "updated_at": "2026-11-13T13:49:46.498079+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -17,8 +17,8 @@
           "3": "札幌の明るい昼下がり、すきとおる大気の底から光の粉が降り注ぐ。地平の果てまでつづく青い宇宙のひろがりの中で、ぼくたちの小さな足音もまっすぐな光の矢に包まれて遠くへ消えていく。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-13T12:44:46.477508+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-13T13:49:46.498079+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "noon",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T12:44:46.477508+09:00",
+      "updated_at": "2026-11-13T13:49:46.498079+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "morning",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T12:44:46.477508+09:00",
+      "updated_at": "2026-11-13T13:49:46.498079+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "morning",
@@ -86,8 +86,8 @@
           "3": "那覇の昼下がり、銀河のきらめきを宿した晴れた大空から、冷たい風がすべての草木に語りかける。透明な光の粒子が宇宙の意志を運ぶとき、私たちはみなひとつの大きな呼吸のなかにいるのだ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-13T12:44:46.477508+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-13T13:49:46.498079+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "noon",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T12:44:46.477508+09:00",
+      "updated_at": "2026-11-13T13:49:46.498079+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "morning",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T12:44:46.477508+09:00",
+      "updated_at": "2026-11-13T13:49:46.498079+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "morning",
@@ -155,8 +155,8 @@
           "3": "仙台の透明な晴れわたった昼、銀河のきらめきを映したような青空の下で、心地よい風がすべての命を優しく包み込み、光と影の踊る街の広大ないとなみを遠くから見つめている。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-13T12:44:46.477508+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-13T13:49:46.498079+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T12:44:46.477508+09:00",
+      "updated_at": "2026-11-13T13:49:46.498079+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "morning",
@@ -201,8 +201,8 @@
           "3": "広島の昼下がり、あまねく光はすべての草木にミルクをあたえ、遠い銀河のうねりのなかで青空の風はつねに新しくめぐり、私たちはみなひとつの大きな命のただなかでめいっぱい息をするのだ"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-13T12:44:46.477508+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-13T13:49:46.498079+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "noon",
