@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-13T18:50:11.186250+09:00",
+  "updated_at": "2026-11-13T19:50:33.746982+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T18:50:11.186250+09:00",
+      "updated_at": "2026-11-13T19:50:33.746982+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "noon",
@@ -40,8 +40,8 @@
           "3": "東京の夕方から夜へと移る蒼い空の、そのはるか遠くの銀河系から、冷たい風が地上へ降り注ぐ。晴れ渡った大気の底で、無数のビルの灯りはまるで地上の星座のようにつばめのようにまたたく。すべての命がこの透明な大気の中で美しく呼吸をし、ぼくは宇宙の大きな鼓動をその足裏で確かに感じるのだ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-13T18:50:11.186250+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-13T19:50:33.746982+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "evening",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T18:50:11.186250+09:00",
+      "updated_at": "2026-11-13T19:50:33.746982+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "morning",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T18:50:11.186250+09:00",
+      "updated_at": "2026-11-13T19:50:33.746982+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "noon",
@@ -109,8 +109,8 @@
           "3": "すみきった夜の神戸の空には風が吹き、銀河のきらめきが橋の灯火ととけあう。夕暮れの余韻をうけたすべてのものが美しく、ぼくらはみんな透明な青い光の粒なのだ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-13T18:50:11.186250+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-13T19:50:33.746982+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "evening",
@@ -132,8 +132,8 @@
           "3": "すべての晴れた夕暮れの果て、大阪の街のあちこちで、電燈の硝子が青い風を吸い込み、冷たい宇宙の匂いを放ちながら、それぞれに点滅しているのがきれいだなあと思う。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-13T18:50:11.186250+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-13T19:50:33.746982+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "evening",
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T18:50:11.186250+09:00",
+      "updated_at": "2026-11-13T19:50:33.746982+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T18:50:11.186250+09:00",
+      "updated_at": "2026-11-13T19:50:33.746982+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "morning",
@@ -202,7 +202,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-13T18:50:11.186250+09:00",
+      "updated_at": "2026-11-13T19:50:33.746982+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-13",
       "poem_slot": "noon",
