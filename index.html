@@ -1,27 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head><style>
-@font-face {
-  font-family: "Optimistic";
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Optimistic Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
-}
-:where(html) {
-  font-family: "Optimistic", system-ui, sans-serif;
-}
-:where(code, pre, kbd, samp) {
-  font-family: "Optimistic Mono", ui-monospace, monospace;
-}
-</style>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>太陽の涙、虚脱の空</title>
@@ -519,7 +498,7 @@ async function renderPoemImage(){
     function _watercolorDraw(touch){
       // 1) 1/3までしか小さくしない – 汚いベタにならない
       const tmp = document.createElement('canvas');
-      tmp.width = Math.max(1, Math.round(img.width/3)); tmp.height = Math.max(1, Math.round(img.height/3));
+      tmp.width = Math.max(1, Math.round(img.width/2)); tmp.height = Math.max(1, Math.round(img.height/2));
       const tctx = tmp.getContext('2d');
       // 夜は、新版画の青と、灯りの黄に – モノクロにしない
       let _f = 'saturate(1.18) contrast(1.02) brightness(1.05)';
@@ -527,55 +506,42 @@ async function renderPoemImage(){
       if(touch==='vivid') _f = 'saturate(1.30) contrast(1.05) brightness(1.05)';
       try{ tctx.filter = _f; }catch(e){}
       tctx.drawImage(img, 0, 0, tmp.width, tmp.height);
+      // ポスタライズは、やめる – ブロックでガタガタになる原因
+      // 色は、細かく残す。やまと絵は、色を減らすんじゃなく、色を整えるだけ
       try{
         const id = tctx.getImageData(0,0,tmp.width,tmp.height);
         const d = id.data;
-        const _step = touch==='mono' ? 48 : 64;
         for(let i=0;i<d.length;i+=4){
-          let r = Math.round(d[i]/_step)*_step;
-          let g = Math.round(d[i+1]/_step)*_step;
-          let b = Math.round(d[i+2]/_step)*_step;
+          let r = d[i];
+          let g = d[i+1];
+          let b = d[i+2];
           if(touch==='mono'){
-            // 新版画の夜 – 明るさで、色を置き換える
+            // 夜は、置き換えじゃなく、寄せるだけ – ブロックにしない
             const y = (r*0.299 + g*0.587 + b*0.114);
             if(y > 175){
-              // 灯り・月 – 温かい黄に (窓・街灯・月が、黄色く光る)
-              r = 255; g = 208; b = 105;
-            } else if(y > 115){
-              // 中間 – 青緑がかった、くすんだ青
-              r = Math.round(r*0.55 + 45); g = Math.round(g*0.55 + 85); b = Math.round(b*0.55 + 130);
+              // 灯りは、少しだけ黄に寄せる (元の色を、半分残す)
+              r = Math.round(r*0.5 + 255*0.5); g = Math.round(g*0.5 + 208*0.5); b = Math.round(b*0.5 + 105*0.5);
             } else if(y > 55){
-              // 暗い空・建物 – 深い藍
-              r = Math.round(r*0.45 + 18); g = Math.round(g*0.45 + 38); b = Math.round(b*0.45 + 92);
+              // 空・建物は、少しだけ藍に寄せる
+              r = Math.round(r*0.8 + 20*0.2); g = Math.round(g*0.8 + 40*0.2); b = Math.round(b*0.8 + 90*0.2);
             } else {
-              // ほぼ黒 – 藍黒
-              r = Math.round(r*0.35 + 10); g = Math.round(g*0.35 + 18); b = Math.round(b*0.35 + 48);
+              r = Math.round(r*0.85 + 12*0.15); g = Math.round(g*0.85 + 20*0.15); b = Math.round(b*0.85 + 50*0.15);
             }
           } else {
-            // 昼・夕は、やまと絵の色 – 青は、くすませない
+            // 青は、そのまま – 足さない、引かない。せっかくの青を、いじらない
             if(b > r + 15){
-              // 青系は、細かく残す (64刻みじゃなく、16刻み) + 青を鮮やかに
-              // 64刻みで、既に丸められた b を、元に近づける
-              b = Math.min(255, b + 22);
-              g = Math.min(255, g + 6);
-              r = Math.max(0, r - 10);
-              // くすみの原因は、黄とベージュなので、青には、黄を足さない
-            } else if(r > 160 && g > 120) { r = Math.min(255, r + 10); g = Math.min(255, g + 6); }
+              // 何もしない – 青の美しさは、元画像のまま
+            } else if(r > 160 && g > 120) { r = Math.min(255, r + 6); g = Math.min(255, g + 3); }
           }
           d[i]=r; d[i+1]=g; d[i+2]=b;
         }
         tctx.putImageData(id, 0, 0);
       }catch(e){}
       // 2) ぼかしは、ほんの少し (0.8px) – 輪郭を残す、やまと絵は平らで、輪郭がはっきり
-      try{ ctx.filter = 'blur(0.8px) ' + (touch==='mono' ? 'saturate(0.60) brightness(1.06)' : 'saturate(1.28) brightness(1.07) contrast(1.00)'); }catch(e){}
+      try{ ctx.filter = 'blur(0.4px) ' + (touch==='mono' ? 'saturate(0.60) brightness(1.06)' : 'saturate(1.12) brightness(1.04) contrast(1.00)'); }catch(e){}
       ctx.drawImage(tmp, _drawX, _drawY, w, h);
       try{ ctx.filter = 'none'; }catch(e){}
-      // 3) 滲みは、ごく薄く – 1pxずらして、0.10だけ
-      try{
-        ctx.globalAlpha = 0.10; ctx.filter = 'blur(3px)';
-        ctx.drawImage(tmp, _drawX+1, _drawY+1, w, h);
-        ctx.globalAlpha = 1; ctx.filter = 'none';
-      }catch(e){ try{ ctx.globalAlpha = 1; ctx.filter = 'none'; }catch(e2){} }
+      // 3) 滲みの重ねは、なし – ブロックを、さらに汚くしてた
       // 4) 夜は、空に藍を重ねる – 新版画の空の深さ
       if(touch==='mono'){
         try{
@@ -961,5 +927,5 @@ document.addEventListener('DOMContentLoaded', init);
 
 
 
-<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
+</body>
 </html>
