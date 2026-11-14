@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-14T18:37:09.506241+09:00",
+  "updated_at": "2026-11-14T19:14:49.186884+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -96,25 +96,21 @@
     "kobe": {
       "image": "images/kobe.jpg",
       "poems": {
-        "kyodatsu": {
-          "0": "夕暮れの神戸、曇り夜に泣く。",
-          "1": "夕方の神戸の曇り空。ぼくは冷たい夜を歩く。",
-          "2": "夜の神戸は曇り。夕暮れの水たまりがぼくの心を汚す。",
-          "3": "曇りの夕方に神戸の街をさまよう夜の記憶、夕暮れの冷たい風が古いコートの襟を鳴らすのはなぜか。"
-        },
-        "taiyou": {
-          "0": "夕方の神戸、晴れ風が光る。",
-          "1": "夜の神戸は晴れ。夕暮れの空は透明な羊の群れ。",
-          "2": "夕方の神戸、晴れわたる夜。ぼくは光の粒を拾う。",
-          "3": "晴れた夕方の神戸の上を巡る夜の銀河、夕暮れの風が草の葉を揺らしながら遠い宇宙の歌をうたっている。"
-        }
+        "KYODATSU0": "神戸の曇り空、肌寒い夕方でも灯りは温かい"
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-14T18:37:09.506241+09:00",
+      "model": "manual-gemini",
+      "updated_at": "2026-11-14T19:14:49.186884+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-14",
       "poem_slot": "evening",
-      "weathernews_id": "7CDDE9067E16"
+      "weathernews_id": "7CDDE9067E16",
+      "poem": "神戸の曇り空、肌寒い夕方でも灯りは温かい",
+      "poemFull": "神戸の曇り空、肌寒い夕方でも灯りは温かい",
+      "KYODATSU0": "神戸の曇り空、肌寒い夕方でも灯りは温かい",
+      "KYODATSU1": "",
+      "KYODATSU2": "",
+      "KYODATSU3": "",
+      "manual": true
     },
     "osaka": {
       "image": "images/osaka.jpg",
