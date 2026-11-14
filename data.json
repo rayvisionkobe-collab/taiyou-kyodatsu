@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-14T19:14:49.186884+09:00",
+  "updated_at": "2026-11-14T19:28:13.019845+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -96,20 +96,19 @@
     "kobe": {
       "image": "images/kobe.jpg",
       "poems": {
-        "KYODATSU0": "神戸の曇り空、肌寒い夕方でも灯りは温かい"
+        "kyodatsu": {
+          "0": "KYODATSU0: 神戸の曇り空、肌寒い夕方でも灯りは温かい",
+          "1": "KYODATSU1: 神戸の街に灰色の曇りが降りる、肌寒い心拍に似た夜の予感",
+          "2": "KYODATSU2: 遠くの橋も霞む曇りの神戸、肌寒い画面の向こうで僕はひとり、それでも明日を待つ微熱",
+          "3": "KYODATSU3: 神戸の坂道に重く垂れ込める曇り、遠く明石海峡の塔さえ灰色のノイズに溶けてゆく夕方、肌寒い空気のなかでスマホの通知だけを待つ孤独な僕らは、何者にもなれないまま街の小さな窓灯りに小さな希望を託して呼吸する"
+        }
       },
       "model": "manual-gemini",
-      "updated_at": "2026-11-14T19:14:49.186884+09:00",
+      "updated_at": "2026-11-14T19:28:13.019845+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-14",
       "poem_slot": "evening",
       "weathernews_id": "7CDDE9067E16",
-      "poem": "神戸の曇り空、肌寒い夕方でも灯りは温かい",
-      "poemFull": "神戸の曇り空、肌寒い夕方でも灯りは温かい",
-      "KYODATSU0": "神戸の曇り空、肌寒い夕方でも灯りは温かい",
-      "KYODATSU1": "",
-      "KYODATSU2": "",
-      "KYODATSU3": "",
       "manual": true
     },
     "osaka": {
