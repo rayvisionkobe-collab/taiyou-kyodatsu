@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-15T12:43:25.617868+09:00",
+  "updated_at": "2026-11-15T13:47:00.546984+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -17,7 +17,7 @@
           "3": "札幌の曇った昼下がりの空から、すきとおった風がみんなの帽子を撫でていく。銀色の雲のひとひらは、遠い北の宇宙のしずくだ。みんなそれぞれの仕事のなかで、この冷たい空気をいっぱいに吸い込み、しっかりと歩いていくのだ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
+      "model": "cached",
       "updated_at": "2026-11-15T11:43:57.811969+09:00",
       "status": "keep-old-image",
       "poem_date": "2026-11-15",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-15T12:43:25.617868+09:00",
+      "updated_at": "2026-11-15T13:47:00.546984+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "morning",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-15T12:43:25.617868+09:00",
+      "updated_at": "2026-11-15T13:47:00.546984+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "morning",
@@ -86,8 +86,8 @@
           "2": "那覇に、晴れの光が落ちている。\n昼下がり、海の向こうで風が渡ろうとしている。\nほどよく暖かい光が、今日の空を包んでいる。"
         }
       },
-      "model": "gemini-3.5-flash",
-      "updated_at": "2026-11-15T12:43:25.617868+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-15T13:47:00.546984+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "noon",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-15T12:43:25.617868+09:00",
+      "updated_at": "2026-11-15T13:47:00.546984+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "morning",
@@ -155,8 +155,8 @@
           "3": "仙台の曇つた昼下がり、透明な雨の匂ひのなかで、遠い天体の音楽がきこえる、南からわたる冷たい風は北上川の水を青くし、すべての草木がひかりのなかで息をひそめながら、あたらしいうたを歌つてゐるのだった。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-15T12:43:25.617868+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-15T13:47:00.546984+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-15T12:43:25.617868+09:00",
+      "updated_at": "2026-11-15T13:47:00.546984+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "morning",
@@ -201,8 +201,8 @@
           "3": "広島の曇った昼、空のまはるから冷たい風が吹きおろし、電線は黒い五線譜になって光をなぞる、きれいな空気と雲の底で、すべての草木がまっすぐに呼吸する、あの美しい昼下がりの青い透明の祈りよ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-15T12:43:25.617868+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-15T13:47:00.546984+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "noon",
