@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-15T19:36:10.792145+09:00",
+  "updated_at": "2026-11-15T20:30:20.688382+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-15T19:36:10.792145+09:00",
+      "updated_at": "2026-11-15T20:30:20.688382+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "evening",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-15T19:36:10.792145+09:00",
+      "updated_at": "2026-11-15T20:30:20.688382+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "morning",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-15T19:36:10.792145+09:00",
+      "updated_at": "2026-11-15T20:30:20.688382+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "noon",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-15T19:36:10.792145+09:00",
+      "updated_at": "2026-11-15T20:30:20.688382+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "evening",
@@ -132,7 +132,7 @@
           "3": "大阪に、曇りの光が落ちている。夜、海の向こうで風が渡ろうとしている。肌寒い光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "gemini-3.5-flash",
+      "model": "cached",
       "updated_at": "2026-11-14T08:32:50.463569+09:00",
       "status": "keep-old-image",
       "poem_date": "2026-11-15",
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-15T19:36:10.792145+09:00",
+      "updated_at": "2026-11-15T20:30:20.688382+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-15T19:36:10.792145+09:00",
+      "updated_at": "2026-11-15T20:30:20.688382+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "morning",
@@ -202,7 +202,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-15T19:36:10.792145+09:00",
+      "updated_at": "2026-11-15T20:30:20.688382+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-15",
       "poem_slot": "noon",
