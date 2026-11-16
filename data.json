@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-16T12:57:27.761943+09:00",
+  "updated_at": "2026-11-16T14:27:58.414423+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -17,7 +17,7 @@
           "3": "曇れる札幌の真昼の電線に、風の精たちの透明な合唱がきこえ、南方の銀河の澱みから、ひんやりとした光がひとすじ、ぼくらのあたまのてっぺんをまっすぐに貫いて落ちてくる。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
+      "model": "cached",
       "updated_at": "2026-11-15T11:43:57.811969+09:00",
       "status": "keep-old-image",
       "poem_date": "2026-11-16",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-16T12:57:27.761943+09:00",
+      "updated_at": "2026-11-16T14:27:58.414423+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "morning",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-16T12:57:27.761943+09:00",
+      "updated_at": "2026-11-16T14:27:58.414423+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "morning",
@@ -86,8 +86,8 @@
           "3": "那覇の昼下がり、すきとおる晴れの気泡が南方の青空からあふれ出る。銀輪のような太陽の光が港の海水をまばゆく透かし、すべての命が熱い歓喜にみちて透明な銀河の歌をうたっている。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-16T12:57:27.761943+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-16T14:27:58.414423+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "noon",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-16T12:57:27.761943+09:00",
+      "updated_at": "2026-11-16T14:27:58.414423+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "morning",
@@ -155,8 +155,8 @@
           "3": "仙台のうるわしい昼下がり、晴れわたった大気の中を白い風がみちびかれ、遠い銀河の記憶を乗せた雲がゆっくりと流れてゆく、すべての草木が光をいっぱいに吸い込み、ぼくらはみんな透明なエネルギーなのだ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-16T12:57:27.761943+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-16T14:27:58.414423+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-16T12:57:27.761943+09:00",
+      "updated_at": "2026-11-16T14:27:58.414423+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "morning",
@@ -201,8 +201,8 @@
           "3": "昼下がり、広島の頭上にひろがる曇り空のなかに、不思議な光の輪が燦然とまはる。冷たい風がどこからか吹き寄せ、銀河のきらめきを地上へつたえる。すべての草木と電線がふるえ、遠い宇宙の意志をいま静かにうけとる。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-16T12:57:27.761943+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-16T14:27:58.414423+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "noon",
