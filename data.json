@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-16T19:33:24.826610+09:00",
+  "updated_at": "2026-11-16T20:57:49.255229+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -40,8 +40,8 @@
           "3": "すべての曇った東京の夜の地平から、冷たい風がまわり、夕方のオレンジの幻影も消え果てて、銀河の底の青い硝子細工のように街全体がしんみりと美しい電波の音楽に包まれていくよ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-16T19:33:24.826610+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-16T20:57:49.255229+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "evening",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-16T19:33:24.826610+09:00",
+      "updated_at": "2026-11-16T20:57:49.255229+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "morning",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-16T19:33:24.826610+09:00",
+      "updated_at": "2026-11-16T20:57:49.255229+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "noon",
@@ -109,8 +109,8 @@
           "3": "すきとおった夜の風が神戸の街をめぐり、夕暮れのなごりの光がまるで美しいリンゴのように凍てつく大気へおちてゆく、みんなが黒いコートを着て古い音楽をきいている。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-16T19:33:24.826610+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-16T20:57:49.255229+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "evening",
@@ -132,7 +132,7 @@
           "3": "大阪に、曇りの光が落ちている。夜、海の向こうで風が渡ろうとしている。肌寒い光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "gemini-3.5-flash",
+      "model": "cached",
       "updated_at": "2026-11-14T08:32:50.463569+09:00",
       "status": "keep-old-image",
       "poem_date": "2026-11-16",
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-16T19:33:24.826610+09:00",
+      "updated_at": "2026-11-16T20:57:49.255229+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-16T19:33:24.826610+09:00",
+      "updated_at": "2026-11-16T20:57:49.255229+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "morning",
@@ -202,7 +202,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-16T19:33:24.826610+09:00",
+      "updated_at": "2026-11-16T20:57:49.255229+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-16",
       "poem_slot": "noon",
