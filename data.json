@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-17T18:53:13.799022+09:00",
+  "updated_at": "2026-11-17T19:53:31.919317+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -18,8 +18,8 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-15T11:43:57.811969+09:00",
-      "status": "keep-old-image",
+      "updated_at": "2026-11-17T19:53:31.919317+09:00",
+      "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "noon",
       "weathernews_id": "7CDDE9068F23"
@@ -40,8 +40,8 @@
           "3": "東京の夕暮れの曇天の底からざわざわと湧き出る銀の光の粉よ冷たい風は北へ還り遠い星の瞬きがぼくの足もとを優しく照らし出すからみんな美しく生きるのだ"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-17T18:53:13.799022+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-17T19:53:31.919317+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "evening",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-17T18:53:13.799022+09:00",
+      "updated_at": "2026-11-17T19:53:31.919317+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "morning",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-17T18:53:13.799022+09:00",
+      "updated_at": "2026-11-17T19:53:31.919317+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "noon",
@@ -109,8 +109,8 @@
           "3": "神戸に、雨の光が落ちている。夕暮れ、海の向こうで風が渡ろうとしている。肌寒い光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "gemini-3.8-flash",
-      "updated_at": "2026-11-17T18:53:13.799022+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-17T19:53:31.919317+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "evening",
@@ -132,7 +132,7 @@
           "3": "大阪の夜、すべては透明な氷の結晶のやうに冴えわたり、冷たい風が電線を通つて遠い銀河の音楽を運んでくる、私たちはこの青く澄んだ大気の底で、それぞれの小さな窓の明かりをともしつづけているのだ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
+      "model": "cached",
       "updated_at": "2026-11-14T08:32:50.463569+09:00",
       "status": "keep-old-image",
       "poem_date": "2026-11-17",
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-17T18:53:13.799022+09:00",
+      "updated_at": "2026-11-17T19:53:31.919317+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-17T18:53:13.799022+09:00",
+      "updated_at": "2026-11-17T19:53:31.919317+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "morning",
@@ -202,7 +202,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-17T18:53:13.799022+09:00",
+      "updated_at": "2026-11-17T19:53:31.919317+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "noon",
