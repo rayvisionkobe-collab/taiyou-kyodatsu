@@ -18,9 +18,9 @@ header h1{font-family:"Shippori Mincho B1",serif;font-size:14px;letter-spacing:0
 .hero img{width:100%;height:auto;max-height:85vh;object-fit:contain;object-position:center}
 @media(max-width:430px){.hero img{aspect-ratio:4/3;}}
 .poem-wrap{max-width:768px;margin:0 auto;padding:24px 16px;background:rgba(28,25,23,0.78);backdrop-filter:blur(12px)}
-@media(max-width:430px){.poem-wrap{padding:24px 10px} .poem-wrap h2{font-size:clamp(18px,5.4vw,22px)!important;letter-spacing:0.01em!important;white-space:nowrap!important}}
+@media(max-width:430px){.poem-wrap{padding:24px 10px} .poem-wrap h2{font-size:clamp(21px,5.2vw,34px)!important;letter-spacing:0.01em!important;white-space:nowrap!important}}
 .poem-card{padding:28px 20px;text-align:left}
-.poem-main{font-family:"Yuji Syuku",cursive;font-size:clamp(20px,5.8vw,26px);line-height:1.95;word-break:keep-all;overflow-wrap:break-word;line-break:strict;text-wrap:pretty;letter-spacing:0.04em;white-space:pre-wrap;text-align:left}
+.poem-main{font-family:"Yuji Syuku",cursive;font-size:clamp(17px,4.6vw,21px);line-height:1.95;word-break:keep-all;overflow-wrap:break-word;line-break:strict;text-wrap:pretty;letter-spacing:0.04em;white-space:pre-wrap;text-align:left}
 .poem-sub{margin-top:12px;font-size:13px;color:var(--muted);font-family:"Shippori Mincho B1",serif}
 .practical{margin-top:16px;padding:10px 14px;background:#1e1e1e;border-radius:8px;color:var(--text);font-size:13px;line-height:1.5}
 .controls{margin-top:20px;display:flex;flex-direction:column;gap:12px}
@@ -71,15 +71,15 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
 
 
 /* v24: 詩をメインに */
-.poem-main{font-size:26px !important;line-height:1.9 !important;text-align:left !important;}
+.poem-main{font-size:21px !important;line-height:1.9 !important;text-align:left !important;}
 @media(min-width:768px){
-  .poem-main{font-size:34px !important;line-height:2.0 !important;}
+  .poem-main{font-size:24px !important;line-height:2.0 !important;}
   .poem-wrap{max-width:720px;margin:0 auto;}
   .real{max-width:520px;margin:0 auto;}  /* 画像は小さく */
   .real-card{aspect-ratio:16/9;}
 }
 @media(min-width:1024px){
-  .poem-main{font-size:38px !important;}
+  .poem-main{font-size:26px !important;}
   .real{max-width:480px;}
 }
 /* ③ 下の詩風と濃淡を小さく、目立たなく */
@@ -103,7 +103,7 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
 
 <div class="poem-wrap" id="poemWrap">
   <div style="text-align:center;padding:0 0 6px">
-    <h2 style="font-family:'Yuji Syuku',cursive;font-weight:400;font-size:clamp(19px,5.6vw,26px);letter-spacing:0.02em;line-height:1.3;margin:0;color:#f5efe6;white-space:nowrap;text-align:center">今日のそらと、僕のこころ</h2>
+    <h2 style="font-family:'Yuji Syuku',cursive;font-weight:400;font-size:clamp(21px,5.2vw,34px);letter-spacing:0.01em;line-height:1.3;margin:0;color:#f5efe6;white-space:nowrap;text-align:center">今日のそらと、僕のこころ</h2>
     <div style="height:1px;background:rgba(255,255,255,0.18);margin:10px auto 0;max-width:280px"></div>
   </div>
   <div class="poem-card">
@@ -302,7 +302,7 @@ async function updateAll(){
   const levels = ["からっと","ほどよく","こいめ","仙人級"];
   document.getElementById('poemMain').textContent = breakByMaru(getPoem(place, poet, level));
   try{ const _pe=liveData?.locations?.[place]; const _el=document.getElementById('poemTime'); if(_el){ if(_pe?.poem_date || _pe?.poem_slot){ const _slotMap={morning:'朝', noon:'昼', evening:'夕方'}; _el.textContent='詩：'+(_pe.poem_date||'')+' '+(_slotMap[_pe.poem_slot]||_pe.poem_slot||'')+'の詩'; _el.style.display='block'; } else { _el.style.display='none'; } } }catch(e){}
-  try{const pm=document.getElementById('poemMain'); if(pm){const longest=Math.max(...pm.textContent.split('\n').map(l=>l.length)); if(longest>=16) pm.style.fontSize='21px'; else if(longest>=14) pm.style.fontSize='23px'; else pm.style.fontSize='';}}catch(e){}
+  try{const pm=document.getElementById('poemMain'); if(pm){const longest=Math.max(...pm.textContent.split('\n').map(l=>l.length)); if(longest>=16) pm.style.fontSize='16px'; else if(longest>=14) pm.style.fontSize='18px'; else pm.style.fontSize='';}}catch(e){}
   const placeName = loc.name;
   const isAI = !!liveData?.locations?.[place]?.poems;
   document.getElementById('practical').textContent = '晴 14℃ / 12℃ 降水0mm 風6m 神戸 ' + placeName;
