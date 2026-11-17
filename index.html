@@ -2,560 +2,899 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>太陽の涙、虚脱の空 — v86 ライブ＋AI詩＋診断</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>太陽の涙、虚脱の空</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1c1917">
+<link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Zen+Old+Mincho:wght@400;500&family=Shippori+Mincho+B1:wght@400&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box}
-  body{margin:0;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;background:#111;color:#fff}
-  header{padding:14px 16px 10px;border-bottom:1px solid #333}
-  header h1{font-size:18px;margin:0;font-weight:600;letter-spacing:.04em}
-  header p{font-size:12px;opacity:.7;margin:4px 0 0}
-  main{max-width:920px;margin:0 auto;padding:16px}
-  .card{background:#1c1c1c;border:1px solid #333;border-radius:14px;padding:14px;margin-bottom:14px}
-  label{font-size:12px;opacity:.8;display:block;margin:10px 0 4px}
-  textarea,input,select{width:100%;background:#222;color:#fff;border:1px solid #444;border-radius:8px;padding:10px;font-size:15px;font-family:inherit}
-  textarea{min-height:96px;line-height:1.7}
-  .row{display:flex;gap:8px;flex-wrap:wrap}
-  .row button{flex:1;min-width:140px;padding:11px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
-  .btn-dark{background:#fff;color:#111}
-  .btn-ghost{background:#2a2a2a;color:#fff;border:1px solid #444}
-  .btn-blue{background:#2563eb;color:#fff}
-  canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
-  .hint{font-size:12px;opacity:.7;line-height:1.6}
-  .sliders{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  @media(max-width:560px){.sliders{grid-template-columns:1fr}}
-  input[type=range]{padding:0}
-  .preview-label{font-size:12px;opacity:.7;margin:8px 0 6px}
+:root{--bg:#1c1917;--card:#231e1b;--text:#f5f1e8;--muted:#a8a29e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:"Zen Old Mincho",serif}
+header{height:38px;background:rgba(28,25,23,0.9);display:flex;align-items:center;justify-content:space-between;padding:0 12px;position:sticky;top:0;z-index:10;backdrop-filter:blur(8px)}
+header h1{font-family:"Shippori Mincho B1",serif;font-size:14px;letter-spacing:0.08em;margin:0}
+.device{display:flex;gap:6px} .device button{font-size:11px;padding:4px 8px;border:1px solid #444;background:transparent;color:var(--text);border-radius:12px}
+.device button.active{background:var(--text);color:var(--bg)}
+.hero{width:100%;background:#0a0a0a;display:flex;justify-content:center;align-items:center;overflow:hidden}
+.hero img{width:100%;height:auto;max-height:85vh;object-fit:contain;object-position:center}
+@media(max-width:430px){.hero img{aspect-ratio:4/3;}}
+.poem-wrap{max-width:768px;margin:0 auto;padding:24px 16px;background:rgba(28,25,23,0.78);backdrop-filter:blur(12px)}
+.poem-card{padding:28px 20px;text-align:left}
+.poem-main{font-family:"Yuji Syuku",cursive;font-size:26px;line-height:1.9;letter-spacing:0.04em;white-space:pre-wrap;text-align:left}
+.poem-sub{margin-top:12px;font-size:13px;color:var(--muted);font-family:"Shippori Mincho B1",serif}
+.practical{margin-top:16px;padding:10px 14px;background:#1e1e1e;border-radius:8px;color:var(--text);font-size:13px;line-height:1.5}
+.controls{margin-top:20px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.select{width:100%;padding:10px;background:#111;color:var(--text);border:1px solid #333;border-radius:8px;font-size:13px}
+.toggle{display:flex;background:#111;border-radius:20px;padding:3px}
+.toggle button{flex:1;padding:6px 12px;border-radius:16px;border:none;background:transparent;color:var(--muted);font-size:13px}
+.toggle button.active{background:var(--text);color:var(--bg)}
+.slider{width:100%}
+.labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
+.real{max-width:768px;margin:0 auto;padding:16px}
+.real-card{aspect-ratio:16/9;background:linear-gradient(180deg,#2a3a5a,#1c1917);border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+
+/* シェアボタン */
+.share-btn{width:100%;margin-top:14px;padding:11px;background:#f5f1e8;color:#1c1917;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
+.share-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.share-modal.open{display:flex}
+.share-sheet{width:100%;max-width:520px;background:#231e1b;border-radius:16px 16px 0 0;padding:16px;max-height:85vh;overflow:auto}
+.share-tabs{display:flex;gap:6px;margin-bottom:12px}
+.share-tabs button{flex:1;padding:8px 4px;border-radius:10px;border:1px solid #444;background:transparent;color:#f5f1e8;font-size:12px}
+.share-tabs button.active{background:#f5f1e8;color:#1c1917}
+.share-preview{white-space:pre-wrap;background:#111;padding:12px;border-radius:10px;font-size:13px;line-height:1.7;min-height:120px}
+.share-actions{display:flex;gap:8px;margin-top:12px}
+.share-actions button{flex:1;padding:10px;border-radius:10px;border:none;font-size:13px;cursor:pointer}
+.copy-btn{background:#f5f1e8;color:#1c1917;font-weight:600}
+.img-btn{background:#333;color:#f5f1e8}
+.close-btn{background:transparent;color:#a8a29e;font-size:12px;margin-top:8px;width:100%;border:none;padding:8px}
+.share-note{font-size:11px;color:#a8a29e;margin-top:8px;line-height:1.5}
+footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
+
+/* v24: 詩をメインに */
+.poem-main{font-size:26px !important;line-height:1.9 !important;text-align:left !important;}
+@media(min-width:768px){
+  .poem-main{font-size:34px !important;line-height:2.0 !important;}
+  .poem-wrap{max-width:720px;margin:0 auto;}
+  .real{max-width:520px;margin:0 auto;}  /* 画像は小さく */
+  .real-card{aspect-ratio:16/9;}
+}
+@media(min-width:1024px){
+  .poem-main{font-size:38px !important;}
+  .real{max-width:480px;}
+}
+/* ③ 下の詩風と濃淡を小さく、目立たなく */
+#bottomControls{opacity:0.75;transform:scale(0.92);transform-origin:top center;}
+#bottomControls .toggle button{font-size:13px;padding:6px 10px;}
+#bottomControls .slider{height:4px;}
+#bottomControls .labels{font-size:11px;color:#a8a29e;}
 </style>
 </head>
 <body>
 <header>
-  <h1>太陽の涙、虚脱の空 <span style="opacity:.5;font-size:12px">v86 ライブ＋AI詩＋診断</span></h1>
-  <p>ライブ画像＋AIの詩＋診断が、1つの画面に。AIの詩をそのまま使うか、診断で自分の作風の詩を作るか、選べる。</p>
+<h1>太陽の涙、虚脱の空</h1>
+<div class="device"><button id="sp" class="active">スマホ</button><button id="tab">タブレット</button></div>
 </header>
-<main>
-  <div style="display:flex;gap:8px;margin-bottom:12px">
-    <button class="btn-dark" onclick="document.getElementById('liveSec').scrollIntoView({behavior:'smooth'})">① ライブ画像</button>
-    <button class="btn-dark" onclick="document.getElementById('aiSec').scrollIntoView({behavior:'smooth'})">② AIの詩</button>
-    <button class="btn-dark" onclick="document.getElementById('shindanCard').scrollIntoView({behavior:'smooth'})">③ 診断</button>
-  </div>
-  <div style="background:#1c1c1c;border:1px solid #333;border-radius:14px;padding:14px;margin-bottom:14px">
-    <div style="font-size:13px;opacity:.8">流れ：ライブ画像を見る → AIの詩か診断の詩か選ぶ → 下の画像生成で、詩入り画像を作る</div>
-    <div style="margin-top:8px;font-size:13px;line-height:1.6">
-      <b>今、選ばれている詩：</b><span id="selectedPoemLabel" style="color:#ffd166">AIの詩（自動）</span><br>
-      <span id="selectedPoemPreview" style="opacity:.8;white-space:pre-line"></span>
-    </div>
-  </div>
 
-  <!-- ① ライブ画像 -->
-  <div class="card" id="liveSec">
-    <div style="font-size:16px;font-weight:800">① ライブ画像 — 今の空</div>
-    <p class="hint">元のアプリのライブ画像です。fetch.py が取ってきた、今の空の写真と天気。タイミングが合わないときは、下の「保存した画像」から、使いたい画像を選べます。</p>
-    <div class="row" style="margin-top:8px">
-      <div style="flex:1"><label>場所</label><select id="citySel"><option>神戸</option><option>大阪</option><option>東京</option><option>名古屋</option><option>福岡</option><option>札幌</option><option>仙台</option><option>広島</option><option>那覇</option></select></div>
-      <div style="flex:1"><label>天気（ライブ）</label><input id="liveWeather" value="晴 13℃ / 13℃ 降水0mm 風9m 神戸"></div>
-    </div>
-    <div style="margin-top:10px;border-radius:12px;overflow:hidden;background:#000">
-      <img id="liveImg" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80&auto=format&fit=crop" style="width:100%;display:block">
-    </div>
-    <p class="hint">※ 本番では、fetch.py の画像がここに入ります。デモではサンプル画像です。</p>
-    <div class="row">
-      <button class="btn-dark" id="useLiveImg">このライブ画像を、詩入り画像に使う</button>
-      <button class="btn-ghost" id="saveLiveImg2">このライブ画像を保存する</button>
-    </div>
-  </div>
+<div class="hero"><img src="hero.jpg" alt="hero"></div>
 
-  <!-- ② AIの詩 -->
-  <div class="card" id="aiSec">
-    <div style="font-size:16px;font-weight:800">② AIによる詩 — 自動で作られた詩</div>
-    <p class="hint">元のアプリのAI詩です。天気から、自動で作られる。KYODATSU（解体的）と TAIYOU（太陽）の2系統。</p>
-    <div class="row">
-      <button class="btn-ghost" data-ai="kyodatsu">KYODATSU — 解体的</button>
-      <button class="btn-ghost" data-ai="taiyou">TAIYOU — 太陽</button>
-    </div>
-    <div id="aiPoemBox" style="margin-top:12px;padding:12px;background:#222;border-radius:10px;white-space:pre-line;line-height:1.8;font-size:15px">曇天の神戸よ今朝の街は何処かぎこちなく、
-ぼくの足もとには冷たい風が吹き抜け、
-朝焼けの端っこがまるでぼろぎれのやうにはりついている、
-ああ痛いほどおなかがすいた朝だ</div>
-    <div class="row" style="margin-top:10px">
-      <button class="btn-dark" id="useAiPoem">このAIの詩を使う</button>
-      <button class="btn-ghost" id="regenAi">AIの詩をもう1編作る</button>
-    </div>
+<div class="poem-wrap" id="poemWrap">
+  <div class="poem-card">
+    <div class="poem-main" id="poemMain">読み込み中…</div>
   </div>
-
-  <div class="card" id="shindanCard" style="border:2px solid #6b4eff">
-    <div style="font-size:16px;font-weight:800">あなたは、中也タイプ？ 賢治タイプ？</div>
-    <p class="hint" style="margin:6px 0 10px">5問だけ答えると、今日の天気に合った作風の詩が出ます。占いみたいに、気軽にどうぞ。</p>
-    <div id="shindanQs"></div>
-    <div class="row" style="margin-top:12px">
-      <button class="btn-dark" id="shindanBtn">診断する → 詩を作る</button>
-      <button class="btn-ghost" id="shindanReset">もう一度</button>
-    </div>
-    <div id="shindanResult" style="display:none;margin-top:14px;padding:12px;background:#222;border-radius:10px"></div>
-    <div id="shindanPoemWrap" style="display:none;margin-top:10px">
-      <div style="font-size:13px;font-weight:700" id="shindanPoemTitle"></div>
-      <div id="shindanPoem" style="white-space:pre-line;line-height:1.8;margin:8px 0;font-size:16px"></div>
-      <div class="row">
-        <button class="btn-dark" id="useShindanPoem">この詩を上の詩欄に入れる</button>
+  <!-- シェアモーダル -->
+  <div class="share-modal" id="shareModal">
+    <div class="share-sheet">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">シェアする</div>
+      <div class="share-tabs" id="shareTabs">
+        <button data-tab="instagram" class="active">Instagram</button>
+        <button data-tab="threads">Threads</button>
+        <button data-tab="bluesky">Bluesky</button>
+        <button data-tab="x">X</button>
       </div>
-    </div>
-  </div>
-  <div class="card">
-    <label>詩（改行はそのまま反映されます）</label>
-    <textarea id="poem">夜明けの神戸に
-風は吹き抜けて、
-ガラス玉のやうな
-僕の溜息よ。</textarea>
-    <div class="row" style="margin-top:10px">
-      <div style="flex:1"><label>タイトル（右下1行目）</label><input id="title" value="太陽の涙、虚脱の空"></div>
-      <div style="flex:1"><label>天気（右下2行目）</label><input id="weather" value="晴 13℃ / 13℃ 降水0mm 風9m 神戸"></div>
-    </div>
-    <label>空の写真</label>
-    <div class="row">
-      <button class="btn-ghost" onclick="document.getElementById('file').click()">写真を選ぶ（スマホの空）</button>
-      <button class="btn-ghost" id="useSample">サンプルの青空を使う</button>
-    </div>
-    <input type="file" id="file" accept="image/*" hidden>
-    <div class="card" style="margin:12px 0 0;padding:12px;background:#222">
-      <div style="font-size:13px;font-weight:700">保存した画像で作る — タイミングがズレてもOK</div>
-      <p class="hint" style="margin:6px 0 8px">ライブ画像は、そのときの空。投稿したいときに、空が変わってても、この保存から選べば、使いたい画像で作れる。</p>
-      <div class="row">
-        <button class="btn-dark" id="saveImgBtn">今の写真を保存する</button>
-        <button class="btn-ghost" onclick="document.getElementById('fileMulti').click()">端末の保存画像から選ぶ</button>
+      <div style="font-size:11px;color:#a8a29e;margin-bottom:6px" id="shareTabLabel">今は Instagram 用です</div>
+      <div class="share-preview" id="sharePreview"></div>
+      <div class="share-actions">
+        <button class="copy-btn" id="copyBtn">📋 テキストをコピー</button>
+        <button class="img-btn" id="imgBtn">🖼️ 画像を保存</button>
       </div>
-      <input type="file" id="fileMulti" accept="image/*" multiple hidden>
-      <div id="savedGallery" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div>
-      <p class="hint" id="savedHint">保存した画像は、この端末のブラウザに残ります。0件です。</p>
-    </div>
-    <div class="card" style="margin:12px 0 0;padding:12px;background:#222">
-      <div style="font-size:13px;font-weight:700">詩は、自分でアレンジして入れる</div>
-      <p class="hint" style="margin:6px 0 8px">アプリの詩をそのまま使っても、自分で直した詩を入れてもOK。上の詩の欄を自由に書き換えてください。</p>
-      <div class="row">
-        <button class="btn-dark" id="savePoemBtn">この詩を保存する</button>
-        <button class="btn-ghost" id="clearPoemBtn">詩を空にする</button>
+      <button id="poemImgBtn" style="width:100%;margin-top:8px;padding:11px;background:#f5f1e8;color:#1c1917;border:none;border-radius:10px;font-size:13px;font-weight:700">✨ 詩入り画像を作る</button>
+      <div id="poemImgWrap" style="display:none;margin-top:10px">
+        <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;position:sticky;top:0;z-index:3;background:#1c1917;padding:6px 0">
+          <div style="display:flex;background:#111;border-radius:20px;padding:3px;flex:1">
+            <button id="sizeInsta" style="flex:1;padding:7px 10px;border-radius:16px;border:none;background:#f5f1e8;color:#1c1917;font-size:12px;font-weight:700">インスタ縦 4:5</button>
+            <button id="sizeX" style="flex:1;padding:7px 10px;border-radius:16px;border:none;background:transparent;color:#a8a29e;font-size:12px">X / Threads 横</button>
+          </div>
+          <div style="display:flex;background:#111;border-radius:20px;padding:3px">
+            <button id="waterOn" style="padding:7px 12px;border-radius:16px;border:none;background:#f5f1e8;color:#1c1917;font-size:12px;font-weight:700">やまと絵 ON</button>
+            <button id="waterOff" style="padding:7px 12px;border-radius:16px;border:none;background:transparent;color:#a8a29e;font-size:12px">OFF</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;background:#111;border-radius:10px;padding:8px 10px;position:sticky;top:44px;z-index:3">
+          <span style="font-size:12px;color:#a8a29e;white-space:nowrap">拡大</span>
+          <input id="cropZoom" type="range" min="100" max="220" value="100" style="flex:1;accent-color:#f5f1e8">
+          <span id="cropZoomVal" style="font-size:12px;color:#f5f1e8;width:38px;text-align:right">100%</span>
+          <button id="cropReset" style="padding:5px 10px;border-radius:14px;border:1px solid #44403c;background:transparent;color:#a8a29e;font-size:11px">リセット</button>
+        </div>
+        <div style="font-size:11px;color:#a8a29e;margin-bottom:6px">画像をドラッグで動かせます – 橋を大きく見せたり、空だけにしたり、自由にトリミングできます</div>
+        <div style="display:flex;justify-content:center">
+          <canvas id="poemCanvas" width="1080" height="1350" style="width:min(100%,300px);max-height:52vh;height:auto;border-radius:12px;background:#111;cursor:grab;touch-action:none;display:block"></canvas>
+        </div>
+        <div class="share-actions" style="margin-top:8px">
+          <button class="copy-btn" id="poemImgSave">💾 詩入り画像を保存</button>
+          <button class="img-btn" id="poemImgShare">📱 詩入り画像でシェア</button>
+        </div>
+        <div style="font-size:11px;color:#a8a29e;margin-top:6px">Instagramは、この画像をそのまま投稿できます。詩が画像に入っているので、キャプションは短くてOKです。</div>
       </div>
-      <div id="savedPoems" style="margin-top:10px;display:flex;flex-direction:column;gap:6px"></div>
+      <button class="share-actions" id="osShareBtn" style="width:100%;margin-top:8px;padding:10px;background:#f5f1e8;color:#1c1917;border-radius:10px;border:none;font-size:13px;font-weight:600">📱 スマホのシェアで送る</button>
+      <div class="share-note" id="shareNote"></div>
+      <button class="close-btn" id="shareClose">閉じる</button>
     </div>
-    <div class="sliders">
-      <div><label>クロップ / ズーム <span id="zoomVal">1.20</span></label><input type="range" id="zoom" min="1" max="2" step="0.01" value="1.2"></div>
-      <div><label>上下位置 <span id="posVal">50%</span></label><input type="range" id="posY" min="0" max="100" step="1" value="50"></div>
-      <div><label>詩の大きさ <span id="fontVal">42</span></label><input type="range" id="fontSize" min="28" max="64" step="1" value="42"></div>
-      <div><label>上の暗さ（読みやすさ） <span id="shadeVal">0.18</span></label><input type="range" id="shade" min="0" max="0.45" step="0.01" value="0.18"></div>
-    </div>
-    <label>Canva風フィルター</label>
-    <div class="row" style="margin-bottom:8px">
-      <button class="btn-ghost" data-filter="none">なし</button>
-      <button class="btn-dark" data-filter="asayake">朝焼け — 青＋オレンジ</button>
-      <button class="btn-ghost" data-filter="aozora">青空 — 青だけ濃く</button>
-      <button class="btn-ghost" data-filter="ame">雨 — 少し desat</button>
-    </div>
-    <div class="sliders">
-      <div><label>青の濃さ <span id="blueVal">1.25</span></label><input type="range" id="blueBoost" min="0.8" max="1.6" step="0.01" value="1.25"></div>
-      <div><label>オレンジの暖かさ <span id="warmVal">0.18</span></label><input type="range" id="warm" min="0" max="0.45" step="0.01" value="0.18"></div>
-      <div><label>鮮やかさ <span id="satVal">1.30</span></label><input type="range" id="sat" min="0.7" max="1.6" step="0.01" value="1.30"></div>
-      <div><label>コントラスト <span id="conVal">1.10</span></label><input type="range" id="con" min="0.9" max="1.3" step="0.01" value="1.10"></div>
-    </div>
-    <p class="hint">朝焼けの仕組み：空全体を saturate で濃く → 下の方だけにオレンジの透明グラデを重ねる → 雲のオレンジだけが浮く。空のグラデは潰さない。</p>
-    <p class="hint">Canva版のポイント：① 空はポスタライズしない、なめらかなまま ② 詩は左上、白、影だけ ③ 右下は斜めじゃなく横向き2行 ④ 箱・枠なし</p>
   </div>
 
-  <div class="card">
-    <div class="row">
-      <button class="btn-dark" id="btnX">X / Threads用 1280×720 で作る</button>
-      <button class="btn-blue" id="btnIG">Instagram用 1080×1350 で作る</button>
-    </div>
-    <p class="preview-label" id="sizeLabel">プレビュー：1280 × 720</p>
-    <canvas id="cv" width="1280" height="720"></canvas>
-    <div class="row" style="margin-top:12px">
-      <button class="btn-dark" id="dl">この画像を保存する</button>
-      <button class="btn-ghost" id="copyText">シェア文をコピー</button>
-    </div>
-    <p class="hint" id="sharePreview" style="white-space:pre-line;margin-top:10px"></p>
+  <div class="controls">
+    <select id="placeSelect" class="select"></select>
+    <div class="practical" id="practical">天気を取得中…</div>
+    <div id="weatherTime" style="font-size:11px;color:#a8a29e;margin-top:2px;"></div>
   </div>
-</main>
+</div>
+
+<div class="real">
+  <div style="font-size:12px;color:#a8a29e;margin-bottom:6px;">ライブ静止画 ・ 30分おきに更新 <span id="liveUpdated"></span></div>
+  <div class="real-card" id="realCard">
+    <img id="liveImg" src="hero.jpg" alt="ライブ静止画" style="width:100%;height:100%;object-fit:cover;display:none;">
+    <div id="livePlaceholder" style="text-align:center;padding:20px;">ライブ静止画を取得中…<br><span id="time"></span></div>
+  </div>
+  <div id="livePoem" style="margin-top:10px;padding:14px;background:#231e1b;border-radius:8px;font-family:'Yuji Syuku',cursive;font-size:19px;line-height:1.9;white-space:pre-wrap;text-align:left;display:none;"></div>
+  <div id="livePoemNote" style="font-size:11px;color:#a8a29e;margin-top:6px;display:none;">AIがライブ画像から自動生成した詩です。上の温墨イラストはトップのままです。</div>
+  <button class="share-btn" id="shareBtn" style="margin-top:14px">↗ シェアする</button>
+  <div style="font-size:11px;color:#a8a29e;margin-top:6px;text-align:center">今開いている画面の詩と画像をシェアします</div>
+</div>
+
+
+<div class="controls" id="bottomControls" style="margin-top:18px;border-top:1px solid #44403c;padding-top:14px;">
+  <div class="toggle" id="poetToggle">
+    <button data-poet="kyodatsu" class="active">虚脱の空</button>
+    <button data-poet="taiyou">太陽の涙</button>
+  </div>
+  <div>
+    <input type="range" id="level" min="0" max="3" step="1" value="1" class="slider">
+    <div class="labels"><span>からっと</span><span>ほどよく</span><span>こいめ</span><span>仙人級</span></div>
+  </div>
+</div>
+
+<footer>出典：ウェザーニュース / Myライブカメラ © rayvisionkobe-collab / PWA template v1 / 背景は生成り #1c1917 温墨</footer>
+
 <script>
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-let img=new Image(), imgLoaded=false, curW=1280, curH=720;
-let sampleUrl='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80&auto=format&fit=crop';
 
-
-// --- Saved images + poems (localStorage) ---
-function getSavedImages(){ try{ return JSON.parse(localStorage.getItem('taiyou_saved_images')||'[]'); }catch(e){ return []; } }
-function setSavedImages(a){ localStorage.setItem('taiyou_saved_images', JSON.stringify(a)); }
-function getSavedPoems(){ try{ return JSON.parse(localStorage.getItem('taiyou_saved_poems')||'[]'); }catch(e){ return []; } }
-function setSavedPoems(a){ localStorage.setItem('taiyou_saved_poems', JSON.stringify(a)); }
-
-function renderSaved(){
-  const imgs=getSavedImages();
-  const g=document.getElementById('savedGallery');
-  const hint=document.getElementById('savedHint');
-  hint.textContent='保存した画像は、この端末のブラウザに残ります。'+imgs.length+'件です。';
-  g.innerHTML='';
-  imgs.forEach((src,i)=>{
-    const wrap=document.createElement('div');
-    wrap.style.cssText='position:relative;width:96px';
-    const im=document.createElement('img');
-    im.src=src; im.style.cssText='width:96px;height:64px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid #555;display:block';
-    im.onclick=()=>{
-      img=new Image(); img.onload=()=>{imgLoaded=true; draw();}; img.src=src;
-    };
-    const del=document.createElement('button');
-    del.textContent='×'; del.style.cssText='position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:0;background:#ff4444;color:#fff;cursor:pointer';
-    del.onclick=(e)=>{ e.stopPropagation(); const a=getSavedImages(); a.splice(i,1); setSavedImages(a); renderSaved(); };
-    wrap.appendChild(im); wrap.appendChild(del);
-    const lab=document.createElement('div'); lab.textContent='保存 '+(i+1); lab.style.cssText='font-size:11px;opacity:.7;text-align:center;margin-top:2px';
-    wrap.appendChild(lab);
-    g.appendChild(wrap);
-  });
-  // poems
-  const poems=getSavedPoems();
-  const pc=document.getElementById('savedPoems');
-  pc.innerHTML='';
-  poems.forEach((p,i)=>{
-    const row=document.createElement('div');
-    row.style.cssText='background:#333;border:1px solid #444;border-radius:8px;padding:8px;font-size:13px;line-height:1.5';
-    const txt=document.createElement('div'); txt.textContent=p; txt.style.whiteSpace='pre-line';
-    const btns=document.createElement('div'); btns.style.cssText='display:flex;gap:6px;margin-top:6px';
-    const use=document.createElement('button'); use.textContent='この詩を使う'; use.style.cssText='flex:1;padding:7px;border-radius:8px;border:0;background:#fff;color:#111;font-weight:700;cursor:pointer';
-    use.onclick=()=>{ document.getElementById('poem').value=p; draw(); };
-    const del2=document.createElement('button'); del2.textContent='削除'; del2.style.cssText='padding:7px 12px;border-radius:8px;border:1px solid #666;background:#222;color:#fff;cursor:pointer';
-    del2.onclick=()=>{ const a=getSavedPoems(); a.splice(i,1); setSavedPoems(a); renderSaved(); };
-    btns.appendChild(use); btns.appendChild(del2);
-    row.appendChild(txt); row.appendChild(btns);
-    pc.appendChild(row);
-  });
+// 「。」で改行 + 左寄せ用 – 「。」の後で改行する (最後の「。」の後は改行しない)
+function breakByMaru(text){
+  if(!text) return text;
+  // すでに改行がある場合は、それを残して、「。」でも改行
+  return text.replace(/\n/g, '').replace(/。(?!$)/g, '。\n');
 }
-document.addEventListener('DOMContentLoaded', renderSaved);
-
-
-// --- 中也 / 賢治 診断 ---
-const SHINDAN_QS = [
-  {q:'1. 朝、目が覚めたら、まず何を感じる？', a:'胸が、ぎゅっとなる', b:'空が、どうなってるか気になる'},
-  {q:'2. 悲しいとき、どうする？', a:'部屋にこもって、自分の心と向き合う', b:'外に出て、風や雨にあたる'},
-  {q:'3. 好きな場所は？', a:'港の夜、静かな街角', b:'田んぼ、山、星空'},
-  {q:'4. 言葉で大切にしたいのは？', a:'自分の痛みを、そのまま言葉にする', b:'誰かのために、祈るような言葉'},
-  {q:'5. 雨が降ったら、どう感じる？', a:'灰色の霧に溶けていく感じ', b:'雨ニモマケズ、風ニモマケズ'},
+const LOCATIONS = [
+  {id:"kobe", name:"神戸", lat:34.69, lon:135.19, weathernews_id:"7CDDE9067E16"},
+  {id:"osaka", name:"大阪", lat:34.69, lon:135.50, weathernews_id:"7CDDE906F8CE"},
+  {id:"sapporo", name:"札幌", lat:43.06, lon:141.35, weathernews_id:"410001361"},
+  {id:"tokyo", name:"東京", lat:35.68, lon:139.76, weathernews_id:"410000116"},
+  {id:"sendai", name:"仙台", lat:38.26, lon:140.87, weathernews_id:"7CDDE905CDB1"},
+  {id:"nagoya", name:"名古屋", lat:35.18, lon:136.90, weathernews_id:"7CDDE906BBEF"},
+  {id:"hiroshima", name:"広島", lat:34.39, lon:132.45, weathernews_id:"7CDDE908C8DC"},
+  {id:"fukuoka", name:"福岡", lat:33.59, lon:130.40, weathernews_id:"7CDDE906F156"},
+  {id:"naha", name:"那覇", lat:26.21, lon:127.68, weathernews_id:"7CDDE9086CB8"}
 ];
-function renderShindan(){
-  const wrap=document.getElementById('shindanQs');
-  wrap.innerHTML='';
-  SHINDAN_QS.forEach((item,idx)=>{
-    const div=document.createElement('div');
-    div.style.cssText='margin:10px 0;padding:10px;background:#222;border-radius:10px';
-    div.innerHTML='<div style="font-size:14px;font-weight:700;margin-bottom:8px">'+item.q+'</div>';
-    const row=document.createElement('div'); row.style.cssText='display:flex;gap:8px;flex-wrap:wrap';
-    ['a','b'].forEach(k=>{
-      const label=document.createElement('label');
-      label.style.cssText='flex:1;min-width:140px;background:#333;border:1px solid #555;border-radius:8px;padding:9px;cursor:pointer;font-size:13px;line-height:1.5';
-      label.innerHTML='<input type="radio" name="sq'+idx+'" value="'+k+'" style="width:auto;margin-right:6px">'+item[k];
-      row.appendChild(label);
-    });
-    div.appendChild(row);
-    wrap.appendChild(div);
-  });
+let liveData=null;
+async function loadLive(){
+  try{
+    const res=await fetch('data.json?v='+Date.now(), {cache:'no-store'});
+    if(res.ok) liveData=await res.json();
+  }catch(e){ console.log('live skip', e); }
 }
-function getWeatherText(){
-  const w=document.getElementById('weather').value||'晴 13℃ 神戸';
-  return w;
+function getPoem(place, poet, level){
+  const entry = liveData?.locations?.[place];
+  if(entry?.poems?.[poet]?.[String(level)]) return entry.poems[poet][String(level)];
+  if(entry?.poem){
+    const lines = entry.poem.split('\n').filter(Boolean);
+    if(level===0) return lines[0]||entry.poem;
+    if(level===1) return lines.slice(0,2).join('\n');
+    return lines.slice(0,3).join('\n');
+  }
+  const loc = LOCATIONS.find(l=>l.id===place);
+  const name = loc?.name || place;
+  const tpl = {
+    kyodatsu: [`${name}の空は、今日も静かだ。`, `${name}の空は、今日も静かだ。\n風が、遠くで何かを運んでくる。`, `${name}の空は、今日も静かだ。\n風が、遠くで何かを運んでくる。\n曇りの午後、空だけが遠くへ行く。`, `${name}の空は、今日も静かだ。風が、遠くで何かを運んでくる。曇りの午後、どこへも行けず、空だけが遠くへ行ってしまうような、虚脱の午後だった。`],
+    taiyou: [`${name}に、光が落ちている。`, `${name}に、光が落ちている。\n海の向こうで、風が渡ろうとしている。`, `${name}に、光が落ちている。\n海の向こうで、風が渡ろうとしている。\n晴れの光が、今日の空を包んでいる。`, `${name}に、光が落ちている。海の向こうで、風が渡ろうとしている。晴れの光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった。`]
+  };
+  return tpl[poet][level]||tpl[poet][1];
 }
-function makePoemByType(type){
-  const w=getWeatherText();
-  // weather keyword extraction simple
-  let tenki='曇り'; if(w.includes('晴')) tenki='晴れ'; if(w.includes('雨')) tenki='雨'; if(w.includes('曇')) tenki='曇り'; if(w.includes('雪')) tenki='雪';
-  const city = w.includes('神戸')?'神戸': w.includes('大阪')?'大阪': w.includes('東京')?'東京':'神戸';
-  if(type==='chuya'){
-    const poems=[
-      `${tenki}の${city}よ今朝の街は何処かぎこちなく、\nぼくの足もとには冷たい風が吹き抜け、\n朝焼けの端っこがまるでぼろぎれのやうにはりついている、\nああ痛いほどおなかがすいた朝だ`,
-      `夜明けの${city}に風は吹き抜けて、\nガラス玉のやうな僕の溜息よ。\n${tenki}の空の下、ぼくはひとり、\n冷やりとした朝に、そっと佇んでいる。`,
-      `${city}の${tenki}の朝、ぼくはまだ夢の中、\n濡れた石畳に、自分の影が映る。\n誰にも言えない痛みを抱えたまま、\nぼろぎれのやうな心で、歩いている。`
-    ];
-    return {title:'中也タイプ — ぼろぎれのやうに', poem: poems[Math.floor(Math.random()*poems.length)], desc:'あなたの心は、自分の痛みを、そのまま言葉にするタイプ。港の夜や、曇りの朝が似合う。'};
+async function fetchWeather(lat, lon){
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo`;
+    const r = await fetch(url);
+    const j = await r.json();
+    const cur = j.current, day = j.daily;
+    const wmap = {0:'晴',1:'晴',2:'曇',3:'曇',45:'霧',48:'霧',51:'小雨',53:'雨',55:'雨',61:'雨',63:'雨',65:'大雨',71:'雪',73:'雪',75:'大雪',80:'雨',95:'雷雨'};
+    const w = wmap[cur.weather_code]||'曇';
+    return `${w} ${Math.round(cur.temperature_2m)}℃ / ${Math.round(day.temperature_2m_min[0])}℃ 降水${cur.precipitation}mm 風${Math.round(cur.wind_speed_10m)}m`;
+  }catch(e){ return '天気を取得中…'; }
+}
+async function updateAll(){
+  const place = document.getElementById('placeSelect').value || 'kobe';
+  const loc = LOCATIONS.find(l=>l.id===place) || LOCATIONS[0];
+  const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
+  const level = parseInt(document.getElementById('level').value);
+  const levels = ["からっと","ほどよく","こいめ","仙人級"];
+  document.getElementById('poemMain').textContent = breakByMaru(getPoem(place, poet, level));
+  const placeName = loc.name;
+  const isAI = !!liveData?.locations?.[place]?.poems;
+  document.getElementById('practical').textContent = '天気を取得中… ' + placeName;
+  const w = await fetchWeather(loc.lat, loc.lon);
+  document.getElementById('practical').textContent = w + ' ' + placeName;
+    // 何時現在の天気か: data.json の updated_at から表示
+    try{
+      const wt = liveData?.updated_at || liveData?.locations?.[place]?.updated_at;
+      if(wt){
+        const d = new Date(wt);
+        const mm = d.getMonth()+1, dd = d.getDate(), hh = String(d.getHours()).padStart(2,'0'), mi = String(d.getMinutes()).padStart(2,'0');
+        document.getElementById('weatherTime').textContent = mm + '月' + dd + '日 ' + hh + ':' + mi + ' 現在の天気';
+      } else {
+        document.getElementById('weatherTime').textContent = '';
+      }
+    }catch(e){}
+  const item = liveData?.locations?.[place];
+  const img = document.getElementById('liveImg');
+  const ph = document.getElementById('livePlaceholder');
+  if(item && item.image && item.status !== 'no-image'){
+    img.onerror = ()=>{ img.style.display='none'; if(ph){ ph.style.display='block'; ph.innerHTML='ライブ静止画を取得中…<br>次回の更新（1時間おき）で表示されます<br><span id="time"></span>'; } };
+    img.src = item.image + '?v=' + Date.now();
+    img.style.display='block';
+    if(ph) ph.style.display='none';
   } else {
-    const poems=[
-      `${tenki}の${city}よ、雨ニモマケズ、風ニモマケズ、\n雪ニモ夏ノ暑サニモマケヌ、丈夫ナカラダヲモチ、\n慾ハナク、決シテ瞋ラズ、いつも静カニ笑ッテイル、\n今日も、空を見上げて、誰かのために祈る。`,
-      `${city}の空に、${tenki}の雲が流れていく、\n風は吹き抜けて、田んぼの稲が揺れる、\n星がまたたき、銀河が、そっと瞬く、\nぼくは、ただ、世界のために、静かに立っている。`,
-      `朝の${city}に降りしきる雨は、\n濡れた石畳も、錆びついた防波堤も、\n灰色の霧に溶かしていくけれど、\nそれでも、アスファルトに反射する、湿った微かな光だけが、\nぎこちないぼくの在り処を、静かに照らし続けている。`
-    ];
-    return {title:'賢治タイプ — 雨ニモマケズ', poem: poems[Math.floor(Math.random()*poems.length)], desc:'あなたの心は、空や風や星に、自分の心を重ねるタイプ。誰かのために祈るような、大きな言葉が似合う。'};
+    if(img) img.style.display='none';
+    if(ph){ ph.style.display='block'; ph.innerHTML='ライブ静止画を取得中…<br>この場所のライブがまだ取得できていません。次回の更新で表示されます<br><span id="time"></span>'; }
   }
+  const upd = document.getElementById('liveUpdated');
+  if(upd && item?.updated_at) upd.textContent = '・ ' + new Date(item.updated_at).toLocaleString('ja-JP');
+  const t = document.getElementById('time'); if(t) t.textContent = new Date().toLocaleString('ja-JP');
 }
-document.addEventListener('DOMContentLoaded', ()=>{
-  renderShindan();
-  document.getElementById('shindanBtn').onclick=()=>{
-    let aCount=0, bCount=0, answered=0;
-    SHINDAN_QS.forEach((_,i)=>{
-      const el=document.querySelector('input[name="sq'+i+'"]:checked');
-      if(el){ answered++; if(el.value==='a') aCount++; else bCount++; }
+function loadPrefs(){
+  try{
+    return {
+      place: localStorage.getItem('kyodatsu_place') || 'kobe',
+      poet: localStorage.getItem('kyodatsu_poet') || 'kyodatsu',
+      level: localStorage.getItem('kyodatsu_level') || '1'
+    };
+  }catch(e){ return {place:'kobe', poet:'kyodatsu', level:'1'}; }
+}
+function savePrefs(){
+  try{
+    const place = document.getElementById('placeSelect').value;
+    const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
+    const level = document.getElementById('level').value;
+    localStorage.setItem('kyodatsu_place', place);
+    localStorage.setItem('kyodatsu_poet', poet);
+    localStorage.setItem('kyodatsu_level', level);
+  }catch(e){}
+}
+function init(){
+  const sel=document.getElementById('placeSelect');
+  sel.innerHTML='';
+  LOCATIONS.forEach(l=>{
+    const o=document.createElement('option'); o.value=l.id; o.textContent=l.name; sel.appendChild(o);
+  });
+  // 保存されたデフォルトを復元
+  const prefs = loadPrefs();
+  sel.value = prefs.place;
+  document.getElementById('level').value = prefs.level;
+  document.querySelectorAll('#poetToggle button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.poet === prefs.poet);
+  });
+  // Service Workerの古いキャッシュを消す
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(regs=>{
+      regs.forEach(r=>r.unregister());
     });
-    if(answered<5){ alert('5問、全部答えてください'); return; }
-    const type = aCount>=3 ? 'chuya':'kenji';
-    const res=makePoemByType(type);
-    const rEl=document.getElementById('shindanResult');
-    rEl.style.display='block';
-    rEl.innerHTML='<div style="font-size:18px;font-weight:800">'+(type==='chuya'?'あなたは、中也タイプ':'あなたは、賢治タイプ')+'</div><div style="font-size:13px;opacity:.8;margin-top:6px">A：'+aCount+' / B：'+bCount+' — '+res.desc+'</div>';
-    document.getElementById('shindanPoemWrap').style.display='block';
-    document.getElementById('shindanPoemTitle').textContent=res.title;
-    document.getElementById('shindanPoem').textContent=res.poem;
-    document.getElementById('useShindanPoem').onclick=()=>{
-      document.getElementById('poem').value=res.poem;
-      draw();
-      window.scrollTo({top: document.getElementById('poem').getBoundingClientRect().top + window.scrollY - 80, behavior:'smooth'});
-    };
-  };
-  document.getElementById('shindanReset').onclick=()=>{
-    document.querySelectorAll('input[type=radio]').forEach(e=>e.checked=false);
-    document.getElementById('shindanResult').style.display='none';
-    document.getElementById('shindanPoemWrap').style.display='none';
-  };
-});
-
-
-// --- Combined: Live + AI + Shindan selection ---
-let selectedPoem = `曇天の神戸よ今朝の街は何処かぎこちなく、
-ぼくの足もとには冷たい風が吹き抜け、
-朝焼けの端っこがまるでぼろぎれのやうにはりついている、
-ああ痛いほどおなかがすいた朝だ`;
-let selectedLabel = 'AIの詩（自動）';
-function updateSelected(label, poem){
-  selectedLabel=label; selectedPoem=poem;
-  document.getElementById('selectedPoemLabel').textContent=label;
-  document.getElementById('selectedPoemPreview').textContent=poem.slice(0,120)+(poem.length>120?'…':'');
-  document.getElementById('poem').value=poem;
-  draw();
+    if('caches' in window){ caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))); }
+  }
+  loadLive().then(updateAll);
+  // 30分おきに自動更新: ページを開きっぱなしでも、新しい静止画と詩を取りに行く
+  // ユーザーの場所・詩風・濃淡は savePrefs で保存済みなので、更新しても変わらない
+  setInterval(()=>{
+    console.log('auto refresh 30min');
+    loadLive().then(updateAll);
+  }, 30*60*1000);
+  // 5分おきに軽くチェック: data.json が新しくなっていたら、すぐ更新
+  let lastUpdatedAt = null;
+  setInterval(async ()=>{
+    try{
+      const r = await fetch('data.json?v='+Date.now(), {cache:'no-store'});
+      if(!r.ok) return;
+      const j = await r.json();
+      if(lastUpdatedAt && j.updated_at === lastUpdatedAt) return;
+      if(!lastUpdatedAt) lastUpdatedAt = liveData?.updated_at;
+      if(j.updated_at !== lastUpdatedAt){ lastUpdatedAt = j.updated_at; liveData = j; updateAll(); }
+    }catch(e){}
+  }, 5*60*1000);
+  // 5分おきに data.json の updated_at だけ軽くチェック (30分より早く気づくため)
+  // 実際は30分ごとの更新に合わせるので、30分間隔で十分。5分チェックは入れない。
+  // アプリに戻ってきたら、すぐ更新 (バックグラウンドから復帰)
+  document.addEventListener('visibilitychange', ()=>{
+    if(!document.hidden){
+      console.log('back to foreground, refresh');
+      loadLive().then(updateAll);
+    }
+  });
 }
-document.addEventListener('DOMContentLoaded', ()=>{
-  // live image -> use
-  document.getElementById('useLiveImg').onclick=()=>{
-    const src=document.getElementById('liveImg').src;
-    img=new Image(); img.crossOrigin='anonymous'; img.onload=()=>{imgLoaded=true; draw();}; img.src=src;
-    alert('ライブ画像を、詩入り画像に使いました');
+document.getElementById('placeSelect').addEventListener('change', ()=>{ savePrefs(); updateAll(); });
+document.getElementById('level').addEventListener('input', ()=>{ savePrefs(); updateAll(); });
+document.getElementById('poetToggle').addEventListener('click', e=>{
+  if(e.target.tagName==='BUTTON'){
+    document.querySelectorAll('#poetToggle button').forEach(b=>b.classList.remove('active'));
+    e.target.classList.add('active'); savePrefs(); updateAll();
+  }
+});
+document.getElementById('sp').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='390px';document.getElementById('sp').classList.add('active');document.getElementById('tab').classList.remove('active')};
+document.getElementById('tab').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='768px';document.getElementById('tab').classList.add('active');document.getElementById('sp').classList.remove('active')};
+
+// ---- シェア ----
+let shareTab = 'instagram';
+const APP_URL = 'https://rayvisionkobe-collab.github.io/taiyou-kyodatsu/';
+function getShareData(){
+  const place = document.getElementById('placeSelect').value;
+  const loc = LOCATIONS.find(l=>l.id===place);
+  const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
+  const level = parseInt(document.getElementById('level').value || 1);
+  const poemFull = document.getElementById('poemMain')?.textContent || '';
+  const short = cutAt2Maru(poemFull); // SNSテキストも、画像と同じ「。」2つ。本体 (poemMain) は切らない
+  const poetName = poet==='kyodatsu' ? '虚脱の空' : '太陽の涙';
+  const placeName = loc?.name || place;
+  return {place, placeName, poet, poetName, level, poemFull, short};
+}
+// SNS画像専用 – 「。」2つまでで切る (「、」は数えない。本体の詩は切らない)
+function cutAt2Maru(text){
+  // 「。。」を1つと数える – 「歩く。。」で、2文と数えないように
+  const clean = (text||'').replace(/\n/g, '').replace(/。\s*。+/g, '。').replace(/、\s*、+/g, '、');
+  let count = 0;
+  for(let i=0; i<clean.length; i++){
+    if(clean[i]==='。'){
+      count++;
+      if(count >= 2) return clean.slice(0, i+1);
+    }
+  }
+  return clean;
+}
+function buildShareText(tab){
+  const d = getShareData();
+  // 2026-11-13 指定文面 – Instagram はこのまま、他はリンクが押せるので第2行だけ変える
+  // 場所は開いている場所に合わせる (神戸を開いていれば #神戸 になる)
+  const tags = '#太陽の涙虚脱の空 #詩 #天気 #' + d.placeName;
+  const intro = '今日のそらと僕のこころ…詩にしてみました。';
+  // 詩入り画像で投稿するなら、テキストに詩は入れない (ダブるから)
+  if(tab==='instagram'){
+    // Instagram はリンクが押せない → プロフィールのリンクから
+    return intro + '\n続きはプロフィールのリンクから\n' + tags;
+  }
+  // Threads / Bluesky / X はリンクが押せる
+  return intro + '\n続きはここから → ' + APP_URL + '\n' + tags;
+}
+function getActiveTab(){
+  return document.querySelector('#shareTabs button.active')?.dataset.tab || 'instagram';
+}
+function renderShare(){
+  shareTab = getActiveTab();
+  const text = buildShareText(shareTab);
+  document.getElementById('sharePreview').textContent = text;
+  const notes = {
+    instagram: 'Instagram: テキストをコピー → Instagramで画像を選んで貼る。リンクは押せないので「プロフィールのリンクから」と書いてあります。プロフィールにアプリのURLを貼っておいてください。',
+    threads: 'Threads: テキストをコピー → Threadsで貼る。リンクは押せます。',
+    bluesky: 'Bluesky: テキストをコピー → Blueskyで貼る。リンクは押せます。',
+    x: 'X: テキストをコピー → Xで貼る。140字を超えると切れるので、短めにしてあります。'
   };
-  document.getElementById('saveLiveImg2').onclick=()=>{ document.getElementById('saveImgBtn').click(); };
-  document.getElementById('citySel').onchange=(e)=>{
-    const c=e.target.value;
-    const w=document.getElementById('liveWeather').value;
-    document.getElementById('weather').value=w.replace(/神戸|大阪|東京|名古屋|福岡|札幌|仙台|広島|那覇/g, c);
-    draw();
-  };
-  // AI poems
-  const AI_POEMS = {
-    kyodatsu: [
-      `曇天の神戸よ今朝の街は何処かぎこちなく、\nぼくの足もとには冷たい風が吹き抜け、\n朝焼けの端っこがまるでぼろぎれのやうにはりついている、\nああ痛いほどおなかがすいた朝だ`,
-      `朝の神戸に降りしきる雨は、肌寒い空気のなかで巨大な橋の輪郭さえも解体し、\n濡れた石畳も錆びついた防波堤も灰色の霧に溶かしていくけれど、\nそれでもアスファルトに反射する湿った微かな光だけが、\nぎこちないぼくの在り処を静かに照らし続けている。`,
-      `夜明けの神戸に風は吹き抜けて、\nガラス玉のやうな僕の溜息よ。`
-    ],
-    taiyou: [
-      `太陽の涙が、虚脱の空に落ちる、\n神戸の朝は、まだ眠たいまま、\nぼくの心は、光と影のあわいで、\nそっと、目を覚ます。`,
-      `晴れの神戸よ、太陽の涙がきらめいて、\n青空の下、ぼくはひとり、風に吹かれている、\nそれでも、光だけが、ぼくの在り処を照らす。`
-    ]
-  };
-  let aiIdx=0;
-  document.querySelectorAll('[data-ai]').forEach(btn=>{
-    btn.onclick=()=>{
-      const k=btn.dataset.ai;
-      aiIdx=(aiIdx+1)%AI_POEMS[k].length;
-      document.getElementById('aiPoemBox').textContent=AI_POEMS[k][aiIdx];
-    };
+  document.getElementById('shareNote').textContent = notes[shareTab] || '';
+  const labelMap = {instagram:'今は Instagram 用です', threads:'今は Threads 用です', bluesky:'今は Bluesky 用です', x:'今は X 用です'};
+  const lbl = document.getElementById('shareTabLabel');
+  if(lbl) lbl.textContent = labelMap[shareTab] || '';
+}
+document.getElementById('shareBtn')?.addEventListener('click', ()=>{
+  renderShare();
+  document.getElementById('shareModal').classList.add('open');
+});
+document.getElementById('shareClose')?.addEventListener('click', ()=>{
+  document.getElementById('shareModal').classList.remove('open');
+});
+document.getElementById('shareModal')?.addEventListener('click', (e)=>{
+  if(e.target.id==='shareModal') e.target.classList.remove('open');
+});
+document.getElementById('shareTabs')?.addEventListener('click', (e)=>{
+  const btn = e.target.closest ? e.target.closest('button') : null;
+  if(btn && btn.dataset.tab){
+    document.querySelectorAll('#shareTabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    shareTab = btn.dataset.tab;
+    renderShare();
+  }
+});
+// タブボタンに、直接 onclick も付けて、二重に確実に
+document.querySelectorAll('#shareTabs button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('#shareTabs button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    shareTab = b.dataset.tab;
+    renderShare();
   });
-  document.getElementById('useAiPoem').onclick=()=>{
-    updateSelected('AIの詩（自動）', document.getElementById('aiPoemBox').textContent);
-  };
-  document.getElementById('regenAi').onclick=()=>{
-    // random pick
-    const all=[...AI_POEMS.kyodatsu, ...AI_POEMS.taiyou];
-    const p=all[Math.floor(Math.random()*all.length)];
-    document.getElementById('aiPoemBox').textContent=p;
-  };
-  // shindan poem -> also update selected
-  const origShindanBtn = document.getElementById('shindanBtn');
-  // we hook via mutation: after shindan generates, use button also updates selected
-  document.getElementById('useShindanPoem').addEventListener('click', ()=>{
-    // will be overwritten later, but also set selected label
-    setTimeout(()=>{ document.getElementById('selectedPoemLabel').textContent='診断の詩（'+document.getElementById('shindanPoemTitle').textContent+')'; }, 100);
-  });
-  // poem textarea manual edit -> selected becomes custom
-  document.getElementById('poem').addEventListener('input', ()=>{
-    document.getElementById('selectedPoemLabel').textContent='自分でアレンジした詩';
-    document.getElementById('selectedPoemPreview').textContent=document.getElementById('poem').value.slice(0,120);
-  });
-  updateSelected('AIの詩（自動）', selectedPoem);
+});
+document.getElementById('copyBtn')?.addEventListener('click', async ()=>{
+  const text = buildShareText(shareTab);
+  try{ await navigator.clipboard.writeText(text); alert('コピーしました。' + (shareTab==='instagram'?'Instagramで貼ってください':'貼ってください')); }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); alert('コピーしました'); }
+});
+document.getElementById('imgBtn')?.addEventListener('click', async ()=>{
+  const img = document.getElementById('liveImg');
+  const url = img?.src;
+  if(!url){ alert('画像がありません'); return; }
+  try{
+    const r = await fetch(url); const b = await r.blob();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(b);
+    const d = getShareData(); a.download = d.place + '-' + d.poet + '.jpg'; a.click();
+  }catch(e){ window.open(url, '_blank'); }
 });
 
-function draw(){
-  const poem=document.getElementById('poem').value;
-  const title=document.getElementById('title').value;
-  const weather=document.getElementById('weather').value;
-  const zoom=parseFloat(document.getElementById('zoom').value);
-  const posY=parseFloat(document.getElementById('posY').value)/100;
-  const fontSize=parseFloat(document.getElementById('fontSize').value);
-  const shade=parseFloat(document.getElementById('shade').value);
-  document.getElementById('zoomVal').textContent=zoom.toFixed(2);
-  document.getElementById('posVal').textContent=Math.round(posY*100)+'%';
-  document.getElementById('fontVal').textContent=fontSize;
-  document.getElementById('shadeVal').textContent=shade.toFixed(2);
-  // background
-  ctx.clearRect(0,0,curW,curH);
-  const blueBoost=parseFloat(document.getElementById('blueBoost').value);
-  const warm=parseFloat(document.getElementById('warm').value);
-  const sat=parseFloat(document.getElementById('sat').value);
-  const con=parseFloat(document.getElementById('con').value);
-  document.getElementById('blueVal').textContent=blueBoost.toFixed(2);
-  document.getElementById('warmVal').textContent=warm.toFixed(2);
-  document.getElementById('satVal').textContent=sat.toFixed(2);
-  document.getElementById('conVal').textContent=con.toFixed(2);
-  // Canva-like filter: keep smooth, no posterize. Blue is boosted via saturate+contrast, orange via warm overlay below.
-  ctx.save();
-  ctx.filter='saturate('+sat+') contrast('+con+') brightness(1.02)';
-  if(imgLoaded){
-    const iw=img.naturalWidth, ih=img.naturalHeight;
-    const scale=Math.max(curW/iw, curH/ih)*zoom;
-    const dw=iw*scale, dh=ih*scale;
-    const dx=(curW-dw)/2;
-    const dy=(curH-dh)*posY + (curH-dh)/2 - (curH-dh)/2 + (curH-dh)*0 + ( - (dh-curH)*posY );
-    // simpler: center with posY offset
-    const y = - (dh-curH)*posY;
-    ctx.drawImage(img, dx, y, dw, dh);
+// ---- 詩入り画像 ----
+let _shareSize = 'insta'; // insta: 1080x1350, x: 1280x720
+let _watercolor = true; // 軽い水彩 ON がデフォルト
+let _cropZoom = 1.0; // 1.0 = 全体, 2.0 = 2倍に拡大
+let _cropX = 0, _cropY = 0; // ドラッグで動かした分 (px)
+async function renderPoemImage(){
+  const d = getShareData();
+  const imgEl = document.getElementById('liveImg');
+  const wrap = document.getElementById('poemImgWrap');
+  wrap.style.display = 'block';
+  const canvas = document.getElementById('poemCanvas');
+  const ctx = canvas.getContext('2d');
+  const isVertical = _shareSize === 'insta';
+  const cw = isVertical ? 1080 : 1280;
+  const ch = isVertical ? 1350 : 720;
+  canvas.width = cw; canvas.height = ch;
+  // 背景: ライブ画像 – シェアだけ、1280px を試す (640だと、引き伸ばしてぼやける)
+  try{
+    const img = new Image(); img.crossOrigin = 'anonymous';
+    let _src = imgEl?.src || 'hero.jpg';
+    // weathernews は、/640/ の代わりに /1280/ があるので、シェアだけ高画質に
+    if(_src.includes('/640/')) _src = _src.replace('/640/', '/1280/');
+    img.src = _src;
+    await new Promise((res, rej)=>{ img.onload=res; img.onerror=res; });
+    const baseScale = Math.max(cw/img.width, ch/img.height);
+    const scale = baseScale * _cropZoom;
+    const w = img.width*scale, h = img.height*scale;
+    // トリミング位置: はみ出さないように、クランプする (隙間ができないように)
+    const _maxX = Math.max(0, (w - cw)/2), _maxY = Math.max(0, (h - ch)/2);
+    _cropX = Math.max(-_maxX, Math.min(_maxX, _cropX));
+    _cropY = Math.max(-_maxY, Math.min(_maxY, _cropY));
+    const _drawX = (cw-w)/2 + _cropX, _drawY = (ch-h)/2 + _cropY;
+    // タッチを、天気・時間で変える – 1つのフィルターで、全部同じにしない
+    const _hour = new Date().getHours();
+    const _weatherTxt = (document.getElementById('practical')?.textContent || '');
+    const _isSunset = (_hour >= 16 && _hour <= 19) || (_hour >= 5 && _hour <= 7);
+    const _isNight = _hour >= 20 || _hour <= 4;
+    const _isCloudy = _weatherTxt.includes('曇') || _weatherTxt.includes('雨');
+    let _touch = 'bright'; // 晴・青空
+    if(_isSunset) _touch = 'vivid'; // 朝焼け・夕焼け
+    if(_isNight || _isCloudy) _touch = 'mono'; // 夜・曇り → モノクロ + 粒子で、わざと
+    // やまと絵風 – 西洋水彩の滲みじゃなく、ベタッと平らに、色を残す、汚くしない
+    function _watercolorDraw(touch){
+      // 1) 1/3までしか小さくしない – 汚いベタにならない
+      const tmp = document.createElement('canvas');
+      tmp.width = Math.max(1, Math.round(img.width/3)); tmp.height = Math.max(1, Math.round(img.height/3));
+      const tctx = tmp.getContext('2d');
+      // 夜は、新版画の青と、灯りの黄に – モノクロにしない
+      let _f = 'saturate(1.18) contrast(1.02) brightness(1.05)';
+      if(touch==='mono') _f = 'saturate(1.10) contrast(1.08) brightness(1.10)';
+      if(touch==='vivid') _f = 'saturate(1.30) contrast(1.05) brightness(1.05)';
+      try{ tctx.filter = _f; }catch(e){}
+      tctx.drawImage(img, 0, 0, tmp.width, tmp.height);
+      try{
+        const id = tctx.getImageData(0,0,tmp.width,tmp.height);
+        const d = id.data;
+        const _step = touch==='mono' ? 48 : 64;
+        for(let i=0;i<d.length;i+=4){
+          let r = Math.round(d[i]/_step)*_step;
+          let g = Math.round(d[i+1]/_step)*_step;
+          let b = Math.round(d[i+2]/_step)*_step;
+          if(touch==='mono'){
+            // 新版画の夜 – 明るさで、色を置き換える
+            const y = (r*0.299 + g*0.587 + b*0.114);
+            if(y > 175){
+              // 灯り・月 – 温かい黄に (窓・街灯・月が、黄色く光る)
+              r = 255; g = 208; b = 105;
+            } else if(y > 115){
+              // 中間 – 青緑がかった、くすんだ青
+              r = Math.round(r*0.55 + 45); g = Math.round(g*0.55 + 85); b = Math.round(b*0.55 + 130);
+            } else if(y > 55){
+              // 暗い空・建物 – 深い藍
+              r = Math.round(r*0.45 + 18); g = Math.round(g*0.45 + 38); b = Math.round(b*0.45 + 92);
+            } else {
+              // ほぼ黒 – 藍黒
+              r = Math.round(r*0.35 + 10); g = Math.round(g*0.35 + 18); b = Math.round(b*0.35 + 48);
+            }
+          } else {
+            // 昼・夕は、やまと絵の色 – 青は群青に、灯りは金に
+            if(b > r + 20) b = Math.min(255, b + 12);
+            if(r > 160 && g > 120) { r = Math.min(255, r + 10); g = Math.min(255, g + 6); }
+          }
+          d[i]=r; d[i+1]=g; d[i+2]=b;
+        }
+        tctx.putImageData(id, 0, 0);
+      }catch(e){}
+      // 2) ぼかしは、ほんの少し (0.8px) – 輪郭を残す、やまと絵は平らで、輪郭がはっきり
+      try{ ctx.filter = 'blur(0.8px) ' + (touch==='mono' ? 'saturate(0.60) brightness(1.06)' : 'saturate(1.20) brightness(1.05) contrast(0.99)'); }catch(e){}
+      ctx.drawImage(tmp, _drawX, _drawY, w, h);
+      try{ ctx.filter = 'none'; }catch(e){}
+      // 3) 滲みは、ごく薄く – 1pxずらして、0.10だけ
+      try{
+        ctx.globalAlpha = 0.10; ctx.filter = 'blur(3px)';
+        ctx.drawImage(tmp, _drawX+1, _drawY+1, w, h);
+        ctx.globalAlpha = 1; ctx.filter = 'none';
+      }catch(e){ try{ ctx.globalAlpha = 1; ctx.filter = 'none'; }catch(e2){} }
+      // 4) 夜は、空に藍を重ねる – 新版画の空の深さ
+      if(touch==='mono'){
+        try{
+          const sky = ctx.createLinearGradient(0, 0, 0, ch*0.62);
+          sky.addColorStop(0, 'rgba(18,32,78,0.42)');
+          sky.addColorStop(1, 'rgba(18,32,78,0)');
+          ctx.fillStyle = sky; ctx.fillRect(0,0,cw,ch*0.62);
+        }catch(e){}
+      }
+      // 金泥っぽい、うっすら金 – 上から下に、ほんのり
+      try{
+        const gold = ctx.createLinearGradient(0, 0, 0, ch);
+        gold.addColorStop(0, 'rgba(212,175,55,0.10)');
+        gold.addColorStop(0.25, 'rgba(212,175,55,0.03)');
+        gold.addColorStop(1, 'rgba(212,175,55,0.06)');
+        ctx.fillStyle = gold; ctx.fillRect(0,0,cw,ch);
+      }catch(e){}
+      // 木版の横線 – 版画の刷り目、ごく薄く
+      if(touch==='mono'){
+        try{
+          ctx.globalAlpha = 0.05; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1;
+          for(let yy=0; yy<ch; yy+=7){ ctx.beginPath(); ctx.moveTo(0, yy); ctx.lineTo(cw, yy); ctx.stroke(); }
+          ctx.globalAlpha = 1;
+        }catch(e){ try{ ctx.globalAlpha = 1; }catch(e2){} }
+      }
+      // 5) 和紙は、ごく薄く – 白ノイズじゃなく、温かいベージュで、汚くしない
+      try{
+        const paper = document.createElement('canvas'); paper.width = 256; paper.height = 256;
+        const pctx = paper.getContext('2d'); const pid = pctx.createImageData(256,256);
+        for(let i=0;i<pid.data.length;i+=4){
+          const v = 246 + Math.random()*8; pid.data[i]=v; pid.data[i+1]=v-4; pid.data[i+2]=v-18; pid.data[i+3]=12;
+        }
+        pctx.putImageData(pid, 0, 0);
+        const pat = ctx.createPattern(paper, 'repeat');
+        ctx.globalAlpha = 0.28; ctx.fillStyle = pat; ctx.fillRect(0,0,cw,ch); ctx.globalAlpha = 1;
+      }catch(e){}
+    }
+    if(!_watercolor){
+      try{ ctx.filter = 'brightness(0.88) saturate(0.75) contrast(0.95) blur(2px)'; }catch(e){}
+      ctx.drawImage(img, _drawX, _drawY, w, h);
+      try{ ctx.filter = 'none'; }catch(e){}
+    } else {
+      _watercolorDraw(_touch);
+    }
+    // 全体に、うっすら黒をかける – 詩が読める背景に
+    const bg = ctx.createLinearGradient(0, 0, 0, ch);
+    bg.addColorStop(0, 'rgba(0,0,0,0.28)');
+    bg.addColorStop(0.5, 'rgba(0,0,0,0.10)');
+    bg.addColorStop(1, 'rgba(0,0,0,0.30)');
+    ctx.fillStyle = bg; ctx.fillRect(0,0,cw,ch);
+    // 周りを、少し暗くして、詩を立たせる (ビネット)
+    const vig = ctx.createRadialGradient(cw/2, ch/2, Math.min(cw,ch)*0.35, cw/2, ch/2, Math.max(cw,ch)*0.75);
+    vig.addColorStop(0, 'rgba(0,0,0,0)');
+    vig.addColorStop(1, 'rgba(0,0,0,0.22)');
+    ctx.fillStyle = vig; ctx.fillRect(0,0,cw,ch);
+  }catch(e){ ctx.fillStyle='#1c1917'; ctx.fillRect(0,0,1280,720); }
+  // 薄い図形を透過で置くためのヘルパー (角丸)
+  function roundRect(x, y, w, h, r){
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
   }
-  ctx.restore();
-  // Warm overlay only near horizon / lower sky - makes sunrise clouds orange, sky stays blue
-  if(warm>0){
-    const wg=ctx.createLinearGradient(0,curH*0.35,0,curH*0.95);
-    wg.addColorStop(0,'rgba(255,140,60,0)');
-    wg.addColorStop(0.65,'rgba(255,140,60,'+(warm*0.55)+')');
-    wg.addColorStop(1,'rgba(255,120,40,'+warm+')');
-    ctx.fillStyle=wg; ctx.fillRect(0,0,curW,curH);
-    // Blue boost overlay on upper sky only - keeps blue deep, not whole image orange
-    const bg=ctx.createLinearGradient(0,0,0,curH*0.55);
-    bg.addColorStop(0,'rgba(30,90,220,'+((blueBoost-1)*0.22)+')');
-    bg.addColorStop(1,'rgba(30,90,220,0)');
-    ctx.fillStyle=bg; ctx.fillRect(0,0,curW,curH*0.55);
+  // 空の明るさを測る – 朝(明るい)と夜(暗い)で、箱の濃さを変える
+  function getBrightness(x, y, w, h){
+    try{
+      const d = ctx.getImageData(Math.max(0, x|0), Math.max(0, y|0), Math.max(1, w|0), Math.max(1, h|0)).data;
+      let sum = 0, n = 0;
+      for(let i=0; i<d.length; i+=16){ sum += (d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114); n++; }
+      return n ? sum/n : 100;
+    }catch(e){ return 100; }
   }
-  if(imgLoaded){
-    // keep below for structure, already drawn
-  } else {
-    const g=ctx.createLinearGradient(0,0,0,curH);
-    g.addColorStop(0,'#3a7bd5'); g.addColorStop(0.55,'#7aa8e6'); g.addColorStop(1,'#f6c9a0');
-    ctx.fillStyle=g; ctx.fillRect(0,0,curW,curH);
+  function alphaForBrightness(b){
+    // 明るいほど、濃く (朝: 0.35 / 昼: 0.22 / 夕: 0.12 / 夜: 0.06)
+    if(b > 170) return 0.38;
+    if(b > 130) return 0.25;
+    if(b > 80) return 0.14;
+    return 0.07;
   }
-  // gentle top shade for readability, like Canva: not a box, just a soft gradient
-  if(shade>0){
-    const g2=ctx.createLinearGradient(0,0,0,curH*0.55);
-    g2.addColorStop(0,'rgba(0,0,0,'+shade+')');
-    g2.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=g2; ctx.fillRect(0,0,curW,curH*0.55);
-    const g3=ctx.createLinearGradient(0,curH*0.72,0,curH);
-    g3.addColorStop(0,'rgba(0,0,0,0)');
-    g3.addColorStop(1,'rgba(0,0,0,'+(shade+0.12)+')');
-    ctx.fillStyle=g3; ctx.fillRect(0,curH*0.72,curW,curH*0.28);
+  // 詩 – 縦は大きく、横は今まで通り
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'left';
+  const raw = cutAt2Maru(d.poemFull);
+  // フレーズ改行: 「。」と「、」で切る – 11文字で割らない
+  // 例: 「誰にも知られず、泣いた / 夜がある。」みたいに、言葉で切る
+  const _poemFont = isVertical ? 48 : 40;
+  const _lineH = isVertical ? 78 : 68;
+  const _poemTop = isVertical ? 150 : 110;
+  const _leftX = isVertical ? 90 : 110;
+  const _maxChars = isVertical ? 11 : 12;
+  const wrapped = [];
+  {
+    const noStart = new Set(['。','、','」','』','）','］','｝','〜','ー','…','・']);
+    const noEnd = new Set(['「','『','（','［','｛','〈','《']);
+    const sentences = raw.split('。').filter(s=>s.trim()!=='').map(s=>s+'。');
+    sentences.forEach(sent=>{
+      let cur = '';
+      for(let i=0; i<sent.length; i++){
+        const ch = sent[i];
+        if(noEnd.has(ch) && cur.length >= 12){ wrapped.push(cur); cur = ch; continue; }
+        cur += ch;
+        if(ch === '。'){ wrapped.push(cur); cur = ''; continue; }
+        if(cur.length >= _maxChars){
+          // 禁則: 次が「。」や「、」なら、一緒にくっつける (「。」が次の行に1つだけ残らないように)
+          while(i+1 < sent.length && noStart.has(sent[i+1])){
+            i++; cur += sent[i];
+            // 「。」が来たら、そこで文が終わるので、すぐ改行
+            if(sent[i] === '。') break;
+          }
+          wrapped.push(cur); cur = '';
+        }
+      }
+      if(cur) wrapped.push(cur);
+    });
   }
-  // poem top-left, like Canva
-  const padX = curW*0.07;
-  const padY = curH*0.11;
-  ctx.textAlign='left'; ctx.textBaseline='top';
-  ctx.font='600 '+fontSize+'px "Hiragino Mincho ProN","Yu Mincho","Hiragino Kaku Gothic ProN",serif';
-  ctx.shadowColor='rgba(0,0,0,0.55)'; ctx.shadowBlur=12; ctx.shadowOffsetY=2;
-  ctx.fillStyle='#fff';
-  const lines=poem.split('\n');
-  const lh=fontSize*1.55;
-  lines.forEach((line,i)=>{
-    ctx.fillText(line, padX, padY + i*lh);
+  // フレーズ改行に、上書き – 「、」は行頭に来ない、「。」は1つだけ、右端で切れない
+  {
+    // 1) クリーニング: 「。。」「。 。」「、、」→1つに – スペース入りも消す
+    const clean = raw.replace(/。\s*。+/g, '。').replace(/、\s*、+/g, '、').replace(/\.\s*\./g, '。');
+    const _phrases = [];
+    const _max = _maxChars; // 縦11 / 横12
+    // 2) まず「。」で文に分け、次に「、」でフレーズに分け、14文字を超えたら、さらに切る
+    clean.split('。').filter(s=>s.trim()!=='').forEach(sent=>{
+      const s = sent + '。';
+      // 「、」で分ける – 「、」は前のフレーズの末尾に残す
+      const parts = s.split('、');
+      let cur = '';
+      const pushCur = ()=>{
+        if(cur){ _phrases.push(cur); cur=''; }
+      };
+      parts.forEach((p, idx)=>{
+        // piece = フレーズ + (最後以外は「、」を付ける) – 最後は、既に「。」があるなら、付けない (「。。」の原因)
+        let piece = p;
+        if(idx < parts.length-1) piece += '、';
+        else if(!piece.endsWith('。')) piece += '。';
+        // piece 自体が長すぎたら、_max で切る – 「、」「。」が頭に来ないように
+        while(piece.length > _max){
+          const take = _max - cur.length;
+          if(take <= 0){ pushCur(); continue; }
+          let chunk = piece.slice(0, take);
+          // 禁則: chunk の最後が「「『（」なら、1つ手前で切る
+          while(chunk.length>1 && ['「','『','（','［','｛'].includes(chunk[chunk.length-1])) chunk = chunk.slice(0,-1);
+          cur += chunk; piece = piece.slice(chunk.length);
+          pushCur();
+        }
+        if((cur + piece).length <= _max){ cur += piece; }
+        else { pushCur(); cur = piece; }
+      });
+      pushCur();
+    });
+    if(_phrases.length){ wrapped.length = 0; _phrases.forEach(p=>wrapped.push(p)); }
+    // 後処理: 行頭の「、」「。」を前の行へ、1文字だけの行を前の行へ
+    for(let i=1;i<wrapped.length;i++){
+      // 行頭が「、」や「。」なら、前の行の末尾へ
+      while(wrapped[i] && ['、','。','」','』','）'].includes(wrapped[i][0])){
+        wrapped[i-1] += wrapped[i][0];
+        wrapped[i] = wrapped[i].slice(1);
+        if(!wrapped[i]){ wrapped.splice(i,1); i--; break; }
+      }
+    }
+    // 1文字だけの行 (「く」「て」「ろ」「。」など) は、前の行へ戻す
+    for(let i=1;i<wrapped.length;i++){
+      if(wrapped[i] && wrapped[i].length <= 1){
+        wrapped[i-1] += wrapped[i];
+        wrapped.splice(i,1); i--;
+      }
+    }
+    // 空の行を消す
+    for(let i=wrapped.length-1;i>=0;i--){ if(!wrapped[i] || !wrapped[i].trim()) wrapped.splice(i,1); }
+    // 3) 念のため、幅でチェック – 測って、はみ出たら、切る
+    try{
+      const _cw2 = isVertical ? 1080 : 1280;
+      const _limit = _cw2 - 180;
+      for(let i=0;i<wrapped.length;i++){
+        while(ctx.measureText(wrapped[i]).width > _limit && wrapped[i].length > 1){
+          const over = wrapped[i];
+          // 後ろから、_max まで戻して、次の行へ
+          const cut = over.slice(0, _max);
+          wrapped[i] = cut;
+          wrapped.splice(i+1, 0, over.slice(_max));
+          i++; break;
+        }
+      }
+    }catch(e){}
+  }
+  // 詩の下に、薄い図形 – 縦は大きく、横は今まで通り
+  const leftX = _leftX + 55;
+  const poemTop = _poemTop;
+  const poemLineH = _lineH;
+  const poemH = wrapped.length * poemLineH + 70;
+  let maxLen = 0; wrapped.forEach(l=>{ if(l.length>maxLen) maxLen=l.length; });
+  const poemW = Math.min(cw-140, maxLen * (_poemFont+2) + 110);
+  const poemBright = getBrightness(leftX-55, poemTop-55, poemW, poemH);
+  // 箱は、消す – 5枚の参考通り、文字に影だけで、写真の上に直接載せる
+  // const poemAlpha = alphaForBrightness(poemBright);
+  // roundRect(...); ctx.fill();
+  // 詩を描く
+  ctx.fillStyle = '#fff';
+  ctx.font = '400 ' + _poemFont + 'px "Shippori Mincho B1", serif';
+  try{ ctx.letterSpacing = '3px'; }catch(e){}
+  // 文字に影 – 朝(明るい)は強く、夜(暗い)は弱く
+  const poemShadow = poemBright > 130 ? 0.65 : 0.4;
+  const poemBlur = poemBright > 130 ? 14 : 8;
+  ctx.shadowColor = 'rgba(0,0,0,' + poemShadow + ')';
+  ctx.shadowBlur = poemBlur;
+  ctx.shadowOffsetY = 2;
+  let y = poemTop + 26;
+  wrapped.forEach(line=>{
+    ctx.fillText(line, leftX, y); y += poemLineH;
   });
-  ctx.shadowColor='rgba(0,0,0,0.45)'; ctx.shadowBlur=8; ctx.shadowOffsetY=1;
-  // bottom-right, horizontal 2 lines, like Canva (not diagonal)
-  const bx = curW - curW*0.045;
-  const titleSize = Math.round(curW*0.018);
-  const weaSize = Math.round(curW*0.016);
-  ctx.textAlign='right';
-  ctx.font='600 '+titleSize+'px "Hiragino Kaku Gothic ProN",sans-serif';
-  ctx.fillStyle='rgba(255,255,255,0.98)';
-  ctx.fillText(title, bx, curH - curH*0.095);
-  ctx.font='500 '+weaSize+'px "Hiragino Kaku Gothic ProN",sans-serif';
-  ctx.fillStyle='rgba(255,255,255,0.92)';
-  ctx.fillText(weather, bx, curH - curH*0.095 + titleSize + 6);
-  ctx.shadowColor='transparent'; ctx.shadowBlur=0;
-  // share text preview
-  document.getElementById('sharePreview').textContent =
-    '今日のそらと僕のこころ…詩にしてみました。\n続きはこちらから → [アプリのURL]\n#太陽の涙虚脱の空 #詩 #天気 #神戸';
+  ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+  // 右下に、タイトルと天気 – 枠の中で中央寄せ・建物にかからないように、もう少し上に
+  let weatherText = document.getElementById('practical')?.textContent?.trim() || '';
+  weatherText = weatherText.split('\n')[0].trim();
+  const titleText = '－太陽の涙、虚脱の空－';
+  // practical に、すでに場所が入っているなら、場所を2回付けない (仙台 仙台 にならないように)
+  const weatherLine = weatherText ? (weatherText.includes(d.placeName) ? weatherText : weatherText + ' ' + d.placeName) : d.placeName;
+  // 枠のサイズ
+  ctx.font = '400 22px "Shippori Mincho B1", serif'; // 28 → 22 小さく
+  const titleW = ctx.measureText(titleText).width;
+  ctx.font = '400 18px "Shippori Mincho B1", serif'; // 24 → 18 小さく
+  const weatherW = ctx.measureText(weatherLine).width;
+  const boxW = Math.max(titleW, weatherW) + 50;
+  const boxH = 82;
+  const boxX = cw - boxW - (isVertical ? 70 : 90);
+  const boxY = isVertical ? ch - 220 : 470;
+  const boxCenterX = boxX + boxW / 2;
+  // 右下も、明るさで変える – 朝は濃く、夜は薄く (コンパクトはそのまま)
+  const bottomBright = getBrightness(boxX, boxY, boxW, boxH);
+  const bottomAlpha = alphaForBrightness(bottomBright);
+  ctx.fillStyle = 'rgba(0,0,0,' + bottomAlpha + ')';
+  roundRect(boxX, boxY, boxW, boxH, 16);
+  ctx.fill();
+  // タイトルと天気は、枠の中で中央寄せ – 字体も明朝で細く
+  ctx.textAlign = 'center';
+  try{ ctx.letterSpacing = '1px'; }catch(e){}
+  ctx.shadowColor = bottomBright > 130 ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.35)';
+  ctx.shadowBlur = bottomBright > 130 ? 10 : 5;
+  ctx.shadowOffsetY = 1;
+  ctx.font = '400 22px "Shippori Mincho B1", serif'; // 28 → 22
+  ctx.fillStyle = '#fff';
+  ctx.fillText(titleText, boxCenterX, boxY + 35);
+  ctx.font = '400 18px "Shippori Mincho B1", serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.92)';
+  ctx.fillText(weatherLine, boxCenterX, boxY + 62);
+  ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+  try{ ctx.letterSpacing = '0px'; }catch(e){}
+  // 額縁は、やめる – 雰囲気を壊すので
+  // アクセント線は、消す – マーカーみたいに見えるので
+  ctx.textAlign = 'left';
 }
-function setSize(w,h,label){
-  curW=w; curH=h; cv.width=w; cv.height=h;
-  document.getElementById('sizeLabel').textContent='プレビュー：'+w+' × '+h;
-  draw();
-}
-document.getElementById('btnX').onclick=()=>setSize(1280,720,'x');
-document.getElementById('btnIG').onclick=()=>setSize(1080,1350,'ig');
-['poem','title','weather','zoom','posY','fontSize','shade','blueBoost','warm','sat','con'].forEach(id=>{
-  document.getElementById(id).addEventListener('input',draw);
-});
-document.querySelectorAll('[data-filter]').forEach(btn=>{
-  btn.onclick=()=>{
-    const f=btn.dataset.filter;
-    if(f==='none'){ document.getElementById('sat').value=1.0; document.getElementById('con').value=1.0; document.getElementById('warm').value=0; document.getElementById('blueBoost').value=1.0; }
-    if(f==='asayake'){ document.getElementById('sat').value=1.30; document.getElementById('con').value=1.10; document.getElementById('warm').value=0.18; document.getElementById('blueBoost').value=1.25; }
-    if(f==='aozora'){ document.getElementById('sat').value=1.32; document.getElementById('con').value=1.08; document.getElementById('warm').value=0.04; document.getElementById('blueBoost').value=1.35; }
-    if(f==='ame'){ document.getElementById('sat').value=0.85; document.getElementById('con').value=1.05; document.getElementById('warm').value=0; document.getElementById('blueBoost').value=0.95; }
-    draw();
+document.getElementById('poemImgBtn')?.addEventListener('click', ()=>{ renderPoemImage(); });
+// トリミング: キャンバスをドラッグで動かす
+(function(){
+  const cv = document.getElementById('poemCanvas');
+  if(!cv) return;
+  let _drag = null;
+  const _start = (e)=>{
+    const r = cv.getBoundingClientRect();
+    const x = (e.touches? e.touches[0].clientX : e.clientX) - r.left;
+    const y = (e.touches? e.touches[0].clientY : e.clientY) - r.top;
+    _drag = {sx: x, sy: y, ox: _cropX, oy: _cropY};
+    cv.style.cursor = 'grabbing';
   };
+  const _move = (e)=>{
+    if(!_drag) return;
+    e.preventDefault();
+    const r = cv.getBoundingClientRect();
+    const x = (e.touches? e.touches[0].clientX : e.clientX) - r.left;
+    const y = (e.touches? e.touches[0].clientY : e.clientY) - r.top;
+    const cw2 = cv.width, ch2 = cv.height;
+    // キャンバス上の移動量を、実サイズに換算
+    _cropX = _drag.ox + (x - _drag.sx) * (cw2 / r.width);
+    _cropY = _drag.oy + (y - _drag.sy) * (ch2 / r.height);
+  };
+  const _end = ()=>{
+    if(!_drag) return;
+    _drag = null; cv.style.cursor = 'grab';
+    renderPoemImage();
+  };
+  cv.addEventListener('mousedown', _start);
+  window.addEventListener('mousemove', _move);
+  window.addEventListener('mouseup', _end);
+  cv.addEventListener('touchstart', _start, {passive:true});
+  cv.addEventListener('touchmove', _move, {passive:false});
+  cv.addEventListener('touchend', _end);
+})();
+// ズーム: スライダー
+document.getElementById('cropZoom')?.addEventListener('input', (e)=>{
+  _cropZoom = parseInt(e.target.value, 10) / 100;
+  const v = document.getElementById('cropZoomVal'); if(v) v.textContent = e.target.value + '%';
 });
-document.getElementById('file').addEventListener('change',e=>{
-  const f=e.target.files[0]; if(!f) return;
-  const url=URL.createObjectURL(f);
-  img=new Image(); img.onload=()=>{imgLoaded=true; draw();}; img.src=url;
+document.getElementById('cropZoom')?.addEventListener('change', ()=>{ renderPoemImage(); });
+document.getElementById('cropReset')?.addEventListener('click', ()=>{
+  _cropZoom = 1.0; _cropX = 0; _cropY = 0;
+  const s = document.getElementById('cropZoom'); if(s) s.value = '100';
+  const v = document.getElementById('cropZoomVal'); if(v) v.textContent = '100%';
+  renderPoemImage();
 });
-document.getElementById('useSample').onclick=()=>{
-  img=new Image(); img.crossOrigin='anonymous';
-  img.onload=()=>{imgLoaded=true; draw();}; img.src=sampleUrl;
-};
-document.getElementById('dl').onclick=()=>{
-  const a=document.createElement('a');
-  a.download='taiyou_'+curW+'x'+curH+'.png';
-  a.href=cv.toDataURL('image/png'); a.click();
-};
-document.getElementById('copyText').onclick=async()=>{
-  const t=document.getElementById('sharePreview').textContent;
-  try{ await navigator.clipboard.writeText(t); alert('シェア文をコピーしました'); }catch(e){ alert(t); }
-};
+function _setSizeBtn(){
+  const insta = document.getElementById('sizeInsta'), x = document.getElementById('sizeX');
+  if(!insta||!x) return;
+  const on = {background:'#f5f1e8', color:'#1c1917', fontWeight:'700'};
+  const off = {background:'transparent', color:'#a8a29e', fontWeight:'400'};
+  Object.assign(insta.style, _shareSize==='insta'?on:off);
+  Object.assign(x.style, _shareSize==='x'?on:off);
+  const won = document.getElementById('waterOn'), woff = document.getElementById('waterOff');
+  if(won&&woff){ Object.assign(won.style, _watercolor?on:off); Object.assign(woff.style, _watercolor?off:on); }
+}
+document.getElementById('sizeInsta')?.addEventListener('click', ()=>{ _shareSize='insta'; _setSizeBtn(); renderPoemImage(); });
+document.getElementById('sizeX')?.addEventListener('click', ()=>{ _shareSize='x'; _setSizeBtn(); renderPoemImage(); });
+document.getElementById('waterOn')?.addEventListener('click', ()=>{ _watercolor=true; _setSizeBtn(); renderPoemImage(); });
+document.getElementById('waterOff')?.addEventListener('click', ()=>{ _watercolor=false; _setSizeBtn(); renderPoemImage(); });
+document.getElementById('poemImgSave')?.addEventListener('click', ()=>{
+  const canvas = document.getElementById('poemCanvas');
+  const a = document.createElement('a');
+  const d = getShareData();
+  a.download = d.place + '-' + d.poet + '-poem.jpg';
+  a.href = canvas.toDataURL('image/jpeg', 0.9);
+  a.click();
+});
+document.getElementById('poemImgShare')?.addEventListener('click', async ()=>{
+  const canvas = document.getElementById('poemCanvas');
+  try{
+    const blob = await new Promise(res=>canvas.toBlob(res, 'image/jpeg', 0.9));
+    const f = new File([blob], 'poem.jpg', {type:'image/jpeg'});
+    if(navigator.share && navigator.canShare({files:[f]})){
+      await navigator.share({text: buildShareText(shareTab), files:[f]});
+    } else {
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='poem.jpg'; a.click();
+    }
+  }catch(e){ console.log(e); }
+});
 
-// Saved image handlers
-document.getElementById('saveImgBtn').onclick=()=>{
-  if(!imgLoaded){ alert('まず写真を選んでください'); return; }
-  // compress to 900px for storage
-  const c=document.createElement('canvas');
-  const maxW=900; const sc=Math.min(1, maxW/img.naturalWidth);
-  c.width=img.naturalWidth*sc; c.height=img.naturalHeight*sc;
-  const cctx=c.getContext('2d'); cctx.drawImage(img,0,0,c.width,c.height);
-  const data=c.toDataURL('image/jpeg',0.82);
-  const a=getSavedImages(); a.unshift(data); if(a.length>8) a=a.slice(0,8); setSavedImages(a); renderSaved();
-  alert('写真を保存しました。あとで「保存した画像」から選べます');
-};
-document.getElementById('fileMulti').addEventListener('change',e=>{
-  const files=[...e.target.files]; if(!files.length) return;
-  // first file becomes current, all get saved
-  files.forEach(f=>{
-    const url=URL.createObjectURL(f);
-    const im=new Image(); im.onload=()=>{
-      const c=document.createElement('canvas');
-      const maxW=900; const sc=Math.min(1, maxW/im.naturalWidth);
-      c.width=im.naturalWidth*sc; c.height=im.naturalHeight*sc;
-      c.getContext('2d').drawImage(im,0,0,c.width,c.height);
-      const data=c.toDataURL('image/jpeg',0.82);
-      const a=getSavedImages(); a.unshift(data); if(a.length>8) a=a.slice(0,8); setSavedImages(a); renderSaved();
-    }; im.src=url;
-  });
-  // use first file as current
-  const first=files[0];
-  const url2=URL.createObjectURL(first);
-  img=new Image(); img.onload=()=>{imgLoaded=true; draw();}; img.src=url2;
+document.getElementById('osShareBtn')?.addEventListener('click', async ()=>{
+  const text = buildShareText(shareTab);
+  const img = document.getElementById('liveImg');
+  try{
+    let files = [];
+    if(img?.src && navigator.canShare){
+      const r = await fetch(img.src); const b = await r.blob();
+      const f = new File([b], 'live.jpg', {type:'image/jpeg'});
+      if(navigator.canShare({files:[f]})) files=[f];
+    }
+    if(navigator.share){
+      await navigator.share({text, files: files.length?files:undefined});
+    } else { await navigator.clipboard.writeText(text); alert('コピーしました'); }
+  }catch(e){ console.log('share cancel', e); }
 });
-document.getElementById('savePoemBtn').onclick=()=>{
-  const p=document.getElementById('poem').value.trim();
-  if(!p){ alert('詩が空です'); return; }
-  const a=getSavedPoems(); a.unshift(p); if(a.length>10) a=a.slice(0,10); setSavedPoems(a); renderSaved();
-  alert('詩を保存しました');
-};
-document.getElementById('clearPoemBtn').onclick=()=>{ document.getElementById('poem').value=''; draw(); };
-renderSaved();
-draw();
+
+document.addEventListener('DOMContentLoaded', init);
 </script>
+
+
+
+
+
+
 </body>
 </html>
