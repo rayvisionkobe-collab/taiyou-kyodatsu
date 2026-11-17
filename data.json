@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-17T12:46:26.099456+09:00",
+  "updated_at": "2026-11-17T13:50:31.245621+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -17,7 +17,7 @@
           "3": "曇った札幌の昼さがり、重たい雲の底から降り注ぐ銀の光と冷たい風を受けて、ぼくらはみんな大気という大きな海の底にいる、青い星のひとつの小さな命として、しっかりと息をしているよ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
+      "model": "cached",
       "updated_at": "2026-11-15T11:43:57.811969+09:00",
       "status": "keep-old-image",
       "poem_date": "2026-11-17",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-17T12:46:26.099456+09:00",
+      "updated_at": "2026-11-17T13:50:31.245621+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "morning",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-17T12:46:26.099456+09:00",
+      "updated_at": "2026-11-17T13:50:31.245621+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "morning",
@@ -86,8 +86,8 @@
           "3": "曇る那覇の昼下がり、あまねく銀河の澱の底にて、風は静かに街を撫で、誰もがみな硝子の貝殻のなかで光の粒を数えているような、不思議に涼しい午前の名残のただなか。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-17T12:46:26.099456+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-17T13:50:31.245621+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "noon",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-17T12:46:26.099456+09:00",
+      "updated_at": "2026-11-17T13:50:31.245621+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "morning",
@@ -155,8 +155,8 @@
           "3": "仙台に、曇りの光が落ちている。昼下がり、海の向こうで風が渡ろうとしている。肌寒い光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった."
         }
       },
-      "model": "gemini-3.8-flash",
-      "updated_at": "2026-11-17T12:46:26.099456+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-17T13:50:31.245621+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-17T12:46:26.099456+09:00",
+      "updated_at": "2026-11-17T13:50:31.245621+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "morning",
@@ -201,8 +201,8 @@
           "3": "広島の曇つた昼下がり冷たい風がどこからか吹きすぎてゆく銀色の大きな空の底で南瓜の蔓がうねり透明な粒子がきらめくぼくはただ青空の欠片を探してこの古い大地を歩き続けるのだ"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-17T12:46:26.099456+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-17T13:50:31.245621+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "noon",
