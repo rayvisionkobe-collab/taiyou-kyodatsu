@@ -112,6 +112,7 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
 空だけが、遠くへ行って
 しまうような、
 虚脱の午後だった。</div>
+  <div id="poemTime" style="font-size:11px;color:#a8a29e;text-align:center;margin-top:4px;display:none"></div>
   </div>
   <!-- シェアモーダル -->
   <div class="share-modal" id="shareModalOLD" style="display:none !important;">
@@ -247,7 +248,7 @@ function breakByMaru(text){
 }
 const LOCATIONS = [
   {id:"kobe", name:"神戸", lat:34.69, lon:135.19, weathernews_id:"7CDDE9067E16", page_url:"https://weathernews.jp/onebox/livecam/kinki/hyogo/7CDDE9067E16/"},
-  {id:"osaka", name:"大阪", lat:34.69, lon:135.50, weathernews_id:"7CDDE906F8CE", page_url:"https://weathernews.jp/onebox/livecam/kinki/osaka/7CDDE906F8CE/"},
+  {id:"osaka", name:"大阪", lat:34.69, lon:135.50, weathernews_id:"7CDDE9068718", page_url:"https://weathernews.jp/onebox/livecam/kinki/osaka/7CDDE9068718/"},
   {id:"sapporo", name:"札幌", lat:43.06, lon:141.35, weathernews_id:"7CDDE9068F23", page_url:"https://weathernews.jp/onebox/livecam/hokkaido/douou/7CDDE9068F23/"},
   {id:"tokyo", name:"東京", lat:35.68, lon:139.76, weathernews_id:"7CDDE90689B1", page_url:"https://weathernews.jp/onebox/livecam/kanto/tokyo/7CDDE90689B1/"},
   {id:"sendai", name:"仙台", lat:38.26, lon:140.87, weathernews_id:"7CDDE905CDB1", page_url:"https://weathernews.jp/onebox/livecam/tohoku/miyagi/7CDDE905CDB1/"},
@@ -299,6 +300,7 @@ async function updateAll(){
   const level = parseInt(document.getElementById('level').value);
   const levels = ["からっと","ほどよく","こいめ","仙人級"];
   document.getElementById('poemMain').textContent = breakByMaru(getPoem(place, poet, level));
+  try{ const _pe=liveData?.locations?.[place]; const _el=document.getElementById('poemTime'); if(_el){ if(_pe?.poem_date || _pe?.poem_slot){ const _slotMap={morning:'朝', noon:'昼', evening:'夕方'}; _el.textContent='詩：'+(_pe.poem_date||'')+' '+(_slotMap[_pe.poem_slot]||_pe.poem_slot||'')+'の詩'; _el.style.display='block'; } else { _el.style.display='none'; } } }catch(e){}
   try{const pm=document.getElementById('poemMain'); if(pm){const longest=Math.max(...pm.textContent.split('\n').map(l=>l.length)); if(longest>=16) pm.style.fontSize='21px'; else if(longest>=14) pm.style.fontSize='23px'; else pm.style.fontSize='';}}catch(e){}
   const placeName = loc.name;
   const isAI = !!liveData?.locations?.[place]?.poems;
