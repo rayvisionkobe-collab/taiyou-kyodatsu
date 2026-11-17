@@ -19,7 +19,7 @@ header h1{font-family:"Shippori Mincho B1",serif;font-size:14px;letter-spacing:0
 @media(max-width:430px){.hero img{aspect-ratio:4/3;}}
 .poem-wrap{max-width:768px;margin:0 auto;padding:24px 16px;background:rgba(28,25,23,0.78);backdrop-filter:blur(12px)}
 .poem-card{padding:28px 20px;text-align:left}
-.poem-main{font-family:"Yuji Syuku",cursive;font-size:26px;line-height:1.9;letter-spacing:0.04em;white-space:pre-wrap;text-align:left}
+.poem-main{font-family:"Yuji Syuku",cursive;font-size:clamp(20px,5.8vw,26px);line-height:1.95;word-break:keep-all;overflow-wrap:break-word;line-break:strict;text-wrap:pretty;letter-spacing:0.04em;white-space:pre-wrap;text-align:left}
 .poem-sub{margin-top:12px;font-size:13px;color:var(--muted);font-family:"Shippori Mincho B1",serif}
 .practical{margin-top:16px;padding:10px 14px;background:#1e1e1e;border-radius:8px;color:var(--text);font-size:13px;line-height:1.5}
 .controls{margin-top:20px;display:flex;flex-direction:column;gap:12px}
@@ -110,7 +110,8 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
     <div class="poem-main" id="poemMain">神戸の空は、今日も静かだ。
 風が、遠くで何かを運んでくる。
 曇りの午後、どこへも行けず、
-空だけが遠くへ行ってしまうような、
+空だけが、遠くへ行って
+しまうような、
 虚脱の午後だった。</div>
   </div>
   <!-- シェアモーダル -->
