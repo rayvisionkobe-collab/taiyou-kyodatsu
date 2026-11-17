@@ -361,15 +361,13 @@ function init(){
   // 追加：シェア箱、診断、詩入り画像
 function openShareSheet(){const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.style.display='block';c.style.visibility='visible';requestAnimationFrame(()=>c.classList.add('open'));} if(o){o.style.display='block';requestAnimationFrame(()=>o.classList.add('open'));}}
 function closeShareSheet(){const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.classList.remove('open');setTimeout(()=>{if(!c.classList.contains('open')){c.style.display='none';c.style.visibility='hidden';}},320);} if(o){o.classList.remove('open');setTimeout(()=>{if(!o.classList.contains('open'))o.style.display='none';},320);}}
-document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('shareBtnLive')?.addEventListener('click',openShareSheet);
   document.getElementById('shareBtn')?.addEventListener('click',openShareSheet);
   document.getElementById('closeShare')?.addEventListener('click',closeShareSheet);
   document.getElementById('closeShareBottom')?.addEventListener('click',closeShareSheet);
   document.getElementById('shareOverlay')?.addEventListener('click',closeShareSheet);
-  const sc0=document.getElementById('shareCard'); if(sc0){sc0.style.display='none';sc0.style.visibility='hidden';}
-  const so0=document.getElementById('shareOverlay'); if(so0){so0.style.display='none';}
-});
+  {const sc0=document.getElementById('shareCard'); if(sc0){sc0.style.display='none';sc0.style.visibility='hidden';}}
+  {const so0=document.getElementById('shareOverlay'); if(so0){so0.style.display='none';}}
 const SHINDAN_QS=[
   {q:'1. 朝、目が覚めたら、まず何を感じる？', a:'胸が、ぎゅっとなる', b:'空が、どうなってるか気になる'},
   {q:'2. 悲しいとき、どうする？', a:'部屋にこもって、自分の心と向き合う', b:'外に出て、風や雨にあたる'},
@@ -565,7 +563,7 @@ function renderShare(){
 }
 // 古い shareModal は使わない — shareCard だけ使う
 document.getElementById('shareClose')?.addEventListener('click', ()=>{
-  document.getElementById('shareModalOLD').classList.remove('open');
+  document.getElementById('shareModalOLD')?.classList.remove('open');
 });
 document.getElementById('shareModalOLD')?.addEventListener('click', (e)=>{
   if(e.target.id==='shareModal') e.target.classList.remove('open');
