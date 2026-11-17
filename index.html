@@ -56,7 +56,7 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
  #shareCard{position:fixed;transform:translateY(100%);left:0;right:0;bottom:0;z-index:91;display:none;visibility:hidden;max-height:88vh;overflow:auto;background:#231e1b;border-radius:18px 18px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.9,.25,1);box-shadow:0 -12px 40px rgba(0,0,0,0.45);padding:14px;max-width:768px;margin:0 auto}
 #shareCard.open{display:block;visibility:visible;transform:translateY(0)}
 #shareHandle{width:40px;height:5px;border-radius:99px;background:rgba(255,255,255,0.35);margin:6px auto 10px}
-#shareCloseBar{position:sticky;top:0;z-index:10;background:#231e1b;padding:6px 0 10px;display:flex;justify-content:space-between;align-items:center}
+#shareCloseBar{position:sticky;top:-14px;z-index:10;background:#231e1b;padding:14px 0 10px;margin:-14px -14px 0;display:flex;justify-content:space-between;align-items:center}
 #closeShare{background:#f5f1e8;color:#1c1917;border:0;font-weight:900;padding:10px 18px;font-size:14px;border-radius:999px;cursor:pointer}
 .btn{padding:11px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
 .btn-dark{background:#f5f1e8;color:#1c1917}
@@ -211,7 +211,7 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
 <div id="shareOverlay"></div>
 <div id="shareCard"><div id="shareHandle"></div><div id="shareCloseBar"><b>シェアする</b><button id="closeShare">✕ とじる</button></div>
   <p style="font-size:12px;opacity:.7">Instagram / Threads / Bluesky / X の切り替え、テキストコピー、画像保存、詩入り画像を作る、スマホのシェアで送る。元のままです。</p>
-  <div class="row" style="margin-top:8px"><button class="btn btn-dark">Instagram</button><button class="btn btn-ghost">Threads</button><button class="btn btn-ghost">Bluesky</button><button class="btn btn-ghost">X</button></div>
+  <div class="row" id="snsTopRow" style="margin-top:8px"><button class="btn btn-dark" id="snsTopIG" data-sns="ig" style="min-width:0;white-space:nowrap;font-size:13px">Instagram</button><button class="btn btn-ghost" id="snsTopThreads" data-sns="threads" style="min-width:0;white-space:nowrap;font-size:13px">Threads</button><button class="btn btn-ghost" id="snsTopBluesky" data-sns="bluesky" style="min-width:0;white-space:nowrap;font-size:13px">Bluesky</button><button class="btn btn-ghost" id="snsTopX" data-sns="x" style="min-width:0;white-space:nowrap;font-size:13px">X</button></div>
   <div style="background:#000;border-radius:10px;padding:12px;margin-top:10px;white-space:pre-line;font-size:14px;line-height:1.7">今日のそらと僕のこころ…詩にしてみました。
 続きはプロフィールのリンクから
 #太陽の涙虚脱の空 #詩 #天気 #神戸</div>
@@ -220,7 +220,7 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
     <div style="background:#1c1917;border-radius:8px;padding:10px;margin-top:10px"><b style="font-size:13px">② 保存した画像で作る</b><p style="font-size:12px;opacity:.7">保存は、ライブ画像の下のボタンでする。ここは、選ぶだけです。</p><div id="savedGallery" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div><label>クロップ / ズーム <span id="zoomVal">1.20</span></label><input type="range" id="zoom" min="1" max="2" step="0.01" value="1.2" class="slider"></div><div><label>詩の大きさ <span id="fontVal">42</span></label><input type="range" id="fontSize" min="28" max="64" step="1" value="42" class="slider"></div><div><label>上の暗さ <span id="shadeVal">0.18</span></label><input type="range" id="shade" min="0" max="0.45" step="0.01" value="0.18" class="slider"></div><div><label>タイトル・天気の大きさ <span id="titleSizeVal">1.00</span></label><input type="range" id="titleSize" min="0.7" max="1.5" step="0.01" value="1" class="slider"></div></div>
     <p style="font-size:12px;opacity:.7;margin-top:8px">ドラッグ：空をドラッグで上下に動かせます。詩をドラッグで位置を動かせます。詩の右下をドラッグで、詩の大きさを変えられます。右下のタイトル・天気も、ドラッグで上下左右に動かせます。</p>
-    <div style="background:#1c1917;border-radius:8px;padding:10px;margin-top:10px"><b style="font-size:13px">③ 元になる写真を選ぶ</b><div class="row" style="margin-top:8px"><button class="btn btn-dark" id="imgSrcLive" style="flex:1">📷 ライブ画像で作る</button><button class="btn btn-ghost" id="imgSrcSaved" style="flex:1">💾 保存画像で作る</button></div><p id="imgSrcLabel" style="font-size:12px;opacity:.8;margin-top:6px">今：ライブ画像</p></div>
+    <div style="background:#1c1917;border-radius:8px;padding:10px;margin-top:10px"><b style="font-size:13px">③ 元になる写真を選ぶ</b><div class="row" style="margin-top:8px"><button class="btn btn-dark" id="imgSrcLive" style="flex:1 1 0;min-width:0;white-space:nowrap;font-size:13px;padding:11px 6px">📷 ライブ画像で作る</button><button class="btn btn-ghost" id="imgSrcSaved" style="flex:1 1 0;min-width:0;white-space:nowrap;font-size:13px;padding:11px 6px">💾 保存画像で作る</button></div><p id="imgSrcLabel" style="font-size:12px;opacity:.8;margin-top:6px">今：ライブ画像</p></div>
     <div class="row" style="margin-top:8px"><button class="btn btn-dark" id="makePoemImg" style="width:100%">🖼 詩入り画像を作る</button></div>
     <p id="makePoemMsg" style="font-size:11px;color:#a8a29e;text-align:center;margin-top:4px"></p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px"><div><label>詩の箱の大きさ <span id="poemBoxVal">1.00</span></label><input type="range" id="poemBoxScale" min="0.7" max="1.5" step="0.05" value="1" class="slider"></div><div><label>箱の濃さ <span id="poemBoxAlphaVal">0.35</span></label><input type="range" id="poemBoxAlpha" min="0" max="0.6" step="0.05" value="0.35" class="slider"></div></div>
@@ -442,12 +442,24 @@ function drawPoemImg(){
   if(warm>0){ const wg=ctx.createLinearGradient(0,curH*0.35,0,curH*0.95); wg.addColorStop(0,'rgba(255,140,60,0)'); wg.addColorStop(1,'rgba(255,120,40,'+warm+')'); ctx.fillStyle=wg; ctx.fillRect(0,0,curW,curH); }
   if(shade>0){ const g2=ctx.createLinearGradient(0,0,0,curH*0.55); g2.addColorStop(0,'rgba(0,0,0,'+shade+')'); g2.addColorStop(1,'rgba(0,0,0,0)'); ctx.fillStyle=g2; ctx.fillRect(0,0,curW,curH*0.55); }
   // 詩の箱 — 大きさはスライダーとドラッグで変えられる
-  const lines=poem.split('\n');
+  // 詩の箱 — 箱の幅で、1行の文字数を決めて、折り返す（箱と文字数を連動）
   const padX=curW*poemXRatio, padY=curH*poemYRatio;
-  const boxPad=Math.round(26*_poemBoxScale), boxW=Math.min(curW*0.86, Math.max.apply(null, lines.map(l=>l.length))*fontSize*0.95*_poemBoxScale + boxPad*2), boxH=lines.length*fontSize*1.55*_poemBoxScale + boxPad*2;
+  const boxPad=Math.round(26*_poemBoxScale);
+  const boxW=Math.min(curW*0.92, Math.max(curW*0.45, curW*0.86*_poemBoxScale));
+  const availW=boxW-boxPad*2;
+  const maxChars=Math.max(8, Math.floor(availW/(fontSize*0.98)));
+  const _flat=poem.replace(/\n/g,'');
+  const lines=[]; let _cur='';
+  for(let _ci=0; _ci<_flat.length; _ci++){
+    _cur+=_flat[_ci];
+    const _isBreak=_cur.endsWith('。')||_cur.endsWith('、');
+    if(_cur.length>=maxChars || (_isBreak && _cur.length>=Math.floor(maxChars*0.6))){ lines.push(_cur); _cur=''; }
+  }
+  if(_cur) lines.push(_cur);
+  const boxH=lines.length*fontSize*1.55 + boxPad*2;
   try{ ctx.save(); ctx.fillStyle='rgba(0,0,0,'+_poemBoxAlpha+')'; ctx.beginPath(); ctx.roundRect(padX-boxPad, padY-boxPad, boxW, boxH, 16); ctx.fill(); ctx.restore(); }catch(e){ ctx.fillStyle='rgba(0,0,0,'+_poemBoxAlpha+')'; ctx.fillRect(padX-boxPad, padY-boxPad, boxW, boxH); }
-  ctx.textAlign='left'; ctx.textBaseline='top'; ctx.font='600 '+(fontSize*_poemBoxScale)+'px "Yuji Syuku",cursive'; ctx.shadowColor='rgba(0,0,0,0.55)'; ctx.shadowBlur=12; ctx.shadowOffsetY=2; ctx.fillStyle='#fff';
-  lines.forEach((line,i)=>{ ctx.fillText(line, padX, padY+i*fontSize*1.55*_poemBoxScale); });
+  ctx.textAlign='left'; ctx.textBaseline='top'; ctx.font='600 '+fontSize+'px "Yuji Syuku",cursive'; ctx.shadowColor='rgba(0,0,0,0.55)'; ctx.shadowBlur=12; ctx.shadowOffsetY=2; ctx.fillStyle='#fff';
+  lines.forEach((line,i)=>{ ctx.fillText(line, padX, padY+i*fontSize*1.55); });
   const bx=curW*titleXRatio, titleSize=Math.round(curW*0.018*titleSizeScale), weaSize=Math.round(curW*0.016*titleSizeScale), titleY=curH*titleYRatio;
   ctx.textAlign='right'; ctx.font='600 '+titleSize+'px "Shippori Mincho B1",serif'; ctx.fillText(title, bx, titleY);
   ctx.font='500 '+weaSize+'px "Shippori Mincho B1",serif'; ctx.fillText(weather, bx, titleY+titleSize+6);
@@ -480,6 +492,7 @@ cv.addEventListener('pointermove', e=>{
   else if(dragMode==='resizePoem'){ const ns=Math.min(1.5,Math.max(0.7,1.0+dy*1.2)); _poemBoxScale=ns; const s=document.getElementById('poemBoxScale'); if(s) s.value=String(ns); drawPoemImg(); }
 });
 cv.addEventListener('pointerup', ()=>{ dragMode=null; drawPoemImg(); });
+document.querySelectorAll('#snsTopRow button').forEach(_b=>{ _b.addEventListener('click',()=>{ document.querySelectorAll('#snsTopRow button').forEach(_x=>{ _x.classList.remove('btn-dark'); _x.classList.add('btn-ghost'); }); _b.classList.remove('btn-ghost'); _b.classList.add('btn-dark'); const _p=document.getElementById('snsPicker'); if(_p) _p.style.display='block'; const _map={ig:'shareIG',threads:'shareThreads',bluesky:'shareBluesky',x:'shareX'}; const _t=document.getElementById(_map[_b.dataset.sns]); if(_t){ _t.style.outline='2px solid #f5f1e8'; setTimeout(()=>{ _t.style.outline=''; },1200); } }); });
 document.getElementById('sharePoemImg').onclick=()=>{ const p=document.getElementById('snsPicker'); p.style.display=p.style.display==='none'?'block':'none'; };
 document.getElementById('shareX').onclick=()=>{ window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent('今日のそらと僕のこころ…詩にしてみました。 #太陽の涙虚脱の空'),'_blank'); };
 document.getElementById('shareThreads').onclick=()=>{ window.open('https://www.threads.net/intent/post?text='+encodeURIComponent('今日のそらと僕のこころ…詩にしてみました。'),'_blank'); };
