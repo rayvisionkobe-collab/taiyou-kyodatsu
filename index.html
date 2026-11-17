@@ -178,6 +178,8 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
   </div>
   <div id="livePoem" style="margin-top:10px;padding:14px;background:#231e1b;border-radius:8px;font-family:'Yuji Syuku',cursive;font-size:19px;line-height:1.9;white-space:pre-wrap;text-align:left;display:none;"></div>
   <div id="livePoemNote" style="font-size:11px;color:#a8a29e;margin-top:6px;display:none;">AIがライブ画像から自動生成した詩です。上の温墨イラストはトップのままです。</div>
+  <button class="btn btn-ghost" id="saveImgLive" style="margin-top:10px;width:100%">💾 このライブ画像を保存する</button>
+  <div id="saveMsg" style="font-size:11px;color:#a8a29e;text-align:center;margin-top:4px"></div>
   <button class="share-btn" id="shareBtn" style="margin-top:14px">↗ シェアする</button>
   <div style="background:#231e1b;border-radius:8px;padding:12px;margin-top:12px">
     <div style="font-size:13px;font-weight:700">詩の濃淡 — 詩人の特徴を、4段階で濃くする</div>
@@ -215,6 +217,7 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
     <div style="background:#1c1917;border-radius:8px;padding:10px;margin-top:10px"><b style="font-size:13px">② 保存した画像で作る</b><p style="font-size:12px;opacity:.7">保存は、ライブ画像の下のボタンでする。ここは、選ぶだけです。</p><div id="savedGallery" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div><label>クロップ / ズーム <span id="zoomVal">1.20</span></label><input type="range" id="zoom" min="1" max="2" step="0.01" value="1.2" class="slider"></div><div><label>詩の大きさ <span id="fontVal">42</span></label><input type="range" id="fontSize" min="28" max="64" step="1" value="42" class="slider"></div><div><label>上の暗さ <span id="shadeVal">0.18</span></label><input type="range" id="shade" min="0" max="0.45" step="0.01" value="0.18" class="slider"></div><div><label>タイトル・天気の大きさ <span id="titleSizeVal">1.00</span></label><input type="range" id="titleSize" min="0.7" max="1.5" step="0.01" value="1" class="slider"></div></div>
     <p style="font-size:12px;opacity:.7;margin-top:8px">ドラッグ：空をドラッグで上下に動かせます。詩をドラッグで位置を動かせます。詩の右下をドラッグで、詩の大きさを変えられます。右下のタイトル・天気も、ドラッグで上下左右に動かせます。</p>
+    <div class="row" style="margin-top:8px"><button class="btn btn-dark" id="makePoemImg" style="width:100%">🖼 詩入り画像を作る</button></div>
     <canvas id="cv" width="1280" height="720"></canvas>
     <div class="row" style="margin-top:12px"><button class="btn btn-dark" id="sharePoemImg">📱 詩入り画像でシェア — SNSを選ぶ</button></div>
     <div id="snsPicker" style="display:none;background:#111;border:1px solid #555;border-radius:10px;padding:12px;margin-top:10px"><b>どこでシェアしますか？</b><div class="row" style="margin-top:10px"><button class="btn btn-dark" id="shareX">X でシェア</button><button class="btn btn-ghost" id="shareThreads">Threads</button></div><div class="row" style="margin-top:8px"><button class="btn btn-ghost" id="shareBluesky">Bluesky</button><button class="btn btn-ghost" id="shareIG">Instagram — 画像保存＋文コピー</button></div><div class="row" style="margin-top:8px"><button class="btn btn-ghost" id="shareOS">📱 スマホのシェア画面</button></div><p style="font-size:12px;opacity:.7">PCでも、X / Threads / Bluesky は、シェア画面が開きます。</p></div>
@@ -359,10 +362,12 @@ function init(){
   });
   // Service Workerの古いキャッシュを消す
   // 追加：シェア箱、診断、詩入り画像
+function renderSavedGallery(){ try{const g=document.getElementById('savedGallery'); if(!g) return; const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); if(!arr.length){g.innerHTML='<p style="font-size:12px;opacity:.7">まだ保存がありません。ライブ画像の下の「保存する」で、保存できます</p>'; return;} g.innerHTML=''; arr.forEach((it,i)=>{const im=document.createElement('img'); im.src=it.src; im.style.cssText='width:72px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid #555'; im.title='保存'+(i+1); im.onclick=()=>{ try{const li=document.getElementById('liveImg'); if(li) li.src=it.src; drawPoemImg(); }catch(e){} }; g.appendChild(im); }); }catch(e){} }
 function openShareSheet(){const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.style.display='block';c.style.visibility='visible';requestAnimationFrame(()=>c.classList.add('open'));} if(o){o.style.display='block';requestAnimationFrame(()=>o.classList.add('open'));}}
 function closeShareSheet(){const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.classList.remove('open');setTimeout(()=>{if(!c.classList.contains('open')){c.style.display='none';c.style.visibility='hidden';}},320);} if(o){o.classList.remove('open');setTimeout(()=>{if(!o.classList.contains('open'))o.style.display='none';},320);}}
   document.getElementById('shareBtnLive')?.addEventListener('click',openShareSheet);
-  document.getElementById('shareBtn')?.addEventListener('click',openShareSheet);
+  document.getElementById('shareBtn')?.addEventListener('click',()=>{ openShareSheet(); setTimeout(()=>{ try{drawPoemImg();}catch(e){} renderSavedGallery(); },80); });
+  document.getElementById('makePoemImg')?.addEventListener('click',()=>{ try{drawPoemImg();}catch(e){} renderSavedGallery(); });
   document.getElementById('closeShare')?.addEventListener('click',closeShareSheet);
   document.getElementById('closeShareBottom')?.addEventListener('click',closeShareSheet);
   document.getElementById('shareOverlay')?.addEventListener('click',closeShareSheet);
@@ -454,7 +459,7 @@ document.getElementById('shareThreads').onclick=()=>{ window.open('https://www.t
 document.getElementById('shareBluesky').onclick=()=>{ window.open('https://bsky.app/intent/compose?text='+encodeURIComponent('今日のそらと僕のこころ…詩にしてみました。'),'_blank'); };
 document.getElementById('shareIG').onclick=async()=>{ const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=cv.toDataURL('image/png'); a.click(); try{ await navigator.clipboard.writeText('今日のそらと僕のこころ…詩にしてみました。'); alert('画像を保存して、文をコピーしました。Instagramアプリで貼ってください'); }catch(e){ alert('画像を保存しました。'); } };
 document.getElementById('shareOS').onclick=async()=>{ try{ const blob=await new Promise(res=>cv.toBlob(res,'image/png')); const file=new File([blob],'taiyou_poem.png',{type:'image/png'}); if(navigator.share && navigator.canShare({files:[file]})){ await navigator.share({files:[file], text:'今日のそらと僕のこころ…詩にしてみました。'}); } else { const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=URL.createObjectURL(blob); a.click(); alert('OSのシェア画面が出ないので、画像を保存しました。'); } }catch(e){} };
-document.getElementById('saveImgLive').onclick=()=>{ alert('今の写真を保存しました。シェア画面の保存から使えます（プロトタイプでは、保存の見本です）'); };
+document.getElementById('saveImgLive')?.addEventListener('click',()=>{ try{const img=document.getElementById('liveImg'); const src=img?.currentSrc||img?.src||''; if(!src){document.getElementById('saveMsg').textContent='まだライブ画像がありません'; return;} const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); arr.unshift({src, at:new Date().toISOString(), place:document.getElementById('placeSelect')?.value||''}); localStorage.setItem('kyodatsu_saved', JSON.stringify(arr.slice(0,12))); const m=document.getElementById('saveMsg'); if(m) m.textContent='保存しました（'+arr.length+'枚）。シェア箱の「保存した画像で作る」から使えます'; renderSavedGallery(); }catch(e){ alert('保存できませんでした'); } });
 if('serviceWorker' in navigator)
 {
     navigator.serviceWorker.getRegistrations().then(regs=>{
