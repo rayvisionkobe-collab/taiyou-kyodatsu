@@ -1,41 +1,32 @@
-name: update weather + poems
-
+name: Update Weather Still and Poem
 on:
   schedule:
-    - cron: "0 * * * *"  # 1時間おき (30分おきは多すぎて、無料枠を使い切る)
+    - cron: '*/30 * * * *'
   workflow_dispatch:
-    inputs:
-      force_poem:
-        description: "1にすると今すぐ詩を作り直す"
-        required: false
-        default: "0"
-
-concurrency:
-  group: update-weather
-  cancel-in-progress: false
-
 permissions:
   contents: write
-
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      - run: pip install requests pillow
-      - run: python fetch.py
+          python-version: '3.11'
+      - name: Install ffmpeg and yt-dlp
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          pip install -q yt-dlp requests Pillow
+      - name: Fetch still and generate poem
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          FORCE_POEM: ${{ github.event.inputs.force_poem || '0' }}
-      - run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add data.json images/
-          git diff --cached --quiet || git commit -m "update"
-          # push 前に、最新の main を取り込んで、ぶつかりを防ぐ
-          git pull --rebase origin main || (git rebase --abort; git pull origin main; git push; exit 0)
-          git push || (git pull --rebase origin main; git push)
+        run: python fetch.py
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.json images/ || true
+          git diff --cached --quiet || git commit -m "auto update: still and poem"
+          git push || echo "nothing to push"
