@@ -52,7 +52,7 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 /* 追加：シェア箱は下から立ち上がる */
 #shareOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);opacity:0;pointer-events:none;transition:opacity .28s;z-index:90;display:none}
 #shareOverlay.open{display:block;opacity:1;pointer-events:auto}
- #shareCard{position:fixed;transform:translateY(100%);left:0;right:0;bottom:0;z-index:91;max-height:88vh;overflow:auto;background:#231e1b;border-radius:18px 18px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.9,.25,1);box-shadow:0 -12px 40px rgba(0,0,0,0.45);padding:14px;max-width:768px;margin:0 auto}
+ #shareCard{position:fixed;transform:translateY(100%);left:0;right:0;bottom:0;z-index:91;display:none;visibility:hidden;max-height:88vh;overflow:auto;background:#231e1b;border-radius:18px 18px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.9,.25,1);box-shadow:0 -12px 40px rgba(0,0,0,0.45);padding:14px;max-width:768px;margin:0 auto}
 #shareCard.open{display:block;visibility:visible;transform:translateY(0)}
 #shareHandle{width:40px;height:5px;border-radius:99px;background:rgba(255,255,255,0.35);margin:6px auto 10px}
 #shareCloseBar{position:sticky;top:0;z-index:10;background:#231e1b;padding:6px 0 10px;display:flex;justify-content:space-between;align-items:center}
@@ -114,7 +114,7 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
 虚脱の午後だった。</div>
   </div>
   <!-- シェアモーダル -->
-  <div class="share-modal" id="shareModal">
+  <div class="share-modal" id="shareModalOLD" style="display:none !important;">
     <div class="share-sheet">
       <div style="font-weight:700;font-size:15px;margin-bottom:10px">シェアする</div>
       <div class="share-tabs" id="shareTabs">
@@ -181,7 +181,7 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
   <button class="share-btn" id="shareBtn" style="margin-top:14px">↗ シェアする</button>
   <div style="background:#231e1b;border-radius:8px;padding:12px;margin-top:12px">
     <div style="font-size:13px;font-weight:700">詩の濃淡 — 詩人の特徴を、4段階で濃くする</div>
-    <input type="range" id="level2" min="0" max="3" step="1" value="1" class="slider" style="margin-top:8px">
+    <input type="range" id="level" min="0" max="3" step="1" value="1" class="slider" style="margin-top:8px">
     <div class="labels"><span>からっと</span><span>ほどよく</span><span>こいめ</span><span>仙人級</span></div>
     <p id="strengthLabel" style="font-size:12px;opacity:.8;text-align:center;margin:8px 0 0">今：ほどよく — 詩人の特徴が、ほどよく</p>
   </div>
@@ -200,10 +200,6 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
     <div class="toggle" id="poetToggle">
     <button data-poet="kyodatsu" class="active">虚脱の空</button>
     <button data-poet="taiyou">太陽の涙</button>
-  </div>
-  <div>
-    <input type="range" id="level" min="0" max="3" step="1" value="1" class="slider">
-    <div class="labels"><span>からっと</span><span>ほどよく</span><span>こいめ</span><span>仙人級</span></div>
   </div>
 </div>
 
@@ -261,7 +257,8 @@ async function loadLive(){
   }catch(e){ console.log('live skip', e); }
 }
 function getPoem(place, poet, level){
-  const entry = liveData?.locations?.[place];
+  let entry = liveData?.locations?.[place];
+  if(!entry && place==='kobe') entry = liveData?.locations?.['maiko'] || liveData?.locations?.['kobe_air'];
   if(entry?.poems?.[poet]?.[String(level)]) return entry.poems[poet][String(level)];
   if(entry?.poem){
     const lines = entry.poem.split('\n').filter(Boolean);
@@ -295,6 +292,7 @@ async function updateAll(){
   const level = parseInt(document.getElementById('level').value);
   const levels = ["からっと","ほどよく","こいめ","仙人級"];
   document.getElementById('poemMain').textContent = breakByMaru(getPoem(place, poet, level));
+  try{const pm=document.getElementById('poemMain'); if(pm){const longest=Math.max(...pm.textContent.split('\n').map(l=>l.length)); if(longest>=16) pm.style.fontSize='21px'; else if(longest>=14) pm.style.fontSize='23px'; else pm.style.fontSize='';}}catch(e){}
   const placeName = loc.name;
   const isAI = !!liveData?.locations?.[place]?.poems;
   document.getElementById('practical').textContent = '晴 14℃ / 12℃ 降水0mm 風6m 神戸 ' + placeName;
@@ -398,15 +396,13 @@ document.getElementById('shindanBtn').onclick=()=>{
   if(ans<5){ alert('5問、全部答えてください'); return; }
   const type=a>=3?'kyodatsu':'taiyou';
   document.querySelectorAll('#poetToggle button').forEach(bb=>bb.classList.toggle('active', bb.dataset.poet===type));
-  updatePoem();
+  updateAll();
   const rEl=document.getElementById('shindanResult'); rEl.style.display='block';
   rEl.innerHTML='<div style="background:#2e2a4a;border:1px solid #6b4eff;border-radius:10px;padding:10px;margin-top:10px"><b>'+(type==='kyodatsu'?'あなたは、自分の痛みを、そのまま言葉にする詩人':'あなたは、空や風に心を重ねて、誰かのために祈る詩人')+'</b></div>';
   document.getElementById('diagPanel').style.display='none';
 };
 document.getElementById('shindanReset').onclick=()=>{ document.querySelectorAll('input[type=radio]').forEach(e=>e.checked=false); document.getElementById('shindanResult').style.display='none'; };
-// level2 と level を同期
-document.getElementById('level2')?.addEventListener('input',e=>{ const lv=document.getElementById('level'); if(lv) lv.value=e.target.value; updatePoem(); const labels=["からっと","ほどよく","こいめ","仙人級"]; const sl=document.getElementById('strengthLabel'); if(sl) sl.textContent='今：'+labels[e.target.value]+' — 詩人の特徴が、'+(e.target.value==3?'一番濃い':e.target.value==0?'ほんのり':'ほどよく'); });
-document.getElementById('level')?.addEventListener('input',e=>{ const lv2=document.getElementById('level2'); if(lv2) lv2.value=e.target.value; });
+// スライダーは1つだけ（level） — 同期はいらない
 // 詩入り画像：簡易描画＋ドラッグ
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d'); let curW=1280, curH=720, poemXRatio=0.07, poemYRatio=0.11, titleXRatio=0.955, titleYRatio=0.905, titleSizeScale=1, dragMode=null, dragStartX=0, dragStartY=0, startPoemX=0.07, startPoemY=0.11, startFont=42;
 function drawPoemImg(){
@@ -567,14 +563,11 @@ function renderShare(){
   const lbl = document.getElementById('shareTabLabel');
   if(lbl) lbl.textContent = labelMap[shareTab] || '';
 }
-document.getElementById('shareBtn')?.addEventListener('click', ()=>{
-  renderShare();
-  document.getElementById('shareModal').classList.add('open');
-});
+// 古い shareModal は使わない — shareCard だけ使う
 document.getElementById('shareClose')?.addEventListener('click', ()=>{
-  document.getElementById('shareModal').classList.remove('open');
+  document.getElementById('shareModalOLD').classList.remove('open');
 });
-document.getElementById('shareModal')?.addEventListener('click', (e)=>{
+document.getElementById('shareModalOLD')?.addEventListener('click', (e)=>{
   if(e.target.id==='shareModal') e.target.classList.remove('open');
 });
 document.getElementById('shareTabs')?.addEventListener('click', (e)=>{
