@@ -52,8 +52,7 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 /* 追加：シェア箱は下から立ち上がる */
 #shareOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);opacity:0;pointer-events:none;transition:opacity .28s;z-index:90;display:none}
 #shareOverlay.open{display:block;opacity:1;pointer-events:auto}
-#shareOverlay.open{opacity:1;pointer-events:auto}
- #shareCard{position:fixed;left:0;right:0;bottom:0;z-index:91;max-height:88vh;overflow:auto;background:#231e1b;border-radius:18px 18px 0 0;transform:translateY(100%);transition:transform .32s;display:none;visibility:hidden cubic-bezier(.2,.9,.25,1);box-shadow:0 -12px 40px rgba(0,0,0,0.45);padding:14px;max-width:768px;margin:0 auto}
+ #shareCard{position:fixed;transform:translateY(100%);left:0;right:0;bottom:0;z-index:91;max-height:88vh;overflow:auto;background:#231e1b;border-radius:18px 18px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.9,.25,1);box-shadow:0 -12px 40px rgba(0,0,0,0.45);padding:14px;max-width:768px;margin:0 auto}
 #shareCard.open{display:block;visibility:visible;transform:translateY(0)}
 #shareHandle{width:40px;height:5px;border-radius:99px;background:rgba(255,255,255,0.35);margin:6px auto 10px}
 #shareCloseBar{position:sticky;top:0;z-index:10;background:#231e1b;padding:6px 0 10px;display:flex;justify-content:space-between;align-items:center}
@@ -180,6 +179,12 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
   <div id="livePoem" style="margin-top:10px;padding:14px;background:#231e1b;border-radius:8px;font-family:'Yuji Syuku',cursive;font-size:19px;line-height:1.9;white-space:pre-wrap;text-align:left;display:none;"></div>
   <div id="livePoemNote" style="font-size:11px;color:#a8a29e;margin-top:6px;display:none;">AIがライブ画像から自動生成した詩です。上の温墨イラストはトップのままです。</div>
   <button class="share-btn" id="shareBtn" style="margin-top:14px">↗ シェアする</button>
+  <div style="background:#231e1b;border-radius:8px;padding:12px;margin-top:12px">
+    <div style="font-size:13px;font-weight:700">詩の濃淡 — 詩人の特徴を、4段階で濃くする</div>
+    <input type="range" id="level2" min="0" max="3" step="1" value="1" class="slider" style="margin-top:8px">
+    <div class="labels"><span>からっと</span><span>ほどよく</span><span>こいめ</span><span>仙人級</span></div>
+    <p id="strengthLabel" style="font-size:12px;opacity:.8;text-align:center;margin:8px 0 0">今：ほどよく — 詩人の特徴が、ほどよく</p>
+  </div>
   <div style="font-size:11px;color:#a8a29e;margin-top:6px;text-align:center">今開いている画面の詩と画像をシェアします</div>
 </div>
 
@@ -356,14 +361,16 @@ function init(){
   });
   // Service Workerの古いキャッシュを消す
   // 追加：シェア箱、診断、詩入り画像
+function openShareSheet(){const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.style.display='block';c.style.visibility='visible';requestAnimationFrame(()=>c.classList.add('open'));} if(o){o.style.display='block';requestAnimationFrame(()=>o.classList.add('open'));}}
+function closeShareSheet(){const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.classList.remove('open');setTimeout(()=>{if(!c.classList.contains('open')){c.style.display='none';c.style.visibility='hidden';}},320);} if(o){o.classList.remove('open');setTimeout(()=>{if(!o.classList.contains('open'))o.style.display='none';},320);}}
 document.addEventListener('DOMContentLoaded', ()=>{
-  const open=()=>{const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.style.display='block';c.style.visibility='visible';requestAnimationFrame(()=>c.classList.add('open'));} if(o){o.style.display='block';requestAnimationFrame(()=>o.classList.add('open'));}};
-  const close=()=>{const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.classList.remove('open');setTimeout(()=>{if(!c.classList.contains('open')){c.style.display='none';c.style.visibility='hidden';}},320);} if(o){o.classList.remove('open');setTimeout(()=>{if(!o.classList.contains('open'))o.style.display='none';},320);}};
-  const close=()=>{document.getElementById('shareCard')?.classList.remove('open');document.getElementById('shareOverlay')?.classList.remove('open');};
-  document.getElementById('shareBtnLive')?.addEventListener('click',open);
-  document.getElementById('closeShare')?.addEventListener('click',close);
-  document.getElementById('closeShareBottom')?.addEventListener('click',close);
-  document.getElementById('shareOverlay')?.addEventListener('click',close);
+  document.getElementById('shareBtnLive')?.addEventListener('click',openShareSheet);
+  document.getElementById('shareBtn')?.addEventListener('click',openShareSheet);
+  document.getElementById('closeShare')?.addEventListener('click',closeShareSheet);
+  document.getElementById('closeShareBottom')?.addEventListener('click',closeShareSheet);
+  document.getElementById('shareOverlay')?.addEventListener('click',closeShareSheet);
+  const sc0=document.getElementById('shareCard'); if(sc0){sc0.style.display='none';sc0.style.visibility='hidden';}
+  const so0=document.getElementById('shareOverlay'); if(so0){so0.style.display='none';}
 });
 const SHINDAN_QS=[
   {q:'1. 朝、目が覚めたら、まず何を感じる？', a:'胸が、ぎゅっとなる', b:'空が、どうなってるか気になる'},
@@ -398,8 +405,8 @@ document.getElementById('shindanBtn').onclick=()=>{
 };
 document.getElementById('shindanReset').onclick=()=>{ document.querySelectorAll('input[type=radio]').forEach(e=>e.checked=false); document.getElementById('shindanResult').style.display='none'; };
 // level2 と level を同期
-document.getElementById('level2').addEventListener('input',e=>{ document.getElementById('level').value=e.target.value; updatePoem(); const labels=["からっと","ほどよく","こいめ","仙人級"]; document.getElementById('strengthLabel').textContent='今：'+labels[e.target.value]+' — 詩人の特徴が、'+(e.target.value==3?'一番濃い':e.target.value==0?'ほんのり':'ほどよく'); });
-document.getElementById('level').addEventListener('input',e=>{ document.getElementById('level2').value=e.target.value; });
+document.getElementById('level2')?.addEventListener('input',e=>{ const lv=document.getElementById('level'); if(lv) lv.value=e.target.value; updatePoem(); const labels=["からっと","ほどよく","こいめ","仙人級"]; const sl=document.getElementById('strengthLabel'); if(sl) sl.textContent='今：'+labels[e.target.value]+' — 詩人の特徴が、'+(e.target.value==3?'一番濃い':e.target.value==0?'ほんのり':'ほどよく'); });
+document.getElementById('level')?.addEventListener('input',e=>{ const lv2=document.getElementById('level2'); if(lv2) lv2.value=e.target.value; });
 // 詩入り画像：簡易描画＋ドラッグ
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d'); let curW=1280, curH=720, poemXRatio=0.07, poemYRatio=0.11, titleXRatio=0.955, titleYRatio=0.905, titleSizeScale=1, dragMode=null, dragStartX=0, dragStartY=0, startPoemX=0.07, startPoemY=0.11, startFont=42;
 function drawPoemImg(){
