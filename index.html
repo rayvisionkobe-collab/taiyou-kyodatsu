@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>太陽の涙、虚脱の空 — v85 中也か賢治か診断</title>
+<title>太陽の涙、虚脱の空 — v86 ライブ＋AI詩＋診断</title>
 <style>
   *{box-sizing:border-box}
   body{margin:0;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;background:#111;color:#fff}
@@ -30,10 +30,59 @@
 </head>
 <body>
 <header>
-  <h1>太陽の涙、虚脱の空 <span style="opacity:.5;font-size:12px">v85 中也か賢治か診断</span></h1>
-  <p>簡単な5問で、中也タイプか賢治タイプかを診断。その作風で、今日の天気の詩が出る。</p>
+  <h1>太陽の涙、虚脱の空 <span style="opacity:.5;font-size:12px">v86 ライブ＋AI詩＋診断</span></h1>
+  <p>ライブ画像＋AIの詩＋診断が、1つの画面に。AIの詩をそのまま使うか、診断で自分の作風の詩を作るか、選べる。</p>
 </header>
 <main>
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <button class="btn-dark" onclick="document.getElementById('liveSec').scrollIntoView({behavior:'smooth'})">① ライブ画像</button>
+    <button class="btn-dark" onclick="document.getElementById('aiSec').scrollIntoView({behavior:'smooth'})">② AIの詩</button>
+    <button class="btn-dark" onclick="document.getElementById('shindanCard').scrollIntoView({behavior:'smooth'})">③ 診断</button>
+  </div>
+  <div style="background:#1c1c1c;border:1px solid #333;border-radius:14px;padding:14px;margin-bottom:14px">
+    <div style="font-size:13px;opacity:.8">流れ：ライブ画像を見る → AIの詩か診断の詩か選ぶ → 下の画像生成で、詩入り画像を作る</div>
+    <div style="margin-top:8px;font-size:13px;line-height:1.6">
+      <b>今、選ばれている詩：</b><span id="selectedPoemLabel" style="color:#ffd166">AIの詩（自動）</span><br>
+      <span id="selectedPoemPreview" style="opacity:.8;white-space:pre-line"></span>
+    </div>
+  </div>
+
+  <!-- ① ライブ画像 -->
+  <div class="card" id="liveSec">
+    <div style="font-size:16px;font-weight:800">① ライブ画像 — 今の空</div>
+    <p class="hint">元のアプリのライブ画像です。fetch.py が取ってきた、今の空の写真と天気。タイミングが合わないときは、下の「保存した画像」から、使いたい画像を選べます。</p>
+    <div class="row" style="margin-top:8px">
+      <div style="flex:1"><label>場所</label><select id="citySel"><option>神戸</option><option>大阪</option><option>東京</option><option>名古屋</option><option>福岡</option><option>札幌</option><option>仙台</option><option>広島</option><option>那覇</option></select></div>
+      <div style="flex:1"><label>天気（ライブ）</label><input id="liveWeather" value="晴 13℃ / 13℃ 降水0mm 風9m 神戸"></div>
+    </div>
+    <div style="margin-top:10px;border-radius:12px;overflow:hidden;background:#000">
+      <img id="liveImg" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80&auto=format&fit=crop" style="width:100%;display:block">
+    </div>
+    <p class="hint">※ 本番では、fetch.py の画像がここに入ります。デモではサンプル画像です。</p>
+    <div class="row">
+      <button class="btn-dark" id="useLiveImg">このライブ画像を、詩入り画像に使う</button>
+      <button class="btn-ghost" id="saveLiveImg2">このライブ画像を保存する</button>
+    </div>
+  </div>
+
+  <!-- ② AIの詩 -->
+  <div class="card" id="aiSec">
+    <div style="font-size:16px;font-weight:800">② AIによる詩 — 自動で作られた詩</div>
+    <p class="hint">元のアプリのAI詩です。天気から、自動で作られる。KYODATSU（解体的）と TAIYOU（太陽）の2系統。</p>
+    <div class="row">
+      <button class="btn-ghost" data-ai="kyodatsu">KYODATSU — 解体的</button>
+      <button class="btn-ghost" data-ai="taiyou">TAIYOU — 太陽</button>
+    </div>
+    <div id="aiPoemBox" style="margin-top:12px;padding:12px;background:#222;border-radius:10px;white-space:pre-line;line-height:1.8;font-size:15px">曇天の神戸よ今朝の街は何処かぎこちなく、
+ぼくの足もとには冷たい風が吹き抜け、
+朝焼けの端っこがまるでぼろぎれのやうにはりついている、
+ああ痛いほどおなかがすいた朝だ</div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn-dark" id="useAiPoem">このAIの詩を使う</button>
+      <button class="btn-ghost" id="regenAi">AIの詩をもう1編作る</button>
+    </div>
+  </div>
+
   <div class="card" id="shindanCard" style="border:2px solid #6b4eff">
     <div style="font-size:16px;font-weight:800">あなたは、中也タイプ？ 賢治タイプ？</div>
     <p class="hint" style="margin:6px 0 10px">5問だけ答えると、今日の天気に合った作風の詩が出ます。占いみたいに、気軽にどうぞ。</p>
@@ -258,6 +307,78 @@ document.addEventListener('DOMContentLoaded', ()=>{
     document.getElementById('shindanResult').style.display='none';
     document.getElementById('shindanPoemWrap').style.display='none';
   };
+});
+
+
+// --- Combined: Live + AI + Shindan selection ---
+let selectedPoem = `曇天の神戸よ今朝の街は何処かぎこちなく、
+ぼくの足もとには冷たい風が吹き抜け、
+朝焼けの端っこがまるでぼろぎれのやうにはりついている、
+ああ痛いほどおなかがすいた朝だ`;
+let selectedLabel = 'AIの詩（自動）';
+function updateSelected(label, poem){
+  selectedLabel=label; selectedPoem=poem;
+  document.getElementById('selectedPoemLabel').textContent=label;
+  document.getElementById('selectedPoemPreview').textContent=poem.slice(0,120)+(poem.length>120?'…':'');
+  document.getElementById('poem').value=poem;
+  draw();
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  // live image -> use
+  document.getElementById('useLiveImg').onclick=()=>{
+    const src=document.getElementById('liveImg').src;
+    img=new Image(); img.crossOrigin='anonymous'; img.onload=()=>{imgLoaded=true; draw();}; img.src=src;
+    alert('ライブ画像を、詩入り画像に使いました');
+  };
+  document.getElementById('saveLiveImg2').onclick=()=>{ document.getElementById('saveImgBtn').click(); };
+  document.getElementById('citySel').onchange=(e)=>{
+    const c=e.target.value;
+    const w=document.getElementById('liveWeather').value;
+    document.getElementById('weather').value=w.replace(/神戸|大阪|東京|名古屋|福岡|札幌|仙台|広島|那覇/g, c);
+    draw();
+  };
+  // AI poems
+  const AI_POEMS = {
+    kyodatsu: [
+      `曇天の神戸よ今朝の街は何処かぎこちなく、\nぼくの足もとには冷たい風が吹き抜け、\n朝焼けの端っこがまるでぼろぎれのやうにはりついている、\nああ痛いほどおなかがすいた朝だ`,
+      `朝の神戸に降りしきる雨は、肌寒い空気のなかで巨大な橋の輪郭さえも解体し、\n濡れた石畳も錆びついた防波堤も灰色の霧に溶かしていくけれど、\nそれでもアスファルトに反射する湿った微かな光だけが、\nぎこちないぼくの在り処を静かに照らし続けている。`,
+      `夜明けの神戸に風は吹き抜けて、\nガラス玉のやうな僕の溜息よ。`
+    ],
+    taiyou: [
+      `太陽の涙が、虚脱の空に落ちる、\n神戸の朝は、まだ眠たいまま、\nぼくの心は、光と影のあわいで、\nそっと、目を覚ます。`,
+      `晴れの神戸よ、太陽の涙がきらめいて、\n青空の下、ぼくはひとり、風に吹かれている、\nそれでも、光だけが、ぼくの在り処を照らす。`
+    ]
+  };
+  let aiIdx=0;
+  document.querySelectorAll('[data-ai]').forEach(btn=>{
+    btn.onclick=()=>{
+      const k=btn.dataset.ai;
+      aiIdx=(aiIdx+1)%AI_POEMS[k].length;
+      document.getElementById('aiPoemBox').textContent=AI_POEMS[k][aiIdx];
+    };
+  });
+  document.getElementById('useAiPoem').onclick=()=>{
+    updateSelected('AIの詩（自動）', document.getElementById('aiPoemBox').textContent);
+  };
+  document.getElementById('regenAi').onclick=()=>{
+    // random pick
+    const all=[...AI_POEMS.kyodatsu, ...AI_POEMS.taiyou];
+    const p=all[Math.floor(Math.random()*all.length)];
+    document.getElementById('aiPoemBox').textContent=p;
+  };
+  // shindan poem -> also update selected
+  const origShindanBtn = document.getElementById('shindanBtn');
+  // we hook via mutation: after shindan generates, use button also updates selected
+  document.getElementById('useShindanPoem').addEventListener('click', ()=>{
+    // will be overwritten later, but also set selected label
+    setTimeout(()=>{ document.getElementById('selectedPoemLabel').textContent='診断の詩（'+document.getElementById('shindanPoemTitle').textContent+')'; }, 100);
+  });
+  // poem textarea manual edit -> selected becomes custom
+  document.getElementById('poem').addEventListener('input', ()=>{
+    document.getElementById('selectedPoemLabel').textContent='自分でアレンジした詩';
+    document.getElementById('selectedPoemPreview').textContent=document.getElementById('poem').value.slice(0,120);
+  });
+  updateSelected('AIの詩（自動）', selectedPoem);
 });
 
 function draw(){
