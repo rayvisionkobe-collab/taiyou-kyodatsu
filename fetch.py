@@ -1,20 +1,17 @@
 # ============================================================
-# fetch.py v53 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v53」と出ます。出なければ、古い fetch.py です
-# POEM_HOURS / POEM_SCHEDULE：詩は1日3スロットだけ作る
-# - 朝：6,7,8,9,10時 → kobe, osaka, tokyo, nagoya, fukuoka
-# - 昼：12,13,14,17時 → sapporo, sendai, hiroshima, naha
-# - 夕方：18,19,20時 → kobe, osaka, tokyo
-# BUSY_HOURS = [15,16]：15-16時はGeminiを使わない
-# 画像は毎回取りに行く。詩だけ、上の時間に作る。
-# 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
-# data.json は {updated_at, locations: {kobe: {image, poems, model, updated_at, status, poem_date, poem_slot}}}
-# index.html は locations[kobe/osaka/...] を読む。kobe_maiko だけではダメ
+# fetch.py v54 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v54」と出ます。出なければ、古い fetch.py です
+# - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
+# - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
+# - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
+#   → その場合は、直接URLでも取れないので、赤いままが正しい
+# - 那覇は、元は 11/19 05:29 で生きている。ページがJSでURLがHTMLにない場合、
+#   直接URL（gvs.../1280/日時.jpg）を試すフォールバックを入れた
 # ============================================================
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v53")
+print("Weathernews版 v54")
 
 Path("images").mkdir(exist_ok=True)
 
@@ -48,19 +45,35 @@ def load_locations():
         {"id": "naha", "name": "那覇", "lat": 26.21, "lon": 127.68, "weathernews_id": "7CDDE9086CB8", "page_url": "https://weathernews.jp/onebox/livecam/okinawa/7CDDE9086CB8/"},
     ]
 
+def _try_direct_guess(camera_id, out_path):
+    """index.html と同じ直接URLを、10分刻みで直近1時間分試す"""
+    now_jst = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+    for back in (0, 10, 20, 30, 40, 50, 60):
+        tt = now_jst - datetime.timedelta(minutes=back)
+        tt = tt.replace(minute=(tt.minute // 10) * 10, second=0, microsecond=0)
+        ts = tt.strftime("%Y%m%d%H%M00")
+        for size in ("1280", "640"):
+            guess = f"https://gvs.weathernews.jp/livecam/{camera_id}/{size}/{ts}.jpg"
+            try:
+                rr = requests.get(guess, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+                if rr.status_code == 200 and len(rr.content) > 10000:
+                    Path(out_path).write_bytes(rr.content)
+                    print(f"  direct guess ok {guess}")
+                    return True
+            except Exception:
+                pass
+    return False
+
 def fetch_weathernews(camera_id, out_path, page_url=None):
-    """ウェザーニュース：ページから最新の画像URLを取る。推測しない"""
+    """ウェザーニュース：ページから最新の画像URLを取る。なければ直接URLを試す"""
     try:
         if page_url:
             r = requests.get(page_url + ("&" if "?" in page_url else "?") + "v=" + str(int(datetime.datetime.now().timestamp())), timeout=12, headers={"User-Agent": "Mozilla/5.0", "Cache-Control": "no-cache"})
             html = r.text
-            # gvs.weathernews.jp/livecam/<ID>/... を全部拾う。自分のIDが入ったものだけ
             urls = re.findall(r'https://gvs\.weathernews\.jp/livecam/[A-Za-z0-9_\-\./\?=&%]+', html)
             urls = [u for u in urls if camera_id in u]
-            # 画像っぽいものだけ（.jpg / .jpeg / image）
             urls = [u for u in urls if ('.jpg' in u or '.jpeg' in u or 'image' in u or '1280' in u or '640' in u)]
             if urls:
-                # 一番後ろ＝一番新しいことが多い。重複を除く
                 seen = []
                 for u in urls:
                     if u not in seen:
@@ -72,12 +85,18 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
                     Path(out_path).write_bytes(rr.content)
                     return True, "ok"
                 print(f"  image download fail {rr.status_code} len={len(rr.content)}")
-                return False, "download-fail"
-            print("  no livecam url in page")
+            else:
+                print("  no livecam url in page -> try direct guess")
+            if _try_direct_guess(camera_id, out_path):
+                return True, "direct-guess"
             return False, "no-url"
+        if _try_direct_guess(camera_id, out_path):
+            return True, "direct-guess"
         return False, "no-page"
     except Exception as e:
-        print(f"  fetch_weathernews fail: {e}")
+        print(f"  fetch_weathernews fail: {e} -> try direct guess")
+        if _try_direct_guess(camera_id, out_path):
+            return True, "direct-guess"
         return False, "error"
 
 def fallback_poems(name, lat, lon):
@@ -137,7 +156,6 @@ def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"
                 print(f"  gemini {model} status {r.status_code}: {r.text[:300]}")
                 continue
             text = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
-            # JSON部分だけ抜く
             m = re.search(r'\{.*\}', text, re.S)
             if m:
                 text = m.group(0)
@@ -168,7 +186,6 @@ def main():
             print(f"old data.json read fail: {e}")
             old = {}
     old_locs = old.get("locations", {}) if isinstance(old, dict) else {}
-    # 旧YouTube版（kobe_maiko だけ）が残っていても、9都市は作り直す
     data = {"updated_at": now, "locations": {}}
     sched = POEM_SCHEDULE.get(hour)
     if hour in BUSY_HOURS:
@@ -180,12 +197,10 @@ def main():
         out = f"images/{key}.jpg"
         existing = old_locs.get(key, {})
         ok, status = fetch_weathernews(loc["weathernews_id"], out, loc["page_url"])
-        # 詩を作るかどうか
         do_gen = False
         slot = None
         if sched and key in sched["targets"]:
             slot = sched["slot"]
-            # 同じ日の同じスロットは、作り直さない（2回目の実行で上書きしない）
             if existing.get("poem_date") == now[:10] and existing.get("poem_slot") == slot and existing.get("poems"):
                 print(f"{key}: poem already {now[:10]} {slot} -> keep")
                 do_gen = False
@@ -194,7 +209,6 @@ def main():
         if do_gen:
             print(f"{key}: poem slot={slot} gen...")
             poems, model = generate_poems(out, name, loc.get("lat"), loc.get("lon"), loc_index=loc_index, slot=slot)
-            # 全部fallbackで、前の詩があれば、前を残す
             if model.startswith("fallback") and existing.get("poems"):
                 poems, model = existing["poems"], "cached-keep"
                 print(f"{key}: gemini fail -> cached-keep")
@@ -209,11 +223,7 @@ def main():
                 poems, model = fallback_poems(name, loc.get("lat"), loc.get("lon")), "fallback-hourly"
                 poem_date = now[:10]
                 poem_slot = slot or ""
-        # updated_at は、画像が取れたときだけ新しくする。取れなければ古いまま
         _img_updated = now if ok else existing.get("updated_at", now)
-        if not ok and not existing.get("image"):
-            # 初回で画像もないときは、image は空のまま
-            pass
         data["locations"][key] = {
             "image": out if (ok or existing.get("image")) else "",
             "poems": poems,
