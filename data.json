@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-18T08:47:23.534486+09:00",
+  "updated_at": "2026-11-18T10:02:18.902896+09:00",
   "locations": {
     "sapporo": {
       "image": "images/sapporo.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T08:47:23.534486+09:00",
+      "updated_at": "2026-11-18T10:02:18.902896+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-18",
       "poem_slot": null,
@@ -40,8 +40,8 @@
           "3": "晴れわたった朝の東京の空から、冷たい風が青い粒子となって舞い降り、大地と建物の尖塔を冷たく洗い清めながら、遥かな銀河の底へとまっすぐに僕たちをいざなっていく。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-18T08:47:23.534486+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-18T10:02:18.902896+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-18",
       "poem_slot": "morning",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T08:47:23.534486+09:00",
+      "updated_at": "2026-11-18T10:02:18.902896+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-18",
       "poem_slot": "morning",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T08:47:23.534486+09:00",
+      "updated_at": "2026-11-18T10:02:18.902896+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-18",
       "poem_slot": null,
@@ -109,8 +109,8 @@
           "3": "神戸の青い空の底から朝が生まれ、快晴の光が冷たい風とともに銀色の野原をめぐる。すきとおった風が古い港の屋根をなでて、私たちはみんな新しい光の粒になるのだ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-18T08:47:23.534486+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-18T10:02:18.902896+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-18",
       "poem_slot": "morning",
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T08:47:23.534486+09:00",
+      "updated_at": "2026-11-18T10:02:18.902896+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T08:47:23.534486+09:00",
+      "updated_at": "2026-11-18T10:02:18.902896+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-18",
       "poem_slot": "morning",
@@ -202,7 +202,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T08:47:23.534486+09:00",
+      "updated_at": "2026-11-18T10:02:18.902896+09:00",
       "status": "weathernews-page",
       "poem_date": "2026-11-17",
       "poem_slot": "noon",
