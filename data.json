@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-18T23:27:40.891248+09:00",
+  "updated_at": "2026-11-18T23:38:24.614269+09:00",
   "locations": {
     "kobe": {
       "image": "images/kobe.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T23:27:40.891248+09:00",
+      "updated_at": "2026-11-18T23:38:24.614269+09:00",
       "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "morning",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T23:27:40.891248+09:00",
+      "updated_at": "2026-11-18T23:38:24.614269+09:00",
       "status": "ok",
       "poem_date": "2026-11-17",
       "poem_slot": "evening",
@@ -88,7 +88,7 @@
       },
       "model": "cached",
       "updated_at": "2026-11-18T23:27:40.891248+09:00",
-      "status": "ok",
+      "status": "keep-old",
       "poem_date": "2026-11-18",
       "poem_slot": "morning",
       "page_url": "https://weathernews.jp/onebox/livecam/kanto/tokyo/7CDDE90689B1/"
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T23:27:40.891248+09:00",
+      "updated_at": "2026-11-18T23:38:24.614269+09:00",
       "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T23:27:40.891248+09:00",
+      "updated_at": "2026-11-18T23:38:24.614269+09:00",
       "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "morning",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T23:27:40.891248+09:00",
+      "updated_at": "2026-11-18T23:38:24.614269+09:00",
       "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "morning",
