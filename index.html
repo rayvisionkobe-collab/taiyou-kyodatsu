@@ -420,6 +420,9 @@ function drawPoemImg(){
 let lastFilter=null;
 document.querySelectorAll('[data-filter]').forEach(btn=>{ btn.onclick=()=>{
   const f=btn.dataset.filter;
+  /* 押したボタンだけ白くする — これが無かった */
+  document.querySelectorAll('[data-filter]').forEach(x=>{ x.classList.remove('btn-dark'); x.classList.add('btn-ghost'); });
+  btn.classList.remove('btn-ghost'); btn.classList.add('btn-dark');
   if(lastFilter===f){ const s=document.getElementById('filterSliders'); s.style.display=s.style.display==='none'?'block':'none'; }
   lastFilter=f;
   const set=(sat,con,warm,blue)=>{ document.getElementById('sat').value=sat; document.getElementById('con').value=con; document.getElementById('warm').value=warm; document.getElementById('blueBoost').value=blue; };
