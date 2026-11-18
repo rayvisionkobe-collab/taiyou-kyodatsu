@@ -179,13 +179,14 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
     <div data-edit-group="pos" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div><label>クロップ / ズーム <span id="zoomVal">1.20</span></label><input type="range" id="zoom" min="1" max="2" step="0.01" value="1.2" class="slider"></div><div><label>画像の位置 — 左右 <span id="imgXVal">0</span></label><input type="range" id="imgX" min="-100" max="100" step="1" value="0" class="slider"></div><div><label>画像の位置 — 上下 <span id="imgYVal">0</span></label><input type="range" id="imgY" min="-100" max="100" step="1" value="0" class="slider"></div></div><div data-edit-group="text" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div><label>詩の大きさ <span id="fontVal">42</span></label><input type="range" id="fontSize" min="28" max="64" step="1" value="42" class="slider"></div><div><label>上の暗さ <span id="shadeVal">0.18</span></label><input type="range" id="shade" min="0" max="0.45" step="0.01" value="0.18" class="slider"></div><div><label>タイトル・天気の大きさ <span id="titleSizeVal">1.00</span></label><input type="range" id="titleSize" min="0.7" max="1.5" step="0.01" value="1" class="slider"></div></div><div data-edit-group="pos" style="margin-top:8px"><div class="row"><button class="btn btn-ghost" id="imgLeft">←</button><button class="btn btn-ghost" id="imgRight">→</button><button class="btn btn-ghost" id="imgUp">↑</button><button class="btn btn-ghost" id="imgDown">↓</button><button class="btn btn-dark" id="imgCenter">中央に戻す</button></div><div style="margin-top:8px"><b style="font-size:12px">ドラッグで動かすもの</b><div class="row" style="margin-top:6px"><button class="btn btn-dark" data-dragmode="auto">自動</button><button class="btn btn-ghost" data-dragmode="image">画像</button><button class="btn btn-ghost" data-dragmode="poem">詩</button><button class="btn btn-ghost" data-dragmode="title">タイトル</button></div></div></div>
     <p data-edit-group="pos" style="font-size:12px;opacity:.7;margin-top:8px">ドラッグ：空をドラッグで上下に動かせます。詩をドラッグで位置を動かせます。詩の右下をドラッグで、詩の大きさを変えられます。右下のタイトル・天気も、ドラッグで上下左右に動かせます。</p>
     <div data-edit-group="photo" style="background:#1c1917;border-radius:8px;padding:10px;margin-top:10px"><b style="font-size:13px">③ 元になる写真を選ぶ</b><div class="row" style="margin-top:8px"><button class="btn btn-dark" id="imgSrcLive" style="flex:1 1 0;min-width:0;white-space:nowrap;font-size:13px;padding:11px 6px">📷 ライブ画像で作る</button><button class="btn btn-ghost" id="imgSrcSaved" style="flex:1 1 0;min-width:0;white-space:nowrap;font-size:13px;padding:11px 6px">💾 保存画像で作る</button></div><p id="imgSrcLabel" style="font-size:12px;opacity:.8;margin-top:6px">今：ライブ画像</p></div>
-    <div class="row" style="margin-top:8px"><button class="btn btn-dark" id="makePoemImg" style="width:100%">🖼 詩入り画像を作る</button></div>
+    
     <p id="makePoemMsg" style="font-size:11px;color:#a8a29e;text-align:center;margin-top:4px"></p>
     <div data-edit-group="text" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px"><div><label>詩の箱の大きさ <span id="poemBoxVal">1.00</span></label><input type="range" id="poemBoxScale" min="0.7" max="1.5" step="0.05" value="1" class="slider"></div><div><label>箱の濃さ <span id="poemBoxAlphaVal">0.35</span></label><input type="range" id="poemBoxAlpha" min="0" max="0.6" step="0.05" value="0.35" class="slider"></div></div>
+    <div class="row" style="margin-top:8px"><button class="btn btn-dark" id="makePoemImg" style="width:100%">🖼 詩入り画像を作る</button></div>
     
   </div></div>
     <div class="row" style="margin-top:12px"><button class="btn btn-dark" id="sharePoemImg">📱 詩入り画像でシェア — SNSを選ぶ</button></div>
-    <div id="snsPicker" style="display:none;background:#111;border:1px solid #555;border-radius:10px;padding:12px;margin-top:10px"><b>どこでシェアしますか？</b><div class="row" style="margin-top:10px"><button class="btn btn-dark" id="shareX">X でシェア</button><button class="btn btn-ghost" id="shareThreads">Threads</button></div><div class="row" style="margin-top:8px"><button class="btn btn-ghost" id="shareBluesky">Bluesky</button><button class="btn btn-ghost" id="shareIG">Instagram — 開く（画像＋文）</button></div><div class="row" style="margin-top:8px"><button class="btn btn-ghost" id="shareOS">📱 スマホのシェア画面</button></div><p style="font-size:12px;opacity:.7">PCでも、X / Threads / Bluesky は、シェア画面が開きます。</p></div>
+    <div id="snsPicker" style="display:none;background:#111;border:1px solid #555;border-radius:10px;padding:12px;margin-top:10px"><b>どこでシェアしますか？</b><div class="row" style="margin-top:10px"><button class="btn btn-dark" id="shareX">X でシェア</button><button class="btn btn-ghost" id="shareThreads">Threads</button></div><div class="row" style="margin-top:8px"><button class="btn btn-ghost" id="shareBluesky">Bluesky</button><button class="btn btn-ghost" id="shareIG">Instagram — 投稿画面を開く</button></div><div class="row" style="margin-top:8px"><button class="btn btn-ghost" id="shareOS">📱 スマホのシェア画面</button></div><p style="font-size:12px;opacity:.7">PCでも、X / Threads / Bluesky は、シェア画面が開きます。</p></div>
     <div class="row" style="margin-top:12px"><button class="btn btn-dark" id="closeShareBottom">✕ とじる</button></div>
 </div>
 <footer>
@@ -290,7 +291,8 @@ async function updateAll(){
     if(ph){ ph.style.display='block'; ph.innerHTML='ライブ静止画 — 次の更新で表示されます<br>この場所のライブがまだ取得できていません。次回の更新で表示されます<br><span id="time"></span>'; }
   }
   const upd = document.getElementById('liveUpdated');
-  if(upd && item?.updated_at) upd.textContent = '・ ' + new Date(item.updated_at).toLocaleString('ja-JP');
+  const _updSrc = item?.updated_at || liveData?.updated_at;
+  if(upd && _updSrc){ upd.textContent = '・ ' + new Date(_updSrc).toLocaleString('ja-JP'); const _ageMin=Math.max(0, Math.round((Date.now()-new Date(_updSrc).getTime())/60000)); if(_ageMin>=90){ upd.textContent += '（'+_ageMin+'分前・更新が止まっています）'; upd.style.color='#fca5a5'; } else { upd.style.color=''; } }
   { const lk=document.getElementById('liveCamLink'); if(lk && loc.page_url) lk.href=loc.page_url; const dbg=document.getElementById('liveImgDebug'); if(dbg) dbg.textContent = 'data.json: ' + (item?.image||'(なし)') + ' / ' + (liveData?.updated_at||''); }
   const t = document.getElementById('time'); if(t) t.textContent = new Date().toLocaleString('ja-JP');
 }
@@ -453,7 +455,7 @@ cv.addEventListener('pointerdown', e=>{
 });
 cv.addEventListener('pointermove', e=>{
   if(!dragMode) return; const rect=cv.getBoundingClientRect(); const x=(e.clientX-rect.left)/rect.width, y=(e.clientY-rect.top)/rect.height; const dx=x-dragStartX, dy=y-dragStartY;
-  if(dragMode==='image'){ const _z=parseFloat(document.getElementById('zoom').value||1.2); const _f=0.6/_z; _imgX=Math.max(-1,Math.min(1,_imgX+dx*_f)); _imgY=Math.max(-1,Math.min(1,_imgY+dy*_f)); _syncImgPos(); drawPoemImg(); }
+  if(dragMode==='image'){ const _z=parseFloat(document.getElementById('zoom').value||1.2); const _f=0.30/_z; _imgX=Math.max(-1,Math.min(1,_imgX+dx*_f)); _imgY=Math.max(-1,Math.min(1,_imgY+dy*_f)); _syncImgPos(); drawPoemImg(); }
   else if(dragMode==='poem'){ poemXRatio=Math.min(0.6,Math.max(0.02,startPoemX+dx)); poemYRatio=Math.min(0.7,Math.max(0.02,startPoemY+dy)); drawPoemImg(); }
   else if(dragMode==='title'){ titleXRatio=Math.min(0.98,Math.max(0.55,window._startTitleX+dx)); titleYRatio=Math.min(0.97,Math.max(0.55,window._startTitleY+dy)); drawPoemImg(); }
   else if(dragMode==='resizePoem'){ const ns=Math.min(1.5,Math.max(0.7,1.0+dy*1.2)); _poemBoxScale=ns; const s=document.getElementById('poemBoxScale'); if(s) s.value=String(ns); drawPoemImg(); }
@@ -508,7 +510,7 @@ document.getElementById('sharePoemImg').onclick=()=>{ const p=document.getElemen
 document.getElementById('shareX').onclick=()=>{ window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(buildShareTextFor('x')),'_blank'); };
 document.getElementById('shareThreads').onclick=()=>{ window.open('https://www.threads.net/intent/post?text='+encodeURIComponent(buildShareTextFor('threads')),'_blank'); };
 document.getElementById('shareBluesky').onclick=()=>{ window.open('https://bsky.app/intent/compose?text='+encodeURIComponent(buildShareTextFor('bluesky')),'_blank'); };
-document.getElementById('shareIG').onclick=async()=>{ const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=cv.toDataURL('image/png'); a.click(); try{ await navigator.clipboard.writeText(buildShareTextFor('ig')); }catch(e){} window.open('https://www.instagram.com/','_blank'); alert('画像を保存して、文をコピーしました。Instagramが開くので、貼ってください'); };
+document.getElementById('shareIG').onclick=async()=>{ const text=buildShareTextFor('ig'); try{ await navigator.clipboard.writeText(text); }catch(e){} const blob=await new Promise(res=>cv.toBlob(res,'image/png')); const file=new File([blob],'taiyou_poem.png',{type:'image/png'}); const isMobile=/iPhone|iPad|Android/i.test(navigator.userAgent||''); if(isMobile){ try{ const a=document.createElement('a'); a.href='instagram://create'; a.click(); }catch(e){} setTimeout(async()=>{ try{ if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], text:text}); return; } }catch(e){ if(String(e).includes('Abort')) return; } const a2=document.createElement('a'); a2.download='taiyou_poem.png'; a2.href=cv.toDataURL('image/png'); a2.click(); window.open('https://www.instagram.com/','_blank'); },600); return; } const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=cv.toDataURL('image/png'); a.click(); window.open('https://www.instagram.com/','_blank'); alert('画像を保存して、文をコピーしました。Instagramが開くので、貼ってください'); };
 document.getElementById('shareOS').onclick=async()=>{ try{ const blob=await new Promise(res=>cv.toBlob(res,'image/png')); const file=new File([blob],'taiyou_poem.png',{type:'image/png'}); if(navigator.share && navigator.canShare({files:[file]})){ await navigator.share({files:[file], text:buildShareTextFor(_currentSns)}); } else { const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=URL.createObjectURL(blob); a.click(); alert('OSのシェア画面が出ないので、画像を保存しました。'); } }catch(e){} };
 document.getElementById('saveImgLive')?.addEventListener('click',()=>{ try{const img=document.getElementById('liveImg'); const src=img?.currentSrc||img?.src||''; if(!src){document.getElementById('saveMsg').textContent='まだライブ画像がありません'; return;} const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); arr.unshift({src, at:new Date().toISOString(), place:document.getElementById('placeSelect')?.value||''}); localStorage.setItem('kyodatsu_saved', JSON.stringify(arr.slice(0,12))); const m=document.getElementById('saveMsg'); if(m) m.textContent='保存しました（'+arr.length+'枚）。シェア箱の「保存した画像で作る」から使えます'; renderSavedGallery(); }catch(e){ alert('保存できませんでした'); } });
 if('serviceWorker' in navigator)
@@ -519,19 +521,14 @@ if('serviceWorker' in navigator)
     if('caches' in window){ caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))); }
   }
   loadLive().then(updateAll);
-  // 30分おきに自動更新: ページを開きっぱなしでも、新しい静止画と詩を取りに行く
-  // ユーザーの場所・詩風・濃淡は savePrefs で保存済みなので、更新しても変わらない
-  setInterval(()=>{
-    console.log('auto refresh 30min');
-    loadLive().then(updateAll);
-  }, 30*60*1000);
-  // 5分おきに軽くチェック: data.json が新しくなっていたら、すぐ更新
+  setInterval(()=>{ console.log('auto refresh 30min'); loadLive().then(updateAll); }, 30*60*1000);
   let lastUpdatedAt = null;
   setInterval(async ()=>{
     try{
       const r = await fetch('data.json?v='+Date.now(), {cache:'no-store'});
       if(!r.ok) return;
       const j = await r.json();
+      const _t=document.getElementById('time'); if(_t) _t.textContent = 'チェック：' + new Date().toLocaleString('ja-JP') + ' / data.json：' + (j.updated_at ? new Date(j.updated_at).toLocaleString('ja-JP') : '(なし)');
       if(lastUpdatedAt && j.updated_at === lastUpdatedAt) return;
       if(!lastUpdatedAt) lastUpdatedAt = liveData?.updated_at;
       if(j.updated_at !== lastUpdatedAt){ lastUpdatedAt = j.updated_at; liveData = j; updateAll(); }

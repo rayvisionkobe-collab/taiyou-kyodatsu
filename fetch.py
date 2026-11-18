@@ -1,6 +1,6 @@
 # ============================================================
-# fetch.py v49 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v49」と出ます。出なければ、古い fetch.py です
+# fetch.py v52 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v52」と出ます。出なければ、古い fetch.py です
 # fetch.py v19 - 朝・昼・晩の3回だけAI詩を作る版
 # POEM_HOURS = [6, 12, 18]  <- ここにあります (朝6時・昼12時・晩18時)
 # BUSY_HOURS = [15, 16]     <- 15-16時はGeminiを使わない
@@ -33,7 +33,7 @@ BUSY_HOURS = [15, 16]  # 15-16時はGeminiを使わない (429/503回避)
 def load_locations():
     return [
         {"id": "kobe", "name": "神戸", "lat": 34.69, "lon": 135.19, "weathernews_id": "7CDDE9067E16", "page_url": "https://weathernews.jp/onebox/livecam/kinki/hyogo/7CDDE9067E16/"},
-        {"id": "osaka", "name": "大阪", "lat": 34.69, "lon": 135.50, "weathernews_id": "7CDDE906F8CE", "page_url": "https://weathernews.jp/onebox/livecam/kinki/osaka/7CDDE906F8CE/"},
+        {"id": "osaka", "name": "大阪", "lat": 34.69, "lon": 135.50, "weathernews_id": "7CDDE9068718", "page_url": "https://weathernews.jp/onebox/livecam/kinki/osaka/7CDDE9068718/"},
         {"id": "sapporo", "name": "札幌", "lat": 43.06, "lon": 141.35, "weathernews_id": "7CDDE9068F23", "page_url": "https://weathernews.jp/onebox/livecam/hokkaido/douou/7CDDE9068F23/"},
         {"id": "tokyo", "name": "東京", "lat": 35.68, "lon": 139.76, "weathernews_id": "7CDDE90689B1", "page_url": "https://weathernews.jp/onebox/livecam/kanto/tokyo/7CDDE90689B1/"},
         {"id": "sendai", "name": "仙台", "lat": 38.26, "lon": 140.87, "weathernews_id": "7CDDE905CDB1", "page_url": "https://weathernews.jp/onebox/livecam/tohoku/miyagi/7CDDE905CDB1/"},
@@ -227,7 +227,7 @@ GEMINI_MODELS = [
     "gemini-2.0-flash-001",
     "gemini-2.0-flash",
 ]
-print("Weathernews版 v49 - fetch.py 起動")  # 2.0/2.5 は引退して 404 になるので使わない。Lite が正解
+print("Weathernews版 v52 - fetch.py 起動")  # 2.0/2.5 は引退して 404 になるので使わない。Lite が正解
 
 def current_poem_slot(hour):
     # GitHubの遅れ・429再試行: 6-10時->朝, 12-14・17時->昼, 18-20時->晩
