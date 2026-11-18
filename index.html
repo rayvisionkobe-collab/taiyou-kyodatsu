@@ -281,15 +281,32 @@ async function updateAll(){
   const item = liveData?.locations?.[place];
   const img = document.getElementById('liveImg');
   const ph = document.getElementById('livePlaceholder');
-  if(item && item.image && item.status !== 'no-image'){
-    img.onerror = ()=>{ try{ const loc2=LOCATIONS.find(l=>l.id===place); const now=new Date(); const ts=now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'00'; const guess='https://gvs.weathernews.jp/livecam/'+loc2.weathernews_id+'/1280/'+ts+'.jpg'; if(img.src!==guess){ img.src=guess; return; } }catch(e){} img.style.display='none'; if(ph){ ph.style.display='block'; ph.innerHTML='ライブ静止画 — 次の更新で表示されます<br>次回の更新（1時間おき）で表示されます<br><span id="time"></span>'; } };
-    img.src = item.image + '?v=' + Date.now();
-    img.style.display='block';
-    if(ph) ph.style.display='none';
-  } else {
-    if(img) img.style.display='none';
-    if(ph){ ph.style.display='block'; ph.innerHTML='ライブ静止画 — 次の更新で表示されます<br>この場所のライブがまだ取得できていません。次回の更新で表示されます<br><span id="time"></span>'; }
-  }
+  // ライブは、data.json 経由じゃなく、直接 gvs から取る。data.json が古くても、画像は新しくなる
+  const _tsFor = (backMin)=>{ const d=new Date(Date.now()-backMin*60000); d.setSeconds(0,0); d.setMinutes(Math.floor(d.getMinutes()/10)*10); const p=(n)=>String(n).padStart(2,'0'); return ''+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+p(d.getHours())+p(d.getMinutes())+'00'; };
+  let _tryIdx = 0;
+  const _tryList = [0,10,20,30,40,50,60];
+  const _setLiveUpdatedDirect = ()=>{ const upd2=document.getElementById('liveUpdated'); if(upd2){ upd2.textContent='・ ライブ直接取得 ' + new Date().toLocaleString('ja-JP'); upd2.style.color=''; } };
+  img.onerror = ()=>{
+    _tryIdx++;
+    if(_tryIdx < _tryList.length){
+      const ts2=_tsFor(_tryList[_tryIdx]);
+      img.src='https://gvs.weathernews.jp/livecam/'+loc.weathernews_id+'/1280/'+ts2+'.jpg';
+      return;
+    }
+    // 直接が全部ダメなら、data.json の画像に落ちる
+    if(item && item.image && item.status!=='no-image'){
+      img.onerror=null;
+      img.src=item.image+'?v='+Date.now();
+      return;
+    }
+    img.style.display='none';
+    if(ph){ ph.style.display='block'; ph.innerHTML='ライブ静止画 — 次の更新で表示されます<br>次回の更新（1時間おき）で表示されます<br><span id="time"></span>'; }
+  };
+  img.onload = ()=>{ _setLiveUpdatedDirect(); };
+  _tryIdx = 0;
+  img.src='https://gvs.weathernews.jp/livecam/'+loc.weathernews_id+'/1280/'+_tsFor(0)+'.jpg';
+  img.style.display='block';
+  if(ph) ph.style.display='none';
   const upd = document.getElementById('liveUpdated');
   const _updSrc = item?.updated_at || liveData?.updated_at;
   if(upd && _updSrc){ upd.textContent = '・ ' + new Date(_updSrc).toLocaleString('ja-JP'); const _ageMin=Math.max(0, Math.round((Date.now()-new Date(_updSrc).getTime())/60000)); if(_ageMin>=90){ upd.textContent += '（'+_ageMin+'分前・更新が止まっています）'; upd.style.color='#fca5a5'; } else { upd.style.color=''; } }
