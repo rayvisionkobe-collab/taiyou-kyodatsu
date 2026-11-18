@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-18T23:54:34.335525+09:00",
+  "updated_at": "2026-11-19T00:29:31.421468+09:00",
   "locations": {
     "kobe": {
       "image": "images/kobe.jpg",
@@ -17,13 +17,12 @@
           "3": "神戸の青い空の底から朝が生まれ、快晴の光が冷たい風とともに銀色の野原をめぐる。すきとおった風が古い港の屋根をなでて、私たちはみんな新しい光の粒になるのだ。"
         }
       },
-      "model": "manual-gemini",
-      "updated_at": "2026-11-18T23:54:34.335525+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-19T00:29:31.421468+09:00",
       "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "morning",
-      "page_url": "https://weathernews.jp/onebox/livecam/kinki/hyogo/7CDDE9067E16/",
-      "manual": true
+      "page_url": "https://weathernews.jp/onebox/livecam/kinki/hyogo/7CDDE9067E16/"
     },
     "osaka": {
       "image": "images/osaka.jpg",
@@ -42,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T23:38:24.614269+09:00",
+      "updated_at": "2026-11-19T00:29:31.421468+09:00",
       "status": "ok",
       "poem_date": "2026-11-17",
       "poem_slot": "evening",
@@ -88,8 +87,8 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T23:27:40.891248+09:00",
-      "status": "keep-old",
+      "updated_at": "2026-11-19T00:29:31.421468+09:00",
+      "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "morning",
       "page_url": "https://weathernews.jp/onebox/livecam/kanto/tokyo/7CDDE90689B1/"
@@ -111,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T23:38:24.614269+09:00",
+      "updated_at": "2026-11-19T00:29:31.421468+09:00",
       "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
@@ -134,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T23:38:24.614269+09:00",
+      "updated_at": "2026-11-19T00:29:31.421468+09:00",
       "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "morning",
@@ -180,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T23:38:24.614269+09:00",
+      "updated_at": "2026-11-19T00:29:31.421468+09:00",
       "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "morning",
