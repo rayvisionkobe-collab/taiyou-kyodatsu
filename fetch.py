@@ -1,6 +1,6 @@
 # ============================================================
-# fetch.py v54 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v54」と出ます。出なければ、古い fetch.py です
+# fetch.py v55 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v55」と出ます。出なければ、古い fetch.py です
 # - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
 # - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
 # - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
@@ -11,7 +11,7 @@
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v54")
+print("Weathernews版 v55")
 
 Path("images").mkdir(exist_ok=True)
 
@@ -211,9 +211,14 @@ def main():
             poems, model = generate_poems(out, name, loc.get("lat"), loc.get("lon"), loc_index=loc_index, slot=slot)
             if model.startswith("fallback") and existing.get("poems"):
                 poems, model = existing["poems"], "cached-keep"
-                print(f"{key}: gemini fail -> cached-keep")
-            poem_date = now[:10]
-            poem_slot = slot
+                print(f"{key}: gemini fail -> cached-keep, poem_date は更新しない（次の時間に再試行）")
+                # ここがバグだった：fallback なのに poem_date を今日にすると、
+                # 7,8,9,10時が「もう作った」と思って、ずっと再試行しなくなる
+                poem_date = existing.get("poem_date", "")
+                poem_slot = existing.get("poem_slot", "")
+            else:
+                poem_date = now[:10]
+                poem_slot = slot
         else:
             if existing.get("poems"):
                 poems, model = existing["poems"], "cached"
