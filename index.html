@@ -163,7 +163,7 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
 <div id="shareCard"><div id="shareHandle"></div><div id="shareCloseBar"><b>シェアする</b><button id="closeShare">✕ とじる</button></div>
   <p style="font-size:12px;opacity:.7">Instagram / Threads / Bluesky / X の切り替え、テキストコピー、画像保存、詩入り画像を作る、スマホのシェアで送る。元のままです。</p>
   <div class="row" id="snsTopRow" style="margin-top:8px"><button class="btn btn-dark" id="snsTopIG" data-sns="ig" style="min-width:0;white-space:nowrap;font-size:13px">Instagram</button><button class="btn btn-ghost" id="snsTopThreads" data-sns="threads" style="min-width:0;white-space:nowrap;font-size:13px">Threads</button><button class="btn btn-ghost" id="snsTopBluesky" data-sns="bluesky" style="min-width:0;white-space:nowrap;font-size:13px">Bluesky</button><button class="btn btn-ghost" id="snsTopX" data-sns="x" style="min-width:0;white-space:nowrap;font-size:13px">X</button></div>
-  <div style="background:#000;border-radius:10px;padding:12px;margin-top:10px;white-space:pre-line;font-size:14px;line-height:1.7">今日のそらと僕のこころ…詩にしてみました。
+  <div id="sharePreviewLabel" style="font-size:11px;color:#a8a29e;margin-top:8px">今は Instagram 用です</div><div id="sharePreviewText" style="background:#000;border-radius:10px;padding:12px;margin-top:6px;white-space:pre-line;font-size:14px;line-height:1.7">今日のそらと僕のこころ…詩にしてみました。
 続きはプロフィールのリンクから
 #太陽の涙虚脱の空 #詩 #天気 #神戸</div>
   <div style="background:#222;border-radius:10px;padding:12px;margin-top:10px"><b style="font-size:13px">詩入り画像の編集</b><p style="font-size:12px;opacity:.7">① 詩情フィルターと、② 保存した画像は、ここにあります。</p>
@@ -443,13 +443,53 @@ cv.addEventListener('pointermove', e=>{
   else if(dragMode==='resizePoem'){ const ns=Math.min(1.5,Math.max(0.7,1.0+dy*1.2)); _poemBoxScale=ns; const s=document.getElementById('poemBoxScale'); if(s) s.value=String(ns); drawPoemImg(); }
 });
 cv.addEventListener('pointerup', ()=>{ dragMode=null; drawPoemImg(); });
-document.querySelectorAll('#snsTopRow button').forEach(_b=>{ _b.addEventListener('click',()=>{ document.querySelectorAll('#snsTopRow button').forEach(_x=>{ _x.classList.remove('btn-dark'); _x.classList.add('btn-ghost'); }); _b.classList.remove('btn-ghost'); _b.classList.add('btn-dark'); const _p=document.getElementById('snsPicker'); if(_p) _p.style.display='block'; const _map={ig:'shareIG',threads:'shareThreads',bluesky:'shareBluesky',x:'shareX'}; const _t=document.getElementById(_map[_b.dataset.sns]); if(_t){ _t.style.outline='2px solid #f5f1e8'; setTimeout(()=>{ _t.style.outline=''; },1200); } }); });
-document.getElementById('sharePoemImg').onclick=()=>{ const p=document.getElementById('snsPicker'); p.style.display=p.style.display==='none'?'block':'none'; };
-document.getElementById('shareX').onclick=()=>{ window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent('今日のそらと僕のこころ…詩にしてみました。 #太陽の涙虚脱の空'),'_blank'); };
-document.getElementById('shareThreads').onclick=()=>{ window.open('https://www.threads.net/intent/post?text='+encodeURIComponent('今日のそらと僕のこころ…詩にしてみました。'),'_blank'); };
-document.getElementById('shareBluesky').onclick=()=>{ window.open('https://bsky.app/intent/compose?text='+encodeURIComponent('今日のそらと僕のこころ…詩にしてみました。'),'_blank'); };
-document.getElementById('shareIG').onclick=async()=>{ const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=cv.toDataURL('image/png'); a.click(); try{ await navigator.clipboard.writeText('今日のそらと僕のこころ…詩にしてみました。'); alert('画像を保存して、文をコピーしました。Instagramアプリで貼ってください'); }catch(e){ alert('画像を保存しました。'); } };
-document.getElementById('shareOS').onclick=async()=>{ try{ const blob=await new Promise(res=>cv.toBlob(res,'image/png')); const file=new File([blob],'taiyou_poem.png',{type:'image/png'}); if(navigator.share && navigator.canShare({files:[file]})){ await navigator.share({files:[file], text:'今日のそらと僕のこころ…詩にしてみました。'}); } else { const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=URL.createObjectURL(blob); a.click(); alert('OSのシェア画面が出ないので、画像を保存しました。'); } }catch(e){} };
+
+// --- SNSごとの文：押したSNSで、文が変わる ---
+let _currentSns = "ig";
+function _sharePlaceTag(){ try{ const sel=document.getElementById("placeSelect"); const loc=LOCATIONS.find(l=>l.id===(sel?.value||"kobe")); return loc?loc.name:"神戸"; }catch(e){ return "神戸"; } }
+function buildShareTextFor(sns){
+  const place = _sharePlaceTag();
+  const base = "今日のそらと僕のこころ…詩にしてみました。";
+  const tags = "#太陽の涙虚脱の空 #詩 #天気 #" + place;
+  if(sns==="ig") return base + "\n続きはプロフィールのリンクから\n" + tags;
+  if(sns==="x") return base + " " + tags + "\n" + APP_URL;
+  // Threads / Bluesky は、リンクが押せる
+  return base + "\n続きはここから → " + APP_URL + "\n" + tags;
+}
+function renderSharePreview(sns){
+  _currentSns = sns;
+  const el=document.getElementById("sharePreviewText"); if(el) el.textContent=buildShareTextFor(sns);
+  const lbl=document.getElementById("sharePreviewLabel");
+  const map={ig:"今は Instagram 用です", threads:"今は Threads 用です", bluesky:"今は Bluesky 用です", x:"今は X 用です"};
+  if(lbl) lbl.textContent=map[sns]||"";
+}
+document.querySelectorAll('#snsTopRow button').forEach(_b=>{ _b.addEventListener('click',()=>{ 
+// --- SNSごとの文：押したSNSで、文が変わる ---
+let _currentSns = "ig";
+function _sharePlaceTag(){ try{ const sel=document.getElementById("placeSelect"); const loc=LOCATIONS.find(l=>l.id===(sel?.value||"kobe")); return loc?loc.name:"神戸"; }catch(e){ return "神戸"; } }
+function buildShareTextFor(sns){
+  const place = _sharePlaceTag();
+  const base = "今日のそらと僕のこころ…詩にしてみました。";
+  const tags = "#太陽の涙虚脱の空 #詩 #天気 #" + place;
+  if(sns==="ig") return base + "\n続きはプロフィールのリンクから\n" + tags;
+  if(sns==="x") return base + " " + tags + "\n" + APP_URL;
+  // Threads / Bluesky は、リンクが押せる
+  return base + "\n続きはここから → " + APP_URL + "\n" + tags;
+}
+function renderSharePreview(sns){
+  _currentSns = sns;
+  const el=document.getElementById("sharePreviewText"); if(el) el.textContent=buildShareTextFor(sns);
+  const lbl=document.getElementById("sharePreviewLabel");
+  const map={ig:"今は Instagram 用です", threads:"今は Threads 用です", bluesky:"今は Bluesky 用です", x:"今は X 用です"};
+  if(lbl) lbl.textContent=map[sns]||"";
+}
+document.querySelectorAll('#snsTopRow button').forEach(_x=>{ _x.classList.remove('btn-dark'); _x.classList.add('btn-ghost'); }); _b.classList.remove('btn-ghost'); _b.classList.add('btn-dark'); renderSharePreview(_b.dataset.sns); const _p=document.getElementById('snsPicker'); if(_p){ _p.style.display='block'; /* 原因：picker は箱の一番下にある。開いても、上のままでは見えない。だから、ここまでスクロールする */ setTimeout(()=>{ try{ _p.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){ _p.scrollIntoView(); } },30); } const _map={ig:'shareIG',threads:'shareThreads',bluesky:'shareBluesky',x:'shareX'}; const _t=document.getElementById(_map[_b.dataset.sns]); if(_t){ _t.style.outline='2px solid #f5f1e8'; setTimeout(()=>{ _t.style.outline=''; },1200); } }); });
+document.getElementById('sharePoemImg').onclick=()=>{ const p=document.getElementById('snsPicker'); const willOpen = p.style.display==='none'; p.style.display=willOpen?'block':'none'; if(willOpen){ setTimeout(()=>{ try{ p.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){ p.scrollIntoView(); } },30); } };
+document.getElementById('shareX').onclick=()=>{ window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(buildShareTextFor('x')),'_blank'); };
+document.getElementById('shareThreads').onclick=()=>{ window.open('https://www.threads.net/intent/post?text='+encodeURIComponent(buildShareTextFor('threads')),'_blank'); };
+document.getElementById('shareBluesky').onclick=()=>{ window.open('https://bsky.app/intent/compose?text='+encodeURIComponent(buildShareTextFor('bluesky')),'_blank'); };
+document.getElementById('shareIG').onclick=async()=>{ const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=cv.toDataURL('image/png'); a.click(); try{ await navigator.clipboard.writeText(buildShareTextFor('ig')); alert('画像を保存して、文をコピーしました。Instagramアプリで貼ってください'); }catch(e){ alert('画像を保存しました。'); } };
+document.getElementById('shareOS').onclick=async()=>{ try{ const blob=await new Promise(res=>cv.toBlob(res,'image/png')); const file=new File([blob],'taiyou_poem.png',{type:'image/png'}); if(navigator.share && navigator.canShare({files:[file]})){ await navigator.share({files:[file], text:buildShareTextFor(_currentSns)}); } else { const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=URL.createObjectURL(blob); a.click(); alert('OSのシェア画面が出ないので、画像を保存しました。'); } }catch(e){} };
 document.getElementById('saveImgLive')?.addEventListener('click',()=>{ try{const img=document.getElementById('liveImg'); const src=img?.currentSrc||img?.src||''; if(!src){document.getElementById('saveMsg').textContent='まだライブ画像がありません'; return;} const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); arr.unshift({src, at:new Date().toISOString(), place:document.getElementById('placeSelect')?.value||''}); localStorage.setItem('kyodatsu_saved', JSON.stringify(arr.slice(0,12))); const m=document.getElementById('saveMsg'); if(m) m.textContent='保存しました（'+arr.length+'枚）。シェア箱の「保存した画像で作る」から使えます'; renderSavedGallery(); }catch(e){ alert('保存できませんでした'); } });
 if('serviceWorker' in navigator)
 {
