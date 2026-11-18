@@ -166,7 +166,10 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
   <div id="sharePreviewLabel" style="font-size:11px;color:#a8a29e;margin-top:8px">今は Instagram 用です</div><div id="sharePreviewText" style="background:#000;border-radius:10px;padding:12px;margin-top:6px;white-space:pre-line;font-size:14px;line-height:1.7">今日のそらと僕のこころ…詩にしてみました。
 続きはプロフィールのリンクから
 #太陽の涙虚脱の空 #詩 #天気 #神戸</div>
-  <div style="background:#222;border-radius:10px;padding:12px;margin-top:10px"><b style="font-size:13px">詩入り画像の編集</b><p style="font-size:12px;opacity:.7">① 詩情フィルターと、② 保存した画像は、ここにあります。</p>
+  <div id="shareSizeLabel" style="font-size:11px;color:#a8a29e;margin-top:6px">Instagram：縦 4:5（1080×1350）</div>
+  <button id="editToggle" class="btn btn-dark" style="width:100%;margin-top:10px">✏️ 編集する — フィルター・位置・大きさを開く</button>
+  <p style="font-size:11px;color:#a8a29e;text-align:center;margin-top:4px">編集を閉じると、画像だけ大きく見られます</p>
+  <div id="editPanel" style="display:none"><div style="background:#222;border-radius:10px;padding:12px;margin-top:10px"><b style="font-size:13px">詩入り画像の編集</b><p style="font-size:12px;opacity:.7">① 詩情フィルターと、② 保存した画像は、ここにあります。</p>
     <div style="background:#1c1917;border-radius:8px;padding:10px;margin-top:8px"><b style="font-size:13px">① フィルター — 詩情の色で分ける</b><div class="row" style="margin-top:8px"><button class="btn btn-ghost" data-filter="none">なし</button><button class="btn btn-dark" data-filter="sumi">澄み</button><button class="btn btn-ghost" data-filter="hakanai">儚い</button><button class="btn btn-ghost" data-filter="nukumori">温もり</button><button class="btn btn-ghost" data-filter="shizukesa">静けさ</button><button class="btn btn-ghost" data-filter="gin">銀</button><button class="btn btn-ghost" data-filter="kagayaki">輝き</button></div><p style="font-size:12px;opacity:.7">天気・時間帯ではなく、詩情の色で分けました。どんな空にも、かけられます。1回押すと適用、もう1回押すと、スライダーが出ます。</p><div id="filterSliders" style="display:none"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>青の濃さ <span id="blueVal">1.25</span></label><input type="range" id="blueBoost" min="0.8" max="1.6" step="0.01" value="1.25" class="slider"></div><div><label>オレンジ <span id="warmVal">0.18</span></label><input type="range" id="warm" min="0" max="0.45" step="0.01" value="0.18" class="slider"></div><div><label>鮮やかさ <span id="satVal">1.30</span></label><input type="range" id="sat" min="0.7" max="1.6" step="0.01" value="1.30" class="slider"></div><div><label>コントラスト <span id="conVal">1.10</span></label><input type="range" id="con" min="0.9" max="1.3" step="0.01" value="1.10" class="slider"></div></div></div></div>
     <div style="background:#1c1917;border-radius:8px;padding:10px;margin-top:10px"><b style="font-size:13px">② 保存した画像で作る</b><p style="font-size:12px;opacity:.7">保存は、ライブ画像の下のボタンでする。ここは、選ぶだけです。</p><div id="savedGallery" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div><label>クロップ / ズーム <span id="zoomVal">1.20</span></label><input type="range" id="zoom" min="1" max="2" step="0.01" value="1.2" class="slider"></div><div><label>詩の大きさ <span id="fontVal">42</span></label><input type="range" id="fontSize" min="28" max="64" step="1" value="42" class="slider"></div><div><label>上の暗さ <span id="shadeVal">0.18</span></label><input type="range" id="shade" min="0" max="0.45" step="0.01" value="0.18" class="slider"></div><div><label>タイトル・天気の大きさ <span id="titleSizeVal">1.00</span></label><input type="range" id="titleSize" min="0.7" max="1.5" step="0.01" value="1" class="slider"></div></div>
@@ -175,11 +178,12 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
     <div class="row" style="margin-top:8px"><button class="btn btn-dark" id="makePoemImg" style="width:100%">🖼 詩入り画像を作る</button></div>
     <p id="makePoemMsg" style="font-size:11px;color:#a8a29e;text-align:center;margin-top:4px"></p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px"><div><label>詩の箱の大きさ <span id="poemBoxVal">1.00</span></label><input type="range" id="poemBoxScale" min="0.7" max="1.5" step="0.05" value="1" class="slider"></div><div><label>箱の濃さ <span id="poemBoxAlphaVal">0.35</span></label><input type="range" id="poemBoxAlpha" min="0" max="0.6" step="0.05" value="0.35" class="slider"></div></div>
+
+    <div style="background:#1c1917;border-radius:8px;padding:10px;margin-top:10px"><b style="font-size:13px">画像の位置 — ズームしたとき、見せたい場所へ</b><p style="font-size:11px;color:#a8a29e;margin-top:4px">スライダーでも、ボタンでも、動かせます。ドラッグで動かす対象も、ここで選べます。</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px"><div><label>左右 <span id="imgXVal">0</span></label><input type="range" id="imgX" min="-100" max="100" step="1" value="0" class="slider"></div><div><label>上下 <span id="imgYVal">0</span></label><input type="range" id="imgY" min="-100" max="100" step="1" value="0" class="slider"></div></div><div class="row" style="margin-top:8px"><button class="btn btn-ghost" id="imgLeft">←</button><button class="btn btn-ghost" id="imgRight">→</button><button class="btn btn-ghost" id="imgUp">↑</button><button class="btn btn-ghost" id="imgDown">↓</button><button class="btn btn-dark" id="imgCenter">中央に戻す</button></div><div style="margin-top:8px"><b style="font-size:12px">ドラッグで動かすもの</b><div class="row" style="margin-top:6px"><button class="btn btn-dark" data-dragmode="auto">自動</button><button class="btn btn-ghost" data-dragmode="image">画像</button><button class="btn btn-ghost" data-dragmode="poem">詩</button><button class="btn btn-ghost" data-dragmode="title">タイトル</button></div><p style="font-size:11px;color:#a8a29e;margin-top:4px">「画像」にすると、どこをドラッグしても、画像だけ動きます。</p></div></div>  </div></div>
     <canvas id="cv" width="1280" height="720"></canvas>
     <div class="row" style="margin-top:12px"><button class="btn btn-dark" id="sharePoemImg">📱 詩入り画像でシェア — SNSを選ぶ</button></div>
-    <div id="snsPicker" style="display:none;background:#111;border:1px solid #555;border-radius:10px;padding:12px;margin-top:10px"><b>どこでシェアしますか？</b><div class="row" style="margin-top:10px"><button class="btn btn-dark" id="shareX">X でシェア</button><button class="btn btn-ghost" id="shareThreads">Threads</button></div><div class="row" style="margin-top:8px"><button class="btn btn-ghost" id="shareBluesky">Bluesky</button><button class="btn btn-ghost" id="shareIG">Instagram — 画像保存＋文コピー</button></div><div class="row" style="margin-top:8px"><button class="btn btn-ghost" id="shareOS">📱 スマホのシェア画面</button></div><p style="font-size:12px;opacity:.7">PCでも、X / Threads / Bluesky は、シェア画面が開きます。</p></div>
+    <div id="snsPicker" style="display:none;background:#111;border:1px solid #555;border-radius:10px;padding:12px;margin-top:10px"><b>どこでシェアしますか？</b><div class="row" style="margin-top:10px"><button class="btn btn-dark" id="shareX">X でシェア</button><button class="btn btn-ghost" id="shareThreads">Threads</button></div><div class="row" style="margin-top:8px"><button class="btn btn-ghost" id="shareBluesky">Bluesky</button><button class="btn btn-ghost" id="shareIG">Instagram — 開く（画像＋文）</button></div><div class="row" style="margin-top:8px"><button class="btn btn-ghost" id="shareOS">📱 スマホのシェア画面</button></div><p style="font-size:12px;opacity:.7">PCでも、X / Threads / Bluesky は、シェア画面が開きます。</p></div>
     <div class="row" style="margin-top:12px"><button class="btn btn-dark" id="closeShareBottom">✕ とじる</button></div>
-  </div>
 </div>
 <footer>
   <div style="margin-bottom:8px;line-height:1.8">
@@ -321,7 +325,7 @@ function init(){
   });
   // Service Workerの古いキャッシュを消す
   // 追加：シェア箱、診断、詩入り画像
-function renderSavedGallery(){ try{const g=document.getElementById('savedGallery'); if(!g) return; const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); if(!arr.length){g.innerHTML='<p style="font-size:12px;opacity:.7">まだ保存がありません。ライブ画像の下の「保存する」で、保存できます</p>'; return;} g.innerHTML=''; arr.forEach((it,i)=>{const im=document.createElement('img'); im.src=it.src; im.style.cssText='width:72px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid #555'; im.title='保存'+(i+1); im.onclick=()=>{ _poemImgMode='saved'; _poemSavedIdx=i; _updateImgSrcLabel(); try{drawPoemImg();}catch(e){} document.querySelectorAll('#savedGallery img').forEach(x=>x.style.border='2px solid #555'); im.style.border='3px solid #f5f1e8'; }; g.appendChild(im); }); }catch(e){} }
+function renderSavedGallery(){ try{const g=document.getElementById('savedGallery'); if(!g) return; const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); if(!arr.length){g.innerHTML='<p style="font-size:12px;opacity:.7">まだ保存がありません。ライブ画像の下の「保存する」で、保存できます</p>'; return;} g.innerHTML=''; arr.forEach((it,i)=>{ const wrap=document.createElement('div'); wrap.style.cssText='position:relative;width:72px;height:48px'; const im=document.createElement('img'); im.src=it.src; im.style.cssText='width:72px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid #555'; im.title='保存'+(i+1)+' — タップで使う'; im.onclick=()=>{ _poemImgMode='saved'; _poemSavedIdx=i; _updateImgSrcLabel(); try{drawPoemImg();}catch(e){} document.querySelectorAll('#savedGallery img').forEach(x=>x.style.border='2px solid #555'); im.style.border='3px solid #f5f1e8'; }; const del=document.createElement('button'); del.textContent='✕'; del.title='この1枚を消す'; del.style.cssText='position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;border:none;background:#f5f1e8;color:#1c1917;font-size:11px;font-weight:700;cursor:pointer;line-height:1'; del.onclick=(e)=>{ e.stopPropagation(); if(!confirm('この1枚を消しますか？')) return; const a2=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); a2.splice(i,1); localStorage.setItem('kyodatsu_saved', JSON.stringify(a2)); if(_poemImgMode==='saved'){ if(a2.length===0){ _poemImgMode='live'; _poemSavedIdx=0; } else if(_poemSavedIdx>=a2.length){ _poemSavedIdx=a2.length-1; } } renderSavedGallery(); try{drawPoemImg();}catch(e){} }; wrap.appendChild(im); wrap.appendChild(del); g.appendChild(wrap); }); }catch(e){} }
 function openShareSheet(){ const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.style.display='block';c.style.visibility='visible';requestAnimationFrame(()=>c.classList.add('open'));} if(o){o.style.display='block';requestAnimationFrame(()=>o.classList.add('open'));}}
 function closeShareSheet(){const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.classList.remove('open');setTimeout(()=>{if(!c.classList.contains('open')){c.style.display='none';c.style.visibility='hidden';}},320);} if(o){o.classList.remove('open');setTimeout(()=>{if(!o.classList.contains('open'))o.style.display='none';},320);}}
   document.getElementById('shareBtnLive')?.addEventListener('click',openShareSheet);
@@ -371,6 +375,9 @@ document.getElementById('shindanReset').onclick=()=>{ document.querySelectorAll(
 // スライダーは1つだけ（level） — 同期はいらない
 // 詩入り画像：簡易描画＋ドラッグ
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d'); let curW=1280, curH=720, poemXRatio=0.07, poemYRatio=0.11, titleXRatio=0.955, titleYRatio=0.905, titleSizeScale=1, dragMode=null, dragStartX=0, dragStartY=0, startPoemX=0.07, startPoemY=0.11, startFont=42; let _poemImgMode='live', _poemSavedIdx=0, _poemBoxScale=1.0, _poemBoxAlpha=0.35, _poemImgCache=null, _poemImgCacheSrc='';
+let _imgX=0, _imgY=0, _dragModeOverride='auto';
+let _shareW=1280, _shareH=720;
+function applyShareSize(){ if(_currentSns==='ig'){ _shareW=1080; _shareH=1350; } else { _shareW=1280; _shareH=720; } try{ const _cv=document.getElementById('cv'); if(_cv){ _cv.width=_shareW; _cv.height=_shareH; } curW=_shareW; curH=_shareH; }catch(e){} const _lbl=document.getElementById('shareSizeLabel'); if(_lbl) _lbl.textContent = (_currentSns==='ig' ? 'Instagram：縦 4:5（1080×1350）' : 'Threads / Bluesky / X：横 16:9（1280×720）'); }
 function _getPoemImgSrc(){ try{ if(_poemImgMode==='saved'){ const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); if(arr[_poemSavedIdx]) return arr[_poemSavedIdx].src; } }catch(e){} const li=document.getElementById('liveImg'); return (li?.currentSrc||li?.src||'hero.jpg'); }
 function _updateImgSrcLabel(){ const el=document.getElementById('imgSrcLabel'); if(!el) return; if(_poemImgMode==='saved'){ const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); el.textContent = arr.length ? ('今：保存画像 ' + (_poemSavedIdx+1) + ' / ' + arr.length + '枚目') : '今：保存画像（まだ保存がありません）'; } else { el.textContent='今：ライブ画像'; } const a=document.getElementById('imgSrcLive'), b=document.getElementById('imgSrcSaved'); if(a&&b){ a.style.background=_poemImgMode==='live'?'#f5f1e8':'transparent'; a.style.color=_poemImgMode==='live'?'#1c1917':'#a8a29e'; b.style.background=_poemImgMode==='saved'?'#f5f1e8':'transparent'; b.style.color=_poemImgMode==='saved'?'#1c1917':'#a8a29e'; } }
 function drawPoemImg(){
@@ -386,7 +393,7 @@ function drawPoemImg(){
   // 写真を描く。まだ読み込み中なら、グラデでつないで、読めたら描き直す
   if(_poemImgCacheSrc!==src){ _poemImgCache=new Image(); _poemImgCacheSrc=src; _poemImgCache.crossOrigin='anonymous'; _poemImgCache.onload=()=>{ try{drawPoemImg();}catch(e){} }; _poemImgCache.onerror=()=>{}; _poemImgCache.src=src; }
   if(_poemImgCache && _poemImgCache.complete && _poemImgCache.naturalWidth>0){
-    try{ ctx.save(); try{ctx.filter='saturate('+sat+') contrast('+con+') brightness(1.02)';}catch(e){} const iw=_poemImgCache.naturalWidth, ih=_poemImgCache.naturalHeight; const sc=Math.max(curW/iw, curH/ih)*zoom; const w=iw*sc, hh=ih*sc; ctx.drawImage(_poemImgCache,(curW-w)/2,(curH-hh)/2,w,hh); ctx.restore(); }catch(e){}
+    try{ ctx.save(); try{ctx.filter='saturate('+sat+') contrast('+con+') brightness(1.02)';}catch(e){} const iw=_poemImgCache.naturalWidth, ih=_poemImgCache.naturalHeight; const sc=Math.max(curW/iw, curH/ih)*zoom; const w=iw*sc, hh=ih*sc; const _ox=(curW-w)/2 + _imgX*curW*0.35; const _oy=(curH-hh)/2 + _imgY*curH*0.35; ctx.drawImage(_poemImgCache,_ox,_oy,w,hh); ctx.restore(); }catch(e){}
   } else {
     ctx.save(); ctx.fillStyle='#1c1917'; ctx.fillRect(0,0,curW,curH); const g=ctx.createLinearGradient(0,0,0,curH); g.addColorStop(0,'#3a7bd5'); g.addColorStop(0.55,'#7aa8e6'); g.addColorStop(1,'#f6c9a0'); ctx.fillStyle=g; ctx.fillRect(0,0,curW,curH); ctx.restore();
   }
@@ -432,7 +439,10 @@ document.querySelectorAll('[data-filter]').forEach(btn=>{ btn.onclick=()=>{
 cv.addEventListener('pointerdown', e=>{
   const rect=cv.getBoundingClientRect(); const x=(e.clientX-rect.left)/rect.width, y=(e.clientY-rect.top)/rect.height;
   const fontSize=parseFloat(document.getElementById('fontSize').value); const poemH=(document.getElementById('poemMain').textContent.split('\n').length*fontSize*1.55)/curH; const poemW=0.6;
-  if(x>poemXRatio+poemW-0.06 && x<poemXRatio+poemW+0.04 && y>poemYRatio+poemH-0.06 && y<poemYRatio+poemH+0.04){ dragMode='resizePoem'; }
+  if(_dragModeOverride==='image'){ dragMode='image'; }
+  else if(_dragModeOverride==='poem'){ dragMode='poem'; }
+  else if(_dragModeOverride==='title'){ dragMode='title'; }
+  else if(x>poemXRatio+poemW-0.06 && x<poemXRatio+poemW+0.04 && y>poemYRatio+poemH-0.06 && y<poemYRatio+poemH+0.04){ dragMode='resizePoem'; }
   else if(x>=titleXRatio-0.32 && x<=titleXRatio+0.02 && y>=titleYRatio-0.03 && y<=titleYRatio+0.12){ dragMode='title'; }
   else if(x>=poemXRatio && x<=poemXRatio+poemW && y>=poemYRatio && y<=poemYRatio+poemH+0.05){ dragMode='poem'; }
   else { dragMode='image'; }
@@ -441,7 +451,8 @@ cv.addEventListener('pointerdown', e=>{
 });
 cv.addEventListener('pointermove', e=>{
   if(!dragMode) return; const rect=cv.getBoundingClientRect(); const x=(e.clientX-rect.left)/rect.width, y=(e.clientY-rect.top)/rect.height; const dx=x-dragStartX, dy=y-dragStartY;
-  if(dragMode==='poem'){ poemXRatio=Math.min(0.6,Math.max(0.02,startPoemX+dx)); poemYRatio=Math.min(0.7,Math.max(0.02,startPoemY+dy)); drawPoemImg(); }
+  if(dragMode==='image'){ _imgX=Math.max(-1,Math.min(1,_imgX+dx*1.5)); _imgY=Math.max(-1,Math.min(1,_imgY+dy*1.5)); _syncImgPos(); drawPoemImg(); }
+  else if(dragMode==='poem'){ poemXRatio=Math.min(0.6,Math.max(0.02,startPoemX+dx)); poemYRatio=Math.min(0.7,Math.max(0.02,startPoemY+dy)); drawPoemImg(); }
   else if(dragMode==='title'){ titleXRatio=Math.min(0.98,Math.max(0.55,window._startTitleX+dx)); titleYRatio=Math.min(0.97,Math.max(0.55,window._startTitleY+dy)); drawPoemImg(); }
   else if(dragMode==='resizePoem'){ const ns=Math.min(1.5,Math.max(0.7,1.0+dy*1.2)); _poemBoxScale=ns; const s=document.getElementById('poemBoxScale'); if(s) s.value=String(ns); drawPoemImg(); }
 });
@@ -461,11 +472,30 @@ function buildShareTextFor(sns){
 }
 function renderSharePreview(sns){
   _currentSns = sns;
+  try{ applyShareSize(); }catch(e){}
+  try{ drawPoemImg(); }catch(e){}
   const el=document.getElementById("sharePreviewText"); if(el) el.textContent=buildShareTextFor(sns);
   const lbl=document.getElementById("sharePreviewLabel");
   const map={ig:"今は Instagram 用です", threads:"今は Threads 用です", bluesky:"今は Bluesky 用です", x:"今は X 用です"};
   if(lbl) lbl.textContent=map[sns]||"";
 }
+
+document.getElementById("editToggle")?.addEventListener("click", ()=>{
+  const p=document.getElementById("editPanel"); if(!p) return;
+  const open = p.style.display==="none";
+  p.style.display = open ? "block" : "none";
+  const btn=document.getElementById("editToggle"); if(btn) btn.textContent = open ? "✏️ 編集を閉じる — 画像だけ見る" : "✏️ 編集する — フィルター・位置・大きさを開く";
+  if(open){ try{ drawPoemImg(); }catch(e){} }
+});
+function _syncImgPos(){ const xv=document.getElementById("imgXVal"); if(xv) xv.textContent=Math.round(_imgX*100); const yv=document.getElementById("imgYVal"); if(yv) yv.textContent=Math.round(_imgY*100); const xs=document.getElementById("imgX"); if(xs) xs.value=String(Math.round(_imgX*100)); const ys=document.getElementById("imgY"); if(ys) ys.value=String(Math.round(_imgY*100)); }
+document.getElementById("imgX")?.addEventListener("input", (e)=>{ _imgX=parseFloat(e.target.value)/100; _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgY")?.addEventListener("input", (e)=>{ _imgY=parseFloat(e.target.value)/100; _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgLeft")?.addEventListener("click", ()=>{ _imgX=Math.max(-1,_imgX-0.1); _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgRight")?.addEventListener("click", ()=>{ _imgX=Math.min(1,_imgX+0.1); _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgUp")?.addEventListener("click", ()=>{ _imgY=Math.max(-1,_imgY-0.1); _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgDown")?.addEventListener("click", ()=>{ _imgY=Math.min(1,_imgY+0.1); _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgCenter")?.addEventListener("click", ()=>{ _imgX=0; _imgY=0; const z=document.getElementById("zoom"); if(z) z.value="1.2"; _syncImgPos(); drawPoemImg(); });
+document.querySelectorAll("[data-dragmode]").forEach(b=>{ b.addEventListener("click", ()=>{ document.querySelectorAll("[data-dragmode]").forEach(x=>{ x.classList.remove("btn-dark"); x.classList.add("btn-ghost"); }); b.classList.remove("btn-ghost"); b.classList.add("btn-dark"); _dragModeOverride=b.dataset.dragmode; }); });
 document.querySelectorAll('#snsTopRow button').forEach(_b=>{ _b.addEventListener('click',()=>{ 
 // --- SNSごとの文：押したSNSで、文が変わる ---
 let _currentSns = "ig";
@@ -481,17 +511,36 @@ function buildShareTextFor(sns){
 }
 function renderSharePreview(sns){
   _currentSns = sns;
+  try{ applyShareSize(); }catch(e){}
+  try{ drawPoemImg(); }catch(e){}
   const el=document.getElementById("sharePreviewText"); if(el) el.textContent=buildShareTextFor(sns);
   const lbl=document.getElementById("sharePreviewLabel");
   const map={ig:"今は Instagram 用です", threads:"今は Threads 用です", bluesky:"今は Bluesky 用です", x:"今は X 用です"};
   if(lbl) lbl.textContent=map[sns]||"";
 }
+
+document.getElementById("editToggle")?.addEventListener("click", ()=>{
+  const p=document.getElementById("editPanel"); if(!p) return;
+  const open = p.style.display==="none";
+  p.style.display = open ? "block" : "none";
+  const btn=document.getElementById("editToggle"); if(btn) btn.textContent = open ? "✏️ 編集を閉じる — 画像だけ見る" : "✏️ 編集する — フィルター・位置・大きさを開く";
+  if(open){ try{ drawPoemImg(); }catch(e){} }
+});
+function _syncImgPos(){ const xv=document.getElementById("imgXVal"); if(xv) xv.textContent=Math.round(_imgX*100); const yv=document.getElementById("imgYVal"); if(yv) yv.textContent=Math.round(_imgY*100); const xs=document.getElementById("imgX"); if(xs) xs.value=String(Math.round(_imgX*100)); const ys=document.getElementById("imgY"); if(ys) ys.value=String(Math.round(_imgY*100)); }
+document.getElementById("imgX")?.addEventListener("input", (e)=>{ _imgX=parseFloat(e.target.value)/100; _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgY")?.addEventListener("input", (e)=>{ _imgY=parseFloat(e.target.value)/100; _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgLeft")?.addEventListener("click", ()=>{ _imgX=Math.max(-1,_imgX-0.1); _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgRight")?.addEventListener("click", ()=>{ _imgX=Math.min(1,_imgX+0.1); _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgUp")?.addEventListener("click", ()=>{ _imgY=Math.max(-1,_imgY-0.1); _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgDown")?.addEventListener("click", ()=>{ _imgY=Math.min(1,_imgY+0.1); _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgCenter")?.addEventListener("click", ()=>{ _imgX=0; _imgY=0; const z=document.getElementById("zoom"); if(z) z.value="1.2"; _syncImgPos(); drawPoemImg(); });
+document.querySelectorAll("[data-dragmode]").forEach(b=>{ b.addEventListener("click", ()=>{ document.querySelectorAll("[data-dragmode]").forEach(x=>{ x.classList.remove("btn-dark"); x.classList.add("btn-ghost"); }); b.classList.remove("btn-ghost"); b.classList.add("btn-dark"); _dragModeOverride=b.dataset.dragmode; }); });
 document.querySelectorAll('#snsTopRow button').forEach(_x=>{ _x.classList.remove('btn-dark'); _x.classList.add('btn-ghost'); }); _b.classList.remove('btn-ghost'); _b.classList.add('btn-dark'); renderSharePreview(_b.dataset.sns); const _p=document.getElementById('snsPicker'); if(_p){ _p.style.display='block'; /* 原因：picker は箱の一番下にある。開いても、上のままでは見えない。だから、ここまでスクロールする */ setTimeout(()=>{ try{ _p.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){ _p.scrollIntoView(); } },30); } const _map={ig:'shareIG',threads:'shareThreads',bluesky:'shareBluesky',x:'shareX'}; const _t=document.getElementById(_map[_b.dataset.sns]); if(_t){ _t.style.outline='2px solid #f5f1e8'; setTimeout(()=>{ _t.style.outline=''; },1200); } }); });
 document.getElementById('sharePoemImg').onclick=()=>{ const p=document.getElementById('snsPicker'); const willOpen = p.style.display==='none'; p.style.display=willOpen?'block':'none'; if(willOpen){ setTimeout(()=>{ try{ p.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){ p.scrollIntoView(); } },30); } };
 document.getElementById('shareX').onclick=()=>{ window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(buildShareTextFor('x')),'_blank'); };
 document.getElementById('shareThreads').onclick=()=>{ window.open('https://www.threads.net/intent/post?text='+encodeURIComponent(buildShareTextFor('threads')),'_blank'); };
 document.getElementById('shareBluesky').onclick=()=>{ window.open('https://bsky.app/intent/compose?text='+encodeURIComponent(buildShareTextFor('bluesky')),'_blank'); };
-document.getElementById('shareIG').onclick=async()=>{ const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=cv.toDataURL('image/png'); a.click(); try{ await navigator.clipboard.writeText(buildShareTextFor('ig')); alert('画像を保存して、文をコピーしました。Instagramアプリで貼ってください'); }catch(e){ alert('画像を保存しました。'); } };
+document.getElementById('shareIG').onclick=async()=>{ try{ const blob=await new Promise(res=>cv.toBlob(res,'image/png')); const file=new File([blob],'taiyou_poem.png',{type:'image/png'}); const text=buildShareTextFor('ig'); if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], text:text}); return; } }catch(e){ if(String(e).includes('Abort')) return; } const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=cv.toDataURL('image/png'); a.click(); try{ await navigator.clipboard.writeText(buildShareTextFor('ig')); }catch(e){} window.open('https://www.instagram.com/','_blank'); alert('画像を保存して、文をコピーしました。Instagramが開くので、貼ってください'); };
 document.getElementById('shareOS').onclick=async()=>{ try{ const blob=await new Promise(res=>cv.toBlob(res,'image/png')); const file=new File([blob],'taiyou_poem.png',{type:'image/png'}); if(navigator.share && navigator.canShare({files:[file]})){ await navigator.share({files:[file], text:buildShareTextFor(_currentSns)}); } else { const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=URL.createObjectURL(blob); a.click(); alert('OSのシェア画面が出ないので、画像を保存しました。'); } }catch(e){} };
 document.getElementById('saveImgLive')?.addEventListener('click',()=>{ try{const img=document.getElementById('liveImg'); const src=img?.currentSrc||img?.src||''; if(!src){document.getElementById('saveMsg').textContent='まだライブ画像がありません'; return;} const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); arr.unshift({src, at:new Date().toISOString(), place:document.getElementById('placeSelect')?.value||''}); localStorage.setItem('kyodatsu_saved', JSON.stringify(arr.slice(0,12))); const m=document.getElementById('saveMsg'); if(m) m.textContent='保存しました（'+arr.length+'枚）。シェア箱の「保存した画像で作る」から使えます'; renderSavedGallery(); }catch(e){ alert('保存できませんでした'); } });
 if('serviceWorker' in navigator)
@@ -545,6 +594,7 @@ document.getElementById('tab').onclick=()=>{document.getElementById('poemWrap').
 let shareTab = 'instagram';
 const APP_URL = 'https://rayvisionkobe-collab.github.io/taiyou-kyodatsu/';
 document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', ()=>{ setTimeout(()=>{ try{ applyShareSize(); drawPoemImg(); }catch(e){} },300); });
 </script>
 
 
