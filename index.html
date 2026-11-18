@@ -54,7 +54,9 @@ footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
 #shareOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);opacity:0;pointer-events:none;transition:opacity .28s;z-index:90;display:none}
 #shareOverlay.open{display:block;opacity:1;pointer-events:auto}
  #shareCard{position:fixed;transform:translateY(100%);left:0;right:0;bottom:0;z-index:91;display:none;visibility:hidden;max-height:88vh;overflow:auto;background:#231e1b;border-radius:18px 18px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.9,.25,1);box-shadow:0 -12px 40px rgba(0,0,0,0.45);padding:14px;max-width:768px;margin:0 auto}
-#shareCard.open{display:block;visibility:visible;transform:translateY(0)}
+#shareCard.open{display:none!important;visibility:hidden!important;transform:translateY(100%)!important}
+#shareCard.share-paused{display:none!important;visibility:hidden!important}
+#shareOverlay.share-paused{display:none!important}
 #shareHandle{width:40px;height:5px;border-radius:99px;background:rgba(255,255,255,0.35);margin:6px auto 10px}
 #shareCloseBar{position:sticky;top:-14px;z-index:10;background:#231e1b;padding:14px 0 10px;margin:-14px -14px 0;display:flex;justify-content:space-between;align-items:center}
 #closeShare{background:#f5f1e8;color:#1c1917;border:0;font-weight:900;padding:10px 18px;font-size:14px;border-radius:999px;cursor:pointer}
@@ -183,7 +185,8 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
   <div style="font-size:11px;color:#a8a29e;margin-top:6px;text-align:center"><a id="liveCamLink" href="https://weathernews.jp/onebox/livecam/kinki/hyogo/7CDDE9067E16/" target="_blank" rel="noopener" style="color:#f5f1e8;text-decoration:underline">ウェザーニュースの元のカメラを見る →</a><span id="liveImgDebug" style="display:block;margin-top:2px"></span></div>
   <button class="btn btn-ghost" id="saveImgLive" style="margin-top:10px;width:100%">💾 このライブ画像を保存する</button>
   <div id="saveMsg" style="font-size:11px;color:#a8a29e;text-align:center;margin-top:4px"></div>
-  <button class="share-btn" id="shareBtn" style="margin-top:14px">↗ シェアする</button>
+  <button class="share-btn" id="shareBtn" style="margin-top:14px;opacity:0.45;cursor:not-allowed" disabled>シェアは一時停止中</button>
+  <div id="sharePausedMsg" style="font-size:11px;color:#a8a29e;text-align:center;margin-top:6px">シェア機能は、見直しのため一時停止中です。詩とライブ画像は、そのまま見られます。</div>
   <div style="background:#231e1b;border-radius:8px;padding:12px;margin-top:12px">
     <div style="font-size:13px;font-weight:700">詩の濃淡 — 詩人の特徴を、4段階で濃くする</div>
     <input type="range" id="level" min="0" max="3" step="1" value="1" class="slider" style="margin-top:8px">
@@ -371,7 +374,8 @@ function init(){
   // Service Workerの古いキャッシュを消す
   // 追加：シェア箱、診断、詩入り画像
 function renderSavedGallery(){ try{const g=document.getElementById('savedGallery'); if(!g) return; const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); if(!arr.length){g.innerHTML='<p style="font-size:12px;opacity:.7">まだ保存がありません。ライブ画像の下の「保存する」で、保存できます</p>'; return;} g.innerHTML=''; arr.forEach((it,i)=>{const im=document.createElement('img'); im.src=it.src; im.style.cssText='width:72px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid #555'; im.title='保存'+(i+1); im.onclick=()=>{ _poemImgMode='saved'; _poemSavedIdx=i; _updateImgSrcLabel(); try{drawPoemImg();}catch(e){} document.querySelectorAll('#savedGallery img').forEach(x=>x.style.border='2px solid #555'); im.style.border='3px solid #f5f1e8'; }; g.appendChild(im); }); }catch(e){} }
-function openShareSheet(){const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.style.display='block';c.style.visibility='visible';requestAnimationFrame(()=>c.classList.add('open'));} if(o){o.style.display='block';requestAnimationFrame(()=>o.classList.add('open'));}}
+const SHARE_PAUSED=true;
+function openShareSheet(){ if(SHARE_PAUSED){ const _m=document.getElementById('sharePausedMsg'); if(_m){ _m.textContent='シェアは一時停止中です。見直しが終わるまで、しばらくお待ちください。'; _m.style.color='#f5efe6'; } return; } const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.style.display='block';c.style.visibility='visible';requestAnimationFrame(()=>c.classList.add('open'));} if(o){o.style.display='block';requestAnimationFrame(()=>o.classList.add('open'));}}
 function closeShareSheet(){const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.classList.remove('open');setTimeout(()=>{if(!c.classList.contains('open')){c.style.display='none';c.style.visibility='hidden';}},320);} if(o){o.classList.remove('open');setTimeout(()=>{if(!o.classList.contains('open'))o.style.display='none';},320);}}
   document.getElementById('shareBtnLive')?.addEventListener('click',openShareSheet);
   document.getElementById('shareBtn')?.addEventListener('click',()=>{ openShareSheet(); setTimeout(()=>{ try{drawPoemImg();}catch(e){} renderSavedGallery(); },80); });
@@ -383,7 +387,7 @@ function closeShareSheet(){const c=document.getElementById('shareCard'),o=docume
   document.getElementById('closeShare')?.addEventListener('click',closeShareSheet);
   document.getElementById('closeShareBottom')?.addEventListener('click',closeShareSheet);
   document.getElementById('shareOverlay')?.addEventListener('click',closeShareSheet);
-  {const sc0=document.getElementById('shareCard'); if(sc0){sc0.style.display='none';sc0.style.visibility='hidden';}}
+  {const sc0=document.getElementById('shareCard'); if(sc0){sc0.style.display='none';sc0.style.visibility='hidden'; sc0.classList.add('share-paused');}}   {const so0=document.getElementById('shareOverlay'); if(so0){ so0.classList.add('share-paused'); }}
   {const so0=document.getElementById('shareOverlay'); if(so0){so0.style.display='none';}}
 const SHINDAN_QS=[
   {q:'1. 朝、目が覚めたら、まず何を感じる？', a:'胸が、ぎゅっとなる', b:'空が、どうなってるか気になる'},
