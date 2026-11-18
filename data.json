@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-19T06:49:55.846238+09:00",
+  "updated_at": "2026-11-19T07:49:28.330454+09:00",
   "locations": {
     "kobe": {
       "image": "images/kobe.jpg",
@@ -17,8 +17,8 @@
           "3": "神戸の青い空の底から朝が生まれ、快晴の光が冷たい風とともに銀色の野原をめぐる。すきとおった風が古い港の屋根をなでて、私たちはみんな新しい光の粒になるのだ。"
         }
       },
-      "model": "cached-keep",
-      "updated_at": "2026-11-19T06:49:55.846238+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-19T07:49:28.330454+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -40,8 +40,8 @@
           "3": "大阪の夜、すべては透明な氷の結晶のやうに冴えわたり、冷たい風が電線を通つて遠い銀河の音楽を運んでくる、私たちはこの青く澄んだ大気の底で、それぞれの小さな窓の明かりをともしつづけているのだ。"
         }
       },
-      "model": "cached-keep",
-      "updated_at": "2026-11-19T06:49:55.846238+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-19T07:49:28.330454+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -65,7 +65,7 @@
       },
       "model": "cached",
       "updated_at": "2026-11-19T06:49:55.846238+09:00",
-      "status": "ok",
+      "status": "keep-old",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
       "page_url": "https://weathernews.jp/onebox/livecam/hokkaido/douou/7CDDE9068F23/"
@@ -86,9 +86,9 @@
           "3": "晴れわたった朝の東京の空から、冷たい風が青い粒子となって舞い降り、大地と建物の尖塔を冷たく洗い清めながら、遥かな銀河の底へとまっすぐに僕たちをいざなっていく。"
         }
       },
-      "model": "cached-keep",
+      "model": "cached",
       "updated_at": "2026-11-19T06:49:55.846238+09:00",
-      "status": "ok",
+      "status": "keep-old",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
       "page_url": "https://weathernews.jp/onebox/livecam/kanto/tokyo/7CDDE90689B1/"
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T06:49:55.846238+09:00",
+      "updated_at": "2026-11-19T07:49:28.330454+09:00",
       "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
@@ -132,8 +132,8 @@
           "3": "名古屋の晴れた朝の空いっぱいに、まぶしい風の粒子が銀河の音楽のように満ちてくる。夜明けの冷たい息吹を吸い込みながら、ぼくは透明な朝焼けの光の中を歩きだす。それは美しい大地の幻影であり、遠い宇宙の底から響いてくるいのちの歌そのものだった。"
         }
       },
-      "model": "cached-keep",
-      "updated_at": "2026-11-19T06:49:55.846238+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-19T07:49:28.330454+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -178,8 +178,8 @@
           "3": "福岡の朝、曇った大気の底を透明な風が吹き抜けて、遠い宇宙の意志を孕んだ朝焼けの光が、すべての草木と屋根の波を冷たく濡れた宝石のように輝かせて発車する。"
         }
       },
-      "model": "cached-keep",
-      "updated_at": "2026-11-19T06:49:55.846238+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-19T07:49:28.330454+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
