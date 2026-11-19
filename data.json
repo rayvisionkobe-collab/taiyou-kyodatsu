@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-19T12:28:13.143108+09:00",
+  "updated_at": "2026-11-19T13:34:52.572176+09:00",
   "locations": {
     "kobe": {
       "image": "images/kobe.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T12:28:13.143108+09:00",
+      "updated_at": "2026-11-19T13:34:52.572176+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T12:28:13.143108+09:00",
+      "updated_at": "2026-11-19T13:34:52.572176+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached-keep",
-      "updated_at": "2026-11-19T12:28:13.143108+09:00",
+      "updated_at": "2026-11-19T13:34:52.572176+09:00",
       "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T12:28:13.143108+09:00",
+      "updated_at": "2026-11-19T13:34:52.572176+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T12:28:13.143108+09:00",
+      "updated_at": "2026-11-19T13:34:52.572176+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -203,7 +203,7 @@
       },
       "model": "cached-keep",
       "updated_at": "2026-11-19T12:28:13.143108+09:00",
-      "status": "ok",
+      "status": "keep-old",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
       "page_url": "https://weathernews.jp/onebox/livecam/okinawa/7CDDE9086CB8/"
