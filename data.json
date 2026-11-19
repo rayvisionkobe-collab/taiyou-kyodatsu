@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-19T14:57:53.630132+09:00",
+  "updated_at": "2026-11-19T16:13:55.657190+09:00",
   "locations": {
     "kobe": {
       "image": "images/kobe.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T14:57:53.630132+09:00",
+      "updated_at": "2026-11-19T16:13:55.657190+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T14:57:53.630132+09:00",
+      "updated_at": "2026-11-19T16:13:55.657190+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -63,7 +63,7 @@
           "3": "札幌の昼、冷たい風が青い大気から生まれ、銀色の雲はまるで天の牧場の羊の群れのようにつぎつぎと流れていく。地上では光がガラスのように鋭く輝き、すべての草木が透き通った美しさで息をひそめている。なんと素晴らしい銀河の呼吸だろうか。"
         }
       },
-      "model": "cached-keep",
+      "model": "cached",
       "updated_at": "2026-11-19T06:49:55.846238+09:00",
       "status": "keep-old",
       "poem_date": "2026-11-18",
@@ -109,8 +109,8 @@
           "3": "仙台の昼下がりから、底冷えのする風が吹いてくる。まっしろな晴れわたった大気のかなた、銀河のきらめきのような街のともしびが、とほうもなく美しい透明な宇宙の底でつめたく燃えている。"
         }
       },
-      "model": "cached-keep",
-      "updated_at": "2026-11-19T14:57:53.630132+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-19T16:13:55.657190+09:00",
       "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T14:57:53.630132+09:00",
+      "updated_at": "2026-11-19T16:13:55.657190+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -155,9 +155,9 @@
           "3": "広島の昼の青空から、雲の銀輪がまるで透明な巨きな時計の歯車のようにきしりながら廻り、清らかな風がすみずみまで満ちわたって、すべての草木が銀の光の粉をあびてしずかに呼吸をしている"
         }
       },
-      "model": "cached-keep",
-      "updated_at": "2026-11-19T04:55:20.484333+09:00",
-      "status": "keep-old",
+      "model": "cached",
+      "updated_at": "2026-11-19T16:13:55.657190+09:00",
+      "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
       "page_url": "https://weathernews.jp/onebox/livecam/chugoku/hiroshima/7CDDE908C8DC/"
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T14:57:53.630132+09:00",
+      "updated_at": "2026-11-19T16:13:55.657190+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -201,9 +201,9 @@
           "3": "那覇の曇った昼の天球から、銀いろの風がどこか遠い銀河の底へ吹き抜け、すべての港のランプが蒼くまたたく。"
         }
       },
-      "model": "cached-keep",
-      "updated_at": "2026-11-19T12:28:13.143108+09:00",
-      "status": "keep-old",
+      "model": "cached",
+      "updated_at": "2026-11-19T16:13:55.657190+09:00",
+      "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
       "page_url": "https://weathernews.jp/onebox/livecam/okinawa/7CDDE9086CB8/"
