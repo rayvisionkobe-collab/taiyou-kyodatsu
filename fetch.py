@@ -1,6 +1,6 @@
 # ============================================================
-# fetch.py v55 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v55」と出ます。出なければ、古い fetch.py です
+# fetch.py v57 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v57」と出ます。出なければ、古い fetch.py です
 # - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
 # - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
 # - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
@@ -11,7 +11,7 @@
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v55")
+print("Weathernews版 v57")
 
 Path("images").mkdir(exist_ok=True)
 
@@ -30,7 +30,7 @@ POEM_SCHEDULE = {
     20: {"slot": "evening", "targets": ["kobe", "osaka", "tokyo"]},
 }
 BUSY_HOURS = [15, 16]
-GEMINI_MODELS = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-2.5-flash", "gemini-1.5-pro"]
+GEMINI_MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3-flash-preview"]
 
 def load_locations():
     return [
@@ -53,15 +53,16 @@ def _try_direct_guess(camera_id, out_path):
         tt = tt.replace(minute=(tt.minute // 10) * 10, second=0, microsecond=0)
         ts = tt.strftime("%Y%m%d%H%M00")
         for size in ("1280", "640"):
-            guess = f"https://gvs.weathernews.jp/livecam/{camera_id}/{size}/{ts}.jpg"
-            try:
-                rr = requests.get(guess, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
-                if rr.status_code == 200 and len(rr.content) > 10000:
-                    Path(out_path).write_bytes(rr.content)
-                    print(f"  direct guess ok {guess}")
-                    return True
-            except Exception:
-                pass
+            for ext in ("jpg", "webp"):
+                guess = f"https://gvs.weathernews.jp/livecam/{camera_id}/{size}/{ts}.{ext}"
+                try:
+                    rr = requests.get(guess, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+                    if rr.status_code == 200 and len(rr.content) > 10000:
+                        Path(out_path).write_bytes(rr.content)
+                        print(f"  direct guess ok {guess}")
+                        return True
+                except Exception:
+                    pass
     return False
 
 def fetch_weathernews(camera_id, out_path, page_url=None):
@@ -84,7 +85,25 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
                 if rr.status_code == 200 and len(rr.content) > 10000:
                     Path(out_path).write_bytes(rr.content)
                     return True, "ok"
-                print(f"  image download fail {rr.status_code} len={len(rr.content)}")
+                print(f"  image download fail {rr.status_code} len={len(rr.content)} -> 時刻をずらして再試行")
+                # ページの URL の時刻を、10分ずつ 60分前までずらして試す
+                # 例: .../20261119185800.webp -> .../20261119184800.webp
+                m_ts = re.search(r'(20\d{12})', img_url)
+                if m_ts:
+                    base_ts = datetime.datetime.strptime(m_ts.group(1), "%Y%m%d%H%M%S")
+                    for back in (10, 20, 30, 40, 50, 60):
+                        tt2 = base_ts - datetime.timedelta(minutes=back)
+                        ts2 = tt2.strftime("%Y%m%d%H%M00")
+                        url2 = img_url[:m_ts.start()] + ts2 + img_url[m_ts.end():]
+                        try:
+                            rr2 = requests.get(url2, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+                            if rr2.status_code == 200 and len(rr2.content) > 10000:
+                                Path(out_path).write_bytes(rr2.content)
+                                print(f"  retry ok {url2}")
+                                return True, "retry-ts"
+                            print(f"  retry fail {ts2} len={len(rr2.content)}")
+                        except Exception:
+                            pass
             else:
                 print("  no livecam url in page -> try direct guess")
             if _try_direct_guess(camera_id, out_path):
