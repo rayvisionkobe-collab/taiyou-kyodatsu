@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-19T20:25:34.215444+09:00",
+  "updated_at": "2026-11-19T21:27:32.501727+09:00",
   "locations": {
     "kobe": {
       "image": "images/kobe.jpg",
@@ -17,8 +17,8 @@
           "3": "夜の雲の切れ間から、白く冷たい月光が明るく橋のケーブルにそそいでゐる。おごそかな夜の底で、街の屋根らはみなひとつの大きな楽譜のやうに整然とならび、遠くの海風がすきとおる銀の笛をふいてゐる。いとしくかなしいすべてのものたちよ、あの光り輝く吊り橋の向かうから、新しい朝の風がきっとわたしたちの胸をひたしにやってくるのだから。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-19T20:25:34.215444+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-19T21:27:32.501727+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "evening",
@@ -40,8 +40,8 @@
           "3": "群青の空の下、都市の明かりが星座のように並んでいる。きらきらと晴れゆく空気のなか、鉄と電気の音が響く。さあ、見知らぬ誰かの営みへと、光の粒が溶けてゆく。あまねく地上のすべての窓が、一つの大きな地図を描き出して、私とあなたの立っているこの場所さえも、静かな宇宙の呼吸のなかに優しく包まれているのだ。"
         }
       },
-      "model": "gemini-3.1-flash-lite",
-      "updated_at": "2026-11-19T20:25:34.215444+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-19T21:27:32.501727+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "evening",
@@ -64,8 +64,8 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T06:49:55.846238+09:00",
-      "status": "keep-old",
+      "updated_at": "2026-11-19T21:27:32.501727+09:00",
+      "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
       "page_url": "https://weathernews.jp/onebox/livecam/hokkaido/douou/7CDDE9068F23/"
@@ -86,8 +86,8 @@
           "3": "まっくらな夜空のてっぺんで、月が晴れやかに街を見下ろしている。硬質な光をたたえたビル群は、まるで銀河の縁に並ぶ小さな石ころのようで、ぼくはただ、そこにある確かな呼吸を聞いている。吹き抜ける風は冷たく透明で、街のざわめきをすべて清らかな調べへと変えていく。すべての灯火が、あまねく世界の調和のために、きらきらと今夜もまた、この深い暗闇のなかで誇り高く灯り続けているのだ。"
         }
       },
-      "model": "gemini-3.1-flash-lite",
-      "updated_at": "2026-11-19T20:25:34.215444+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-19T21:27:32.501727+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "evening",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T20:25:34.215444+09:00",
+      "updated_at": "2026-11-19T21:27:32.501727+09:00",
       "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T20:25:34.215444+09:00",
+      "updated_at": "2026-11-19T21:27:32.501727+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -156,8 +156,8 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T20:25:34.215444+09:00",
-      "status": "retry-ts",
+      "updated_at": "2026-11-19T21:27:32.501727+09:00",
+      "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
       "page_url": "https://weathernews.jp/onebox/livecam/chugoku/hiroshima/7CDDE908C8DC/"
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T20:25:34.215444+09:00",
+      "updated_at": "2026-11-19T21:27:32.501727+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -202,8 +202,8 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T17:41:36.912504+09:00",
-      "status": "keep-old",
+      "updated_at": "2026-11-19T21:27:32.501727+09:00",
+      "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
       "page_url": "https://weathernews.jp/onebox/livecam/okinawa/7CDDE9086CB8/"
