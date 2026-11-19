@@ -1,6 +1,6 @@
 # ============================================================
-# fetch.py v57 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v57」と出ます。出なければ、古い fetch.py です
+# fetch.py v58 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v58」と出ます。出なければ、古い fetch.py です
 # - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
 # - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
 # - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
@@ -11,7 +11,7 @@
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v57")
+print("Weathernews版 v58")
 
 Path("images").mkdir(exist_ok=True)
 
@@ -45,6 +45,20 @@ def load_locations():
         {"id": "naha", "name": "那覇", "lat": 26.21, "lon": 127.68, "weathernews_id": "7CDDE9086CB8", "page_url": "https://weathernews.jp/onebox/livecam/okinawa/7CDDE9086CB8/"},
     ]
 
+
+def _is_image(data: bytes) -> bool:
+    # サイズだけでは、夜の暗い写真（小さい）とエラーHTML（小さい）を見分けられない
+    # 中身の先頭で判断する：JPEG=FFD8, WebP=RIFF....WEBP, PNG=89PNG
+    if not data or len(data) < 1000:
+        return False
+    if data[:2] == b"\xff\xd8":
+        return True
+    if data[:4] == b"RIFF" and b"WEBP" in data[:16]:
+        return True
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return True
+    return False
+
 def _try_direct_guess(camera_id, out_path):
     """index.html と同じ直接URLを、10分刻みで直近1時間分試す"""
     now_jst = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
@@ -57,7 +71,7 @@ def _try_direct_guess(camera_id, out_path):
                 guess = f"https://gvs.weathernews.jp/livecam/{camera_id}/{size}/{ts}.{ext}"
                 try:
                     rr = requests.get(guess, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
-                    if rr.status_code == 200 and len(rr.content) > 10000:
+                    if rr.status_code == 200 and _is_image(rr.content):
                         Path(out_path).write_bytes(rr.content)
                         print(f"  direct guess ok {guess}")
                         return True
@@ -82,10 +96,10 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
                 img_url = seen[-1]
                 print(f"  livecam url: {img_url[:120]}")
                 rr = requests.get(img_url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
-                if rr.status_code == 200 and len(rr.content) > 10000:
+                if rr.status_code == 200 and _is_image(rr.content):
                     Path(out_path).write_bytes(rr.content)
                     return True, "ok"
-                print(f"  image download fail {rr.status_code} len={len(rr.content)} -> 時刻をずらして再試行")
+                print(f"  image download fail {rr.status_code} len={len(rr.content)} ctype={rr.headers.get('Content-Type')} head={rr.content[:30]!r} -> 時刻をずらして再試行")
                 # ページの URL の時刻を、10分ずつ 60分前までずらして試す
                 # 例: .../20261119185800.webp -> .../20261119184800.webp
                 m_ts = re.search(r'(20\d{12})', img_url)
@@ -97,11 +111,11 @@ def fetch_weathernews(camera_id, out_path, page_url=None):
                         url2 = img_url[:m_ts.start()] + ts2 + img_url[m_ts.end():]
                         try:
                             rr2 = requests.get(url2, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
-                            if rr2.status_code == 200 and len(rr2.content) > 10000:
+                            if rr2.status_code == 200 and _is_image(rr2.content):
                                 Path(out_path).write_bytes(rr2.content)
                                 print(f"  retry ok {url2}")
                                 return True, "retry-ts"
-                            print(f"  retry fail {ts2} len={len(rr2.content)}")
+                            print(f"  retry fail {ts2} len={len(rr2.content)} ctype={rr2.headers.get('Content-Type')} head={rr2.content[:30]!r}")
                         except Exception:
                             pass
             else:
