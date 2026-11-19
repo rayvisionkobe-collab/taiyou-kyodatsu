@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-19T08:37:51.664491+09:00",
+  "updated_at": "2026-11-19T10:00:53.763958+09:00",
   "locations": {
     "kobe": {
       "image": "images/kobe.jpg",
@@ -17,13 +17,12 @@
           "3": "神戸の青い空の底から朝が生まれ、快晴の光が冷たい風とともに銀色の野原をめぐる。すきとおった風が古い港の屋根をなでて、私たちはみんな新しい光の粒になるのだ。"
         }
       },
-      "model": "manual-gemini",
-      "updated_at": "2026-11-19T08:37:51.664491+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-19T10:00:53.763958+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
-      "page_url": "https://weathernews.jp/onebox/livecam/kinki/hyogo/7CDDE9067E16/",
-      "manual": true
+      "page_url": "https://weathernews.jp/onebox/livecam/kinki/hyogo/7CDDE9067E16/"
     },
     "osaka": {
       "image": "images/osaka.jpg",
@@ -42,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T07:49:28.330454+09:00",
+      "updated_at": "2026-11-19T10:00:53.763958+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -111,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T07:49:28.330454+09:00",
+      "updated_at": "2026-11-19T10:00:53.763958+09:00",
       "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
@@ -134,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T07:49:28.330454+09:00",
+      "updated_at": "2026-11-19T10:00:53.763958+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -180,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-19T07:49:28.330454+09:00",
+      "updated_at": "2026-11-19T10:00:53.763958+09:00",
       "status": "ok",
       "poem_date": "2026-11-19",
       "poem_slot": "morning",
@@ -203,8 +202,8 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-18T17:39:04.253510+09:00",
-      "status": "keep-old",
+      "updated_at": "2026-11-19T10:00:53.763958+09:00",
+      "status": "ok",
       "poem_date": "2026-11-18",
       "poem_slot": "noon",
       "page_url": "https://weathernews.jp/onebox/livecam/okinawa/7CDDE9086CB8/"
