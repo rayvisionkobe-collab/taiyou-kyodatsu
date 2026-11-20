@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-21T00:29:41.869855+09:00",
+  "updated_at": "2026-11-21T01:31:40.866272+09:00",
   "locations": {
     "kobe": {
       "image": "images/kobe.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-21T00:29:41.869855+09:00",
+      "updated_at": "2026-11-21T01:31:40.866272+09:00",
       "status": "ok",
       "poem_date": "2026-11-20",
       "poem_slot": "morning",
@@ -42,7 +42,7 @@
       },
       "model": "cached",
       "updated_at": "2026-11-21T00:29:41.869855+09:00",
-      "status": "ok",
+      "status": "keep-old",
       "poem_date": "2026-11-20",
       "poem_slot": "morning",
       "page_url": "https://weathernews.jp/onebox/livecam/kinki/osaka/7CDDE9068718/"
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-21T00:29:41.869855+09:00",
+      "updated_at": "2026-11-21T01:31:40.866272+09:00",
       "status": "ok",
       "poem_date": "2026-11-20",
       "poem_slot": "noon",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-21T00:29:41.869855+09:00",
+      "updated_at": "2026-11-21T01:31:40.866272+09:00",
       "status": "ok",
       "poem_date": "2026-11-20",
       "poem_slot": "morning",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-21T00:29:41.869855+09:00",
+      "updated_at": "2026-11-21T01:31:40.866272+09:00",
       "status": "ok",
       "poem_date": "2026-11-20",
       "poem_slot": "noon",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-21T00:29:41.869855+09:00",
+      "updated_at": "2026-11-21T01:31:40.866272+09:00",
       "status": "ok",
       "poem_date": "2026-11-20",
       "poem_slot": "morning",
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-21T00:29:41.869855+09:00",
+      "updated_at": "2026-11-21T01:31:40.866272+09:00",
       "status": "ok",
       "poem_date": "2026-11-20",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-21T00:29:41.869855+09:00",
+      "updated_at": "2026-11-21T01:31:40.866272+09:00",
       "status": "ok",
       "poem_date": "2026-11-20",
       "poem_slot": "morning",
@@ -202,7 +202,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-21T00:29:41.869855+09:00",
+      "updated_at": "2026-11-21T01:31:40.866272+09:00",
       "status": "ok",
       "poem_date": "2026-11-20",
       "poem_slot": "noon",
