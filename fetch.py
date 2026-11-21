@@ -1,6 +1,6 @@
 # ============================================================
-# fetch.py v59 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v59」と出ます。出なければ、古い fetch.py です
+# fetch.py v61 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v61」と出ます。出なければ、古い fetch.py です
 # - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
 # - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
 # - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
@@ -11,7 +11,7 @@
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v59")
+print("Weathernews版 v61")
 
 Path("images").mkdir(exist_ok=True)
 
@@ -35,7 +35,7 @@ GEMINI_MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite"
 def load_locations():
     return [
         {"id": "kobe", "name": "神戸", "lat": 34.69, "lon": 135.19, "weathernews_id": "7CDDE9067E16", "page_url": "https://weathernews.jp/onebox/livecam/kinki/hyogo/7CDDE9067E16/"},
-        {"id": "osaka", "name": "大阪", "lat": 34.69, "lon": 135.50, "weathernews_id": "7CDDE9068718", "page_url": "https://weathernews.jp/onebox/livecam/kinki/osaka/7CDDE9068718/"},
+        {"id": "osaka", "name": "大阪", "lat": 34.69, "lon": 135.50, "weathernews_id": "7CDDE90683C1", "page_url": "https://weathernews.jp/onebox/livecam/kinki/osaka/7CDDE90683C1/"},
         {"id": "sapporo", "name": "札幌", "lat": 43.06, "lon": 141.35, "weathernews_id": "7CDDE9068F23", "page_url": "https://weathernews.jp/onebox/livecam/hokkaido/douou/7CDDE9068F23/"},
         {"id": "tokyo", "name": "東京", "lat": 35.68, "lon": 139.76, "weathernews_id": "7CDDE90689B1", "page_url": "https://weathernews.jp/onebox/livecam/kanto/tokyo/7CDDE90689B1/"},
         {"id": "sendai", "name": "仙台", "lat": 38.26, "lon": 140.87, "weathernews_id": "7CDDE905CDB1", "page_url": "https://weathernews.jp/onebox/livecam/tohoku/miyagi/7CDDE905CDB1/"},
@@ -201,6 +201,20 @@ def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"
                 for lv in ("0", "1", "2", "3"):
                     if j.get(poet, {}).get(lv):
                         ok += 1
+            # 時間帯の禁止ワード：捨てずに、朝の言葉に置き換える
+            # v60 は捨ててたので、全モデルが捨てられて、古い詩のまま（全く同じ文面）になった
+            _rep = {"morning": {"夕暮れ":"夜明け","夕方":"朝","夕日":"朝日","黄昏":"夜明け","宵":"朝","日暮れ":"夜明け","夕焼け":"朝焼け"}, "noon": {"夕暮れ":"昼","夕方":"昼","夕日":"昼の光","黄昏":"昼","夜明け":"朝","朝日":"昼の光"}, "evening": {"朝日":"夕日","朝霧":"夕霧","夜明け":"夕暮れ","朝の光":"夕の光"}}.get(slot, {})
+            _fixed = 0
+            for poet in ("kyodatsu", "taiyou"):
+                for lv in ("0", "1", "2", "3"):
+                    _txt = j.get(poet, {}).get(lv, "") or ""
+                    for _k, _v in _rep.items():
+                        if _k in _txt:
+                            _txt = _txt.replace(_k, _v)
+                            _fixed += 1
+                    j[poet][lv] = _txt
+            if _fixed:
+                print(f"  gemini {model} 禁止ワード {_fixed}件を置き換え {place_name} slot={slot}")
             print(f"  gemini ok {place_name} model={model} parsed={ok}/8")
             if ok >= 4:
                 return j, model
@@ -213,7 +227,7 @@ def main():
     now_dt = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
     now = now_dt.isoformat()
     hour = now_dt.hour
-    print(f"now JST {now} hour={hour}")
+    print(f"now JST {now} hour={hour} FORCE_POEM={os.environ.get('FORCE_POEM')}")
     old = {}
     if Path("data.json").exists():
         try:
@@ -237,7 +251,7 @@ def main():
         slot = None
         if sched and key in sched["targets"]:
             slot = sched["slot"]
-            if existing.get("poem_date") == now[:10] and existing.get("poem_slot") == slot and existing.get("poems") and os.environ.get("FORCE_POEM") != "1":
+            if existing.get("poem_date") == now[:10] and existing.get("poem_slot") == slot and existing.get("poems") and os.environ.get("FORCE_POEM", "").lower() not in ("1", "true", "yes"):
                 print(f"{key}: poem already {now[:10]} {slot} -> keep")
                 do_gen = False
             else:

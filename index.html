@@ -114,6 +114,7 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
 しまうような、
 虚脱の午後だった。</div>
   <div id="poemTime" style="font-size:11px;color:#a8a29e;text-align:center;margin-top:4px;display:none"></div>
+    <div style="text-align:center;margin-top:4px"><button id="poemReloadBtn" style="font-size:11px;padding:4px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.25);background:transparent;color:#d6d3d1;cursor:pointer">詩を読み直す</button> <span id="poemReloadMsg" style="font-size:11px;color:#a8a29e"></span></div>
   </div>
   <!-- シェアモーダル -->
   <div class="controls">
@@ -208,7 +209,7 @@ function breakByMaru(text){
 }
 const LOCATIONS = [
   {id:"kobe", name:"神戸", lat:34.69, lon:135.19, weathernews_id:"7CDDE9067E16", page_url:"https://weathernews.jp/onebox/livecam/kinki/hyogo/7CDDE9067E16/"},
-  {id:"osaka", name:"大阪", lat:34.69, lon:135.50, weathernews_id:"7CDDE9068718", page_url:"https://weathernews.jp/onebox/livecam/kinki/osaka/7CDDE9068718/"},
+  {id:"osaka", name:"大阪", lat:34.69, lon:135.50, weathernews_id:"7CDDE90683C1", page_url:"https://weathernews.jp/onebox/livecam/kinki/osaka/7CDDE90683C1/"},
   {id:"sapporo", name:"札幌", lat:43.06, lon:141.35, weathernews_id:"7CDDE9068F23", page_url:"https://weathernews.jp/onebox/livecam/hokkaido/douou/7CDDE9068F23/"},
   {id:"tokyo", name:"東京", lat:35.68, lon:139.76, weathernews_id:"7CDDE90689B1", page_url:"https://weathernews.jp/onebox/livecam/kanto/tokyo/7CDDE90689B1/"},
   {id:"sendai", name:"仙台", lat:38.26, lon:140.87, weathernews_id:"7CDDE905CDB1", page_url:"https://weathernews.jp/onebox/livecam/tohoku/miyagi/7CDDE905CDB1/"},
@@ -538,6 +539,7 @@ if('serviceWorker' in navigator)
     if('caches' in window){ caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))); }
   }
   loadLive().then(updateAll);
+  try{ const _rb=document.getElementById('poemReloadBtn'); if(_rb){ _rb.addEventListener('click', async ()=>{ const _m=document.getElementById('poemReloadMsg'); if(_m) _m.textContent='読み込み中…'; await loadLive(); updateAll(); if(_m){ const _pe=liveData?.locations?.[document.getElementById('placeSelect').value||'kobe']; _m.textContent = _pe ? ('data.json：'+(liveData?.updated_at||'')+' / 詩：'+(_pe.poem_date||'')+' '+(_pe.poem_slot||'')) : '読めませんでした'; } }); } }catch(e){}
   setInterval(()=>{ console.log('auto refresh 30min'); loadLive().then(updateAll); }, 30*60*1000);
   let lastUpdatedAt = null;
   setInterval(async ()=>{
@@ -558,6 +560,7 @@ if('serviceWorker' in navigator)
     if(!document.hidden){
       console.log('back to foreground, refresh');
       loadLive().then(updateAll);
+  try{ const _rb=document.getElementById('poemReloadBtn'); if(_rb){ _rb.addEventListener('click', async ()=>{ const _m=document.getElementById('poemReloadMsg'); if(_m) _m.textContent='読み込み中…'; await loadLive(); updateAll(); if(_m){ const _pe=liveData?.locations?.[document.getElementById('placeSelect').value||'kobe']; _m.textContent = _pe ? ('data.json：'+(liveData?.updated_at||'')+' / 詩：'+(_pe.poem_date||'')+' '+(_pe.poem_slot||'')) : '読めませんでした'; } }); } }catch(e){}
     }
   });
 }
