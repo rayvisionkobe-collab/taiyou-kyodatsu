@@ -22,7 +22,6 @@ jobs:
       - name: Fetch still and generate poem
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          FORCE_POEM: "1"
         run: python fetch.py
       - name: Commit and push
         run: |
