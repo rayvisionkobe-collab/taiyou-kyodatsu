@@ -1,6 +1,6 @@
 # ============================================================
-# fetch.py v58 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v58」と出ます。出なければ、古い fetch.py です
+# fetch.py v59 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v59」と出ます。出なければ、古い fetch.py です
 # - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
 # - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
 # - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
@@ -11,7 +11,7 @@
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v58")
+print("Weathernews版 v59")
 
 Path("images").mkdir(exist_ok=True)
 
@@ -159,7 +159,10 @@ def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"
         print(f"  gemini: image read fail {e}")
         return fallback_poems(place_name, lat, lon), "fallback-no-image"
     models = GEMINI_MODELS[loc_index % len(GEMINI_MODELS):] + GEMINI_MODELS[:loc_index % len(GEMINI_MODELS)]
-    prompt = f"""この画像は{place_name}のライブカメラの空と風景です。画像をよく見て、中原中也風（kyodatsu）と宮沢賢治風（taiyou）の詩を、日本語で作ってください。
+    # 時間帯を Gemini に伝えないと、朝の低い太陽を夕日と間違える
+    slot_ja = {"morning": "朝（6〜10時）", "noon": "昼（11〜15時）", "evening": "夕方（18〜20時）"}.get(slot, slot)
+    slot_ban = {"morning": "夕暮れ・夕方・夕日・黄昏・宵・日暮れ・夕焼けなどの夕方の言葉は、絶対に使わない", "noon": "夕暮れ・夕方・夕日・黄昏・朝日・朝霧・夜明けなどの朝夕の言葉は、絶対に使わない", "evening": "朝日・朝霧・夜明け・朝の光などの朝の言葉は、絶対に使わない"}.get(slot, "")
+    prompt = f"""この画像は{place_name}のライブカメラの空と風景です。今は{slot_ja}です。{slot_ban}。画像をよく見て、中原中也風（kyodatsu）と宮沢賢治風（taiyou）の詩を、日本語で作ってください。
 条件：
 - それぞれ 4段階：0=からっと（1行）、1=ほどよく（2行）、2=こいめ（3行）、3=仙人級（長め1段落）
 - 1行目は空や雲や光の様子を具体的に
@@ -234,7 +237,7 @@ def main():
         slot = None
         if sched and key in sched["targets"]:
             slot = sched["slot"]
-            if existing.get("poem_date") == now[:10] and existing.get("poem_slot") == slot and existing.get("poems"):
+            if existing.get("poem_date") == now[:10] and existing.get("poem_slot") == slot and existing.get("poems") and os.environ.get("FORCE_POEM") != "1":
                 print(f"{key}: poem already {now[:10]} {slot} -> keep")
                 do_gen = False
             else:
