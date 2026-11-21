@@ -1,6 +1,6 @@
 # ============================================================
-# fetch.py v61 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v61」と出ます。出なければ、古い fetch.py です
+# fetch.py v62 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v62」と出ます。出なければ、古い fetch.py です
 # - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
 # - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
 # - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
@@ -11,7 +11,7 @@
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v61")
+print("Weathernews版 v62")
 
 Path("images").mkdir(exist_ok=True)
 
@@ -237,10 +237,29 @@ def main():
             old = {}
     old_locs = old.get("locations", {}) if isinstance(old, dict) else {}
     data = {"updated_at": now, "locations": {}}
+    # --- v62 根本修正：FORCE はスケジュールを無視する ---
+    _force = os.environ.get("FORCE_POEM", "").lower() in ("1", "true", "yes")
+    _force_slot = os.environ.get("FORCE_SLOT", "").strip()  # morning / noon / evening
+    _force_city = os.environ.get("FORCE_CITY", "").strip()  # kobe だけ、など
     sched = POEM_SCHEDULE.get(hour)
-    if hour in BUSY_HOURS:
+    if hour in BUSY_HOURS and not _force:
         print(f"BUSY_HOUR {hour}: 詩は作らない（画像だけ）")
         sched = None
+    if _force:
+        print(f"FORCE_POEM=1: スケジュールを無視して生成します slot={_force_slot or '(時間から決める)'} city={_force_city or '(全部)'}")
+        # FORCE のときは、時間から slot を決める（FORCE_SLOT があれば、それを優先）
+        if _force_slot in ("morning", "noon", "evening"):
+            _slot = _force_slot
+        elif 6 <= hour <= 10:
+            _slot = "morning"
+        elif 11 <= hour <= 17:
+            _slot = "noon"
+        elif 18 <= hour <= 20:
+            _slot = "evening"
+        else:
+            _slot = "morning" if hour < 12 else ("noon" if hour < 18 else "evening")
+        # 全都市を対象にする（FORCE_CITY があれば絞るのは、後のループで）
+        sched = {"slot": _slot, "targets": [l["id"] for l in load_locations()]}
     for loc_index, loc in enumerate(load_locations()):
         key = loc["id"]
         name = loc["name"]
@@ -249,13 +268,35 @@ def main():
         ok, status = fetch_weathernews(loc["weathernews_id"], out, loc["page_url"])
         do_gen = False
         slot = None
-        if sched and key in sched["targets"]:
+        _skip_reason = ""
+        if _force_city and key != _force_city:
+            _skip_reason = f"FORCE_CITY={_force_city} のため、対象外"
+        elif sched and key in sched["targets"]:
             slot = sched["slot"]
-            if existing.get("poem_date") == now[:10] and existing.get("poem_slot") == slot and existing.get("poems") and os.environ.get("FORCE_POEM", "").lower() not in ("1", "true", "yes"):
-                print(f"{key}: poem already {now[:10]} {slot} -> keep")
+            if existing.get("poem_date") == now[:10] and existing.get("poem_slot") == slot and existing.get("poems") and not _force:
+                _skip_reason = f"poem already {now[:10]} {slot} -> keep（生成しません）"
                 do_gen = False
             else:
                 do_gen = True
+        else:
+            if not sched:
+                _skip_reason = f"hour={hour} は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
+            else:
+                _skip_reason = f"key={key} は今の targets={sched.get('targets')} にない → 生成しません"
+        if not do_gen:
+            print(f"{key}: SKIP {_skip_reason}")
+        # 既存の詩に禁止ワードが入ってたら、FORCE なしでも作り直す（自己修復）
+        if not do_gen and existing.get("poems") and existing.get("poem_slot") in ("morning", "noon", "evening"):
+            _ban2 = {"morning": ["夕暮れ","夕方","夕日","黄昏","夕焼け"], "noon": ["夕暮れ","夕方","夕日","黄昏"], "evening": ["朝日","夜明け"]}.get(existing.get("poem_slot"), [])
+            _all = ""
+            for _p in ("kyodatsu", "taiyou"):
+                for _lv in ("0","1","2","3"):
+                    _all += existing["poems"].get(_p, {}).get(_lv, "") or ""
+            if any(w in _all for w in _ban2):
+                print(f"{key}: SELF-HEAL 既存の詩に禁止ワードあり → 作り直します")
+                do_gen = True
+                slot = existing.get("poem_slot")
+                _skip_reason = ""
         if do_gen:
             print(f"{key}: poem slot={slot} gen...")
             poems, model = generate_poems(out, name, loc.get("lat"), loc.get("lon"), loc_index=loc_index, slot=slot)
