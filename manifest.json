@@ -2,7 +2,7 @@
   "id": "/taiyou-kyodatsu/",
   "name": "太陽の涙、虚脱の空",
   "short_name": "虚脱の空",
-  "description": "実用的な天気と詩の一行を重ねる天気アプリ",
+  "description": "詩の一行がメインで、天気（ライブカメラ）を添えた詩のアプリ",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
