@@ -1,6 +1,6 @@
 # ============================================================
-# fetch.py v63 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v63」と出ます。出なければ、古い fetch.py です
+# fetch.py v64 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v64」と出ます。出なければ、古い fetch.py です
 # - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
 # - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
 # - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
@@ -11,7 +11,7 @@
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v63")
+print("Weathernews版 v64")
 
 Path("images").mkdir(exist_ok=True)
 
@@ -198,6 +198,34 @@ def _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, levels,
             continue
     return None, "fail"
 
+
+def generate_senjin(image_path, place_name, lat, lon, slot="morning"):
+    """仙人級（3）だけを、Gemini 3.8 優先で作る。私が作りたいときに、作りたい都市だけ。"""
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return None, "fallback-no-key"
+    try:
+        b64 = base64.b64encode(Path(image_path).read_bytes()).decode()
+    except Exception as e:
+        print(f"  senjin image fail {e}")
+        return None, "fallback-no-image"
+    slot_ja = {"morning": "朝（6〜10時）", "noon": "昼（11〜15時）", "evening": "夕方（18〜20時）"}.get(slot, slot)
+    slot_ban = {"morning": "夕暮れ・夕方・夕日・黄昏・宵・日暮れ・夕焼けなどの夕方の言葉は、絶対に使わない", "noon": "夕暮れ・夕方・夕日・黄昏・朝日・朝霧・夜明けなどの朝夕の言葉は、絶対に使わない", "evening": "朝日・朝霧・夜明け・朝の光などの朝の言葉は、絶対に使わない"}.get(slot, "")
+    SENJIN_MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3-flash-preview"]
+    j, m = _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, ["3"], SENJIN_MODELS, 0.95, 1200)
+    if j is None:
+        return None, "fail"
+    _rep = {"morning": {"夕暮れ": "夜明け", "夕方": "朝", "夕日": "朝日", "黄昏": "夜明け", "宵": "朝", "日暮れ": "夜明け", "夕焼け": "朝焼け"}, "noon": {"夕暮れ": "昼", "夕方": "昼", "夕日": "昼の光", "黄昏": "昼", "夜明け": "朝", "朝日": "昼の光"}, "evening": {"朝日": "夕日", "朝霧": "夕霧", "夜明け": "夕暮れ", "朝の光": "夕の光"}}.get(slot, {})
+    for _poet in ("kyodatsu", "taiyou"):
+        _txt = j.get(_poet, {}).get("3", "") or ""
+        for _k, _v in _rep.items():
+            if _k in _txt:
+                _txt = _txt.replace(_k, _v)
+        if _poet not in j:
+            j[_poet] = {}
+        j[_poet]["3"] = _txt
+    return j, m
+
 def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"):
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
@@ -208,8 +236,8 @@ def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"
     except Exception as e:
         print(f"  gemini: image read fail {e}")
         return fallback_poems(place_name, lat, lon), "fallback-no-image"
-    SHORT_MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.6-flash", "gemini-3.8-flash"]
-    LONG_MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3-flash-preview", "gemini-3.5-flash-lite"]
+    SHORT_MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.6-flash", "gemini-3-flash-preview"]  # v64：普段は 3.8 なし
+    LONG_MODELS = ["gemini-3.6-flash", "gemini-3-flash-preview", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]  # v64：普段は 3.8 なし
     _s = SHORT_MODELS[loc_index % len(SHORT_MODELS):] + SHORT_MODELS[:loc_index % len(SHORT_MODELS)]
     _l = LONG_MODELS[loc_index % len(LONG_MODELS):] + LONG_MODELS[:loc_index % len(LONG_MODELS)]
     # v63：短い（0,1）は Lite / temp 0.6 / 500、長い（2,3）は Flash / temp 0.95 / 1200
@@ -217,7 +245,7 @@ def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"
     slot_ja_tmp = {"morning": "朝（6〜10時）", "noon": "昼（11〜15時）", "evening": "夕方（18〜20時）"}.get(slot, slot)
     slot_ban_tmp = {"morning": "夕暮れ・夕方・夕日・黄昏・宵・日暮れ・夕焼けなどの夕方の言葉は、絶対に使わない", "noon": "夕暮れ・夕方・夕日・黄昏・朝日・朝霧・夜明けなどの朝夕の言葉は、絶対に使わない", "evening": "朝日・朝霧・夜明け・朝の光などの朝の言葉は、絶対に使わない"}.get(slot, "")
     _short_j, _short_m = _call_gemini_for_levels(api_key, b64, place_name, slot_ja_tmp, slot_ban_tmp, ["0", "1"], _s, 0.6, 500)
-    _long_j, _long_m = _call_gemini_for_levels(api_key, b64, place_name, slot_ja_tmp, slot_ban_tmp, ["2", "3"], _l, 0.95, 1200)
+    _long_j, _long_m = _call_gemini_for_levels(api_key, b64, place_name, slot_ja_tmp, slot_ban_tmp, ["2"], _l, 0.85, 800)  # v64：普段は 2 まで。3 は作らない
     if _short_j is None and _long_j is None:
         return fallback_poems(place_name, lat, lon), "fallback-all-fail"
     _merged = {"kyodatsu": {}, "taiyou": {}}
@@ -225,7 +253,7 @@ def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"
         for _lv in ("0", "1"):
             if _short_j and _short_j.get(_poet, {}).get(_lv):
                 _merged[_poet][_lv] = _short_j[_poet][_lv]
-        for _lv in ("2", "3"):
+        for _lv in ("2",):  # v64：3 はここでは作らない
             if _long_j and _long_j.get(_poet, {}).get(_lv):
                 _merged[_poet][_lv] = _long_j[_poet][_lv]
     # 欠けた分は、ある方で補う（片方だけ成功しても、全部空にしない）
@@ -386,6 +414,26 @@ def main():
         if do_gen:
             print(f"{key}: poem slot={slot} gen...")
             poems, model = generate_poems(out, name, loc.get("lat"), loc.get("lon"), loc_index=loc_index, slot=slot)
+            # v64：普段は仙人級を作らないので、既存の 3 を残す
+            if existing.get("poems"):
+                for _p in ("kyodatsu", "taiyou"):
+                    _old3 = existing["poems"].get(_p, {}).get("3")
+                    if _old3:
+                        poems[_p]["3"] = _old3
+            # v64：仙人級オンデマンド — FORCE_SENJIN=1 のときだけ、3 を 3.8 優先で作る
+            if os.environ.get("FORCE_SENJIN", "").lower() in ("1", "true", "yes"):
+                _fc = os.environ.get("FORCE_CITY", "").strip()
+                if not _fc or _fc == key:
+                    _ss = os.environ.get("FORCE_SLOT", "").strip() or slot
+                    print(f"{key}: SENJIN on-demand slot={_ss} model=3.8優先")
+                    _sj, _sm = generate_senjin(out, name, loc.get("lat"), loc.get("lon"), slot=_ss)
+                    if _sj:
+                        for _p in ("kyodatsu", "taiyou"):
+                            if _sj.get(_p, {}).get("3"):
+                                poems[_p]["3"] = _sj[_p]["3"]
+                        model = model + "+" + _sm + "(senjin)"
+                    else:
+                        print(f"{key}: SENJIN fail -> 既存の 3 を残す")
             if model.startswith("fallback") and existing.get("poems"):
                 poems, model = existing["poems"], "cached-keep"
                 print(f"{key}: gemini fail -> cached-keep, poem_date は更新しない（次の時間に再試行）")

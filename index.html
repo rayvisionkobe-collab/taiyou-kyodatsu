@@ -196,7 +196,7 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
     感想・ひとこと → <a href="https://forms.gle/PLACEHOLDER" target="_blank" rel="noopener" style="color:#f5f1e8;text-decoration:underline">Googleフォーム (匿名OK)</a>
   </div>
   <div style="font-size:10px;color:#a8a29e">このサイトは、個人情報を集めません。感想を送るときも、名前は入れなくて大丈夫です。</div>
-  <div style="margin-top:6px">出典：ウェザーニュース / Myライブカメラ © rayvisionkobe-collab / v141 仙人級ゲート版 / data.json対応 / 背景は生成り #1c1917 温墨</div>
+  <div style="margin-top:6px">出典：ウェザーニュース / Myライブカメラ © rayvisionkobe-collab / v142 仙人級ゲート＋ラベル修正版 / data.json対応 / 背景は生成り #1c1917 温墨</div>
 </footer>
 
 <script>
@@ -261,6 +261,16 @@ async function updateAll(){
   const level = parseInt(document.getElementById('level').value);
   const levels = ["からっと","ほどよく","こいめ","仙人級"];
   document.getElementById('poemMain').textContent = breakByMaru(getPoem(place, poet, level));
+  // v142：スライダーを動かしても表示が変わらなかったバグ修正 — strengthLabel を毎回更新する
+  try{
+    var _sl = document.getElementById('strengthLabel');
+    if(_sl){
+      var _poetName = (poet === 'taiyou' ? '太陽の涙' : '虚脱の空');
+      var _lvName = levels[level] || levels[1];
+      var _lvDesc = ['からっと — 余白を残して、ひと言', 'ほどよく — 詩人の特徴が、ほどよく', 'こいめ — 濃く、深く', '仙人級 — 奥の座敷、ここだけ'][level] || '';
+      _sl.textContent = '今：' + _lvName + ' — ' + _poetName + '、' + _lvDesc.split(' — ')[1];
+    }
+  }catch(e){}
   try{ const _pe=liveData?.locations?.[place]; const _el=document.getElementById('poemTime'); if(_el){ if(_pe?.poem_date || _pe?.poem_slot){ const _slotMap={morning:'朝', noon:'昼', evening:'夕方'}; _el.textContent='詩：'+(_pe.poem_date||'')+' '+(_slotMap[_pe.poem_slot]||_pe.poem_slot||'')+'の詩'; _el.style.display='block'; } else { _el.style.display='none'; } } }catch(e){}
   try{const pm=document.getElementById('poemMain'); if(pm){const longest=Math.max(...pm.textContent.split('\n').map(l=>l.length)); if(longest>=16) pm.style.fontSize='16px'; else if(longest>=14) pm.style.fontSize='18px'; else pm.style.fontSize='';}}catch(e){}
   const placeName = loc.name;
