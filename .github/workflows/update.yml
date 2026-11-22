@@ -16,6 +16,10 @@ on:
         description: 'kobe だけ等 (空なら全部)'
         required: false
         default: ''
+      force_senjin:
+        description: '仙人級だけ作る (1 で作る。FORCE_CITY と一緒に使う)'
+        required: false
+        default: ''
 permissions:
   contents: write
 jobs:
@@ -35,6 +39,7 @@ jobs:
           FORCE_POEM: ${{ inputs.force_poem }}
           FORCE_SLOT: ${{ inputs.force_slot }}
           FORCE_CITY: ${{ inputs.force_city }}
+          FORCE_SENJIN: ${{ inputs.force_senjin }}
         run: python fetch.py
       - name: Commit and push
         run: |
