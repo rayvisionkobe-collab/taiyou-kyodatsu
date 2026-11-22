@@ -1,6 +1,6 @@
 # ============================================================
-# fetch.py v64 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v64」と出ます。出なければ、古い fetch.py です
+# fetch.py v65 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v65」と出ます。出なければ、古い fetch.py です
 # - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
 # - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
 # - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
@@ -11,7 +11,7 @@
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v64")
+print("Weathernews版 v65")
 
 Path("images").mkdir(exist_ok=True)
 
@@ -156,8 +156,18 @@ def _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, levels,
     prompt = "この画像は" + place_name + "のライブカメラの空と風景です。今は" + slot_ja + "です。" + slot_ban + "。画像をよく見て、中原中也風（kyodatsu）と宮沢賢治風（taiyou）の詩を、日本語で作ってください。\n"
     prompt += "条件：\n"
     prompt += "- 今回は濃淡 " + lv_line + " だけ作る\n"
+    # v65：順序の根本修正 — 0,1,2 を1回の呼び出しで、長さの順序を厳守させる。別々に呼ぶと、2 が 0 より短くなる逆転が起きた
+    if set(levels) == {"0", "1", "2"}:
+        prompt += "- 順序は、必ず 0 < 1 < 2 の長さにする。0 が一番短く、2 が一番長く、濃い。逆転は禁止\n"
+        prompt += "- 0=からっと：1文だけ、約15文字、余白を残して、あっさり。詩人の特徴は一番薄く\n"
+        prompt += "- 1=ほどよく：2文、約30文字、ほどよく\n"
+        prompt += "- 2=こいめ：3文、約45文字、一番濃く、深く。詩人の特徴を一番強く\n"
+        prompt += "- 3文とは、句点「。」が3つあること。1文の詩を 2 に入れない\n"
+    if "3" in levels:
+        prompt += "- 3=仙人級：長め1段落、約80文字、一番濃く\n"
     prompt += "- 1行目は空や雲や光の様子を具体的に\n"
     prompt += "- 2行目以降は風や音や気配を感じる言葉を\n"
+    prompt += "- 酒・タバコ・ギャンブルなど、人間の嗜好品の話は入れない。空・雲・光・風・街の灯りを中心に\n"
     prompt += "- 天気の言葉（晴れ・曇り・雨・風など）を1つだけ入れる\n"
     prompt += "- 説明文やタイトルは不要。JSONだけを返す\n"
     prompt += '- 返却形式は必ずこの形：{"kyodatsu": {"0": "...", "1": "..."}, "taiyou": {"0": "...", "1": "..."}} のように、今回の濃淡だけを入れる\n'
@@ -236,26 +246,31 @@ def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"
     except Exception as e:
         print(f"  gemini: image read fail {e}")
         return fallback_poems(place_name, lat, lon), "fallback-no-image"
-    SHORT_MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.6-flash", "gemini-3-flash-preview"]  # v64：普段は 3.8 なし
-    LONG_MODELS = ["gemini-3.6-flash", "gemini-3-flash-preview", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]  # v64：普段は 3.8 なし
-    _s = SHORT_MODELS[loc_index % len(SHORT_MODELS):] + SHORT_MODELS[:loc_index % len(SHORT_MODELS)]
-    _l = LONG_MODELS[loc_index % len(LONG_MODELS):] + LONG_MODELS[:loc_index % len(LONG_MODELS)]
-    # v63：短い（0,1）は Lite / temp 0.6 / 500、長い（2,3）は Flash / temp 0.95 / 1200
-    # 下の既存ループは使わず、ここで2回呼んで合成する
+    # v65：効率化 — 0,1,2 を1回の呼び出しで作る。2回呼ぶと、画像トークンが2倍、リクエストが2倍、503 のリトライも2倍になる
+    # モデルは 2つだけに絞る（4つ試すと、503 のたびにリクエストが増える）。都市ごとにローテーションして、負荷を分散
+    ALL_MODELS = ["gemini-3.5-flash-lite", "gemini-3.6-flash"]
+    _m = ALL_MODELS[loc_index % len(ALL_MODELS):] + ALL_MODELS[:loc_index % len(ALL_MODELS)]
     slot_ja_tmp = {"morning": "朝（6〜10時）", "noon": "昼（11〜15時）", "evening": "夕方（18〜20時）"}.get(slot, slot)
     slot_ban_tmp = {"morning": "夕暮れ・夕方・夕日・黄昏・宵・日暮れ・夕焼けなどの夕方の言葉は、絶対に使わない", "noon": "夕暮れ・夕方・夕日・黄昏・朝日・朝霧・夜明けなどの朝夕の言葉は、絶対に使わない", "evening": "朝日・朝霧・夜明け・朝の光などの朝の言葉は、絶対に使わない"}.get(slot, "")
-    _short_j, _short_m = _call_gemini_for_levels(api_key, b64, place_name, slot_ja_tmp, slot_ban_tmp, ["0", "1"], _s, 0.6, 500)
-    _long_j, _long_m = _call_gemini_for_levels(api_key, b64, place_name, slot_ja_tmp, slot_ban_tmp, ["2"], _l, 0.85, 800)  # v64：普段は 2 まで。3 は作らない
-    if _short_j is None and _long_j is None:
+    _j, _model = _call_gemini_for_levels(api_key, b64, place_name, slot_ja_tmp, slot_ban_tmp, ["0", "1", "2"], _m, 0.7, 900)
+    if _j is None:
         return fallback_poems(place_name, lat, lon), "fallback-all-fail"
     _merged = {"kyodatsu": {}, "taiyou": {}}
     for _poet in ("kyodatsu", "taiyou"):
-        for _lv in ("0", "1"):
-            if _short_j and _short_j.get(_poet, {}).get(_lv):
-                _merged[_poet][_lv] = _short_j[_poet][_lv]
-        for _lv in ("2",):  # v64：3 はここでは作らない
-            if _long_j and _long_j.get(_poet, {}).get(_lv):
-                _merged[_poet][_lv] = _long_j[_poet][_lv]
+        for _lv in ("0", "1", "2"):
+            if _j and _j.get(_poet, {}).get(_lv):
+                _merged[_poet][_lv] = _j[_poet][_lv]
+    # v65：順序の安全網 — Gemini が逆転して返しても、長さで並べ直す。0 < 1 < 2 を保証する
+    for _poet in ("kyodatsu", "taiyou"):
+        _vals = [_merged[_poet].get(_lv, "") for _lv in ("0", "1", "2")]
+        # 欠けがなければ、長さ順に並べ直す。欠けがあるときは、そのまま
+        if all(_vals):
+            _sorted = sorted(_vals, key=lambda x: len(x))
+            # すでに正しい順序なら、何もしない。逆転してたら、並べ直す
+            if _vals != _sorted:
+                print(f"  order fix {place_name} {_poet}: {[len(v) for v in _vals]} -> {[len(v) for v in _sorted]}")
+                for _i, _lv in enumerate(("0", "1", "2")):
+                    _merged[_poet][_lv] = _sorted[_i]
     # 欠けた分は、ある方で補う（片方だけ成功しても、全部空にしない）
     for _poet in ("kyodatsu", "taiyou"):
         for _lv in ("0", "1", "2", "3"):
@@ -271,7 +286,7 @@ def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"
                 if _k in _txt:
                     _txt = _txt.replace(_k, _v)
             _merged[_poet][_lv] = _txt
-    return _merged, (_short_m + "+" + _long_m)
+    return _merged, _model
     models = GEMINI_MODELS[loc_index % len(GEMINI_MODELS):] + GEMINI_MODELS[:loc_index % len(GEMINI_MODELS)]
     # 時間帯を Gemini に伝えないと、朝の低い太陽を夕日と間違える
     slot_ja = {"morning": "朝（6〜10時）", "noon": "昼（11〜15時）", "evening": "夕方（18〜20時）"}.get(slot, slot)
