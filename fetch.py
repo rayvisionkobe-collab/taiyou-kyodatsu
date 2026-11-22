@@ -1,6 +1,6 @@
 # ============================================================
-# fetch.py v65 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v65」と出ます。出なければ、古い fetch.py です
+# fetch.py v68 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v68」と出ます。出なければ、古い fetch.py です
 # - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
 # - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
 # - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
@@ -11,23 +11,38 @@
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v65")
+print("Weathernews版 v68")
 
 Path("images").mkdir(exist_ok=True)
 
+# v68：休日バイアスを直す ＋ 仙人級なしの分を反映
+# 11/22 の統計は、日曜（＋前後 3日は休日）のもの。昼 12時の山は、休日型。
+# 平日は、夕方 18〜20時が混む（帰宅後に使う人が多い）。v67 は「夕方は空いてる」と
+# 日曜の統計だけで決めて、18時に 2つ置いてたので、平日だと直撃する。直す。
+# 仙人級を毎回作るのをやめた分（v64〜）：
+#   v63 まで：LONG 呼びで 2＋3（仙人級）を作ってた。出力 1200トークン、仙人級が約4割
+#   v64〜：普段は 0〜2 だけ。仙人級は FORCE_SENJIN=1 のときだけ、選んだ都市だけ
+#   v65〜：0〜2 を 1回の呼びに。出力 900トークン、入力も 2回→1回に
+# → 11/22 の統計は、まだ v64（2回呼び）のときのもの。v65 の 1回呼びは、まだ反映されてない
+# → これから先は、統計の 22回より、さらに半分くらいになるはず
+# 対策：
+#   朝：6時 2つ / 7時 2つ / 8時 1つ / 9・10時 再試行（朝は平日・休日とも空いてる）
+#   昼：12時 1つ / 13時 2つ / 14時 1つ / 17時 再試行（休日 12時ピークを避ける）
+#   夕：18時 1つ / 19時 1つ / 20時 1つ / 21時 再試行（平日 夕方ピークを避ける。21時はピーク過ぎ）
 POEM_SCHEDULE = {
-    6:  {"slot": "morning", "targets": ["kobe", "osaka", "tokyo", "nagoya", "fukuoka"]},
-    7:  {"slot": "morning", "targets": ["kobe", "osaka", "tokyo", "nagoya", "fukuoka"]},
-    8:  {"slot": "morning", "targets": ["kobe", "osaka", "tokyo", "nagoya", "fukuoka"]},
+    6:  {"slot": "morning", "targets": ["kobe", "osaka"]},
+    7:  {"slot": "morning", "targets": ["tokyo", "nagoya"]},
+    8:  {"slot": "morning", "targets": ["fukuoka"]},
     9:  {"slot": "morning", "targets": ["kobe", "osaka", "tokyo", "nagoya", "fukuoka"]},
     10: {"slot": "morning", "targets": ["kobe", "osaka", "tokyo", "nagoya", "fukuoka"]},
-    12: {"slot": "noon",    "targets": ["sapporo", "sendai", "hiroshima", "naha"]},
-    13: {"slot": "noon",    "targets": ["sapporo", "sendai", "hiroshima", "naha"]},
-    14: {"slot": "noon",    "targets": ["sapporo", "sendai", "hiroshima", "naha"]},
+    12: {"slot": "noon",    "targets": ["sapporo"]},
+    13: {"slot": "noon",    "targets": ["sendai", "hiroshima"]},
+    14: {"slot": "noon",    "targets": ["naha"]},
     17: {"slot": "noon",    "targets": ["sapporo", "sendai", "hiroshima", "naha"]},
-    18: {"slot": "evening", "targets": ["kobe", "osaka", "tokyo"]},
-    19: {"slot": "evening", "targets": ["kobe", "osaka", "tokyo"]},
-    20: {"slot": "evening", "targets": ["kobe", "osaka", "tokyo"]},
+    18: {"slot": "evening", "targets": ["kobe"]},
+    19: {"slot": "evening", "targets": ["osaka"]},
+    20: {"slot": "evening", "targets": ["tokyo"]},
+    21: {"slot": "evening", "targets": ["kobe", "osaka", "tokyo"]},
 }
 BUSY_HOURS = [15, 16]
 GEMINI_MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3-flash-preview"]
@@ -480,6 +495,9 @@ def main():
             "page_url": loc["page_url"],
         }
         print(f"{key}: image_ok={ok} status={data['locations'][key]['status']} poem slot={poem_slot} model={model}")
+        # v67：都市ごとに 10秒待つ（v51 にあった 429回避を復活）。一気に叩くと 503 が増える
+        if do_gen:
+            time.sleep(10)
     Path("data.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"wrote data.json updated_at={now} locations={len(data['locations'])}")
 
