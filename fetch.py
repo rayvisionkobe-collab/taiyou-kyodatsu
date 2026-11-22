@@ -1,6 +1,6 @@
 # ============================================================
-# fetch.py v62 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v62」と出ます。出なければ、古い fetch.py です
+# fetch.py v63 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v63」と出ます。出なければ、古い fetch.py です
 # - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
 # - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
 # - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
@@ -11,7 +11,7 @@
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v62")
+print("Weathernews版 v63")
 
 Path("images").mkdir(exist_ok=True)
 
@@ -148,6 +148,56 @@ def fallback_poems(name, lat, lon):
         },
     }
 
+
+def _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, levels, models, temp, max_tok):
+    lv_str = "、".join(levels)
+    lv_desc = {"0": "0=からっと1行", "1": "1=ほどよく2行", "2": "2=こいめ3行", "3": "3=仙人級 長め1段落"}
+    lv_line = " / ".join([lv_desc[lv] for lv in levels])
+    prompt = "この画像は" + place_name + "のライブカメラの空と風景です。今は" + slot_ja + "です。" + slot_ban + "。画像をよく見て、中原中也風（kyodatsu）と宮沢賢治風（taiyou）の詩を、日本語で作ってください。\n"
+    prompt += "条件：\n"
+    prompt += "- 今回は濃淡 " + lv_line + " だけ作る\n"
+    prompt += "- 1行目は空や雲や光の様子を具体的に\n"
+    prompt += "- 2行目以降は風や音や気配を感じる言葉を\n"
+    prompt += "- 天気の言葉（晴れ・曇り・雨・風など）を1つだけ入れる\n"
+    prompt += "- 説明文やタイトルは不要。JSONだけを返す\n"
+    prompt += '- 返却形式は必ずこの形：{"kyodatsu": {"0": "...", "1": "..."}, "taiyou": {"0": "...", "1": "..."}} のように、今回の濃淡だけを入れる\n'
+    for model in models:
+        try:
+            url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + api_key
+            payload = {"contents": [{"parts": [{"text": prompt}, {"inline_data": {"mime_type": "image/jpeg", "data": b64}}]}], "generationConfig": {"temperature": temp, "maxOutputTokens": max_tok}}
+            r = requests.post(url, json=payload, timeout=60)
+            if r.status_code == 404:
+                print("  gemini " + model + " 404 " + place_name + ": 次へ")
+                continue
+            if r.status_code == 429:
+                print("  gemini " + model + " 429 " + place_name + ": 20秒待って次へ")
+                time.sleep(20)
+                continue
+            if r.status_code == 503:
+                print("  gemini " + model + " 503 " + place_name + ": 5秒待って次へ")
+                time.sleep(5)
+                continue
+            if r.status_code != 200:
+                print("  gemini " + model + " status " + str(r.status_code) + ": " + r.text[:300])
+                continue
+            text = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+            m = re.search(r'\{.*\}', text, re.S)
+            if m:
+                text = m.group(0)
+            j = json.loads(text)
+            ok = 0
+            for poet in ("kyodatsu", "taiyou"):
+                for lv in levels:
+                    if j.get(poet, {}).get(lv):
+                        ok += 1
+            print("  gemini ok " + place_name + " model=" + model + " levels=" + lv_str + " parsed=" + str(ok) + "/" + str(len(levels)*2) + " temp=" + str(temp))
+            if ok >= len(levels):
+                return j, model
+        except Exception as e:
+            print("  gemini fail " + place_name + " model=" + model + " levels=" + lv_str + ": " + str(e))
+            continue
+    return None, "fail"
+
 def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"):
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
@@ -158,6 +208,42 @@ def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"
     except Exception as e:
         print(f"  gemini: image read fail {e}")
         return fallback_poems(place_name, lat, lon), "fallback-no-image"
+    SHORT_MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.6-flash", "gemini-3.8-flash"]
+    LONG_MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3-flash-preview", "gemini-3.5-flash-lite"]
+    _s = SHORT_MODELS[loc_index % len(SHORT_MODELS):] + SHORT_MODELS[:loc_index % len(SHORT_MODELS)]
+    _l = LONG_MODELS[loc_index % len(LONG_MODELS):] + LONG_MODELS[:loc_index % len(LONG_MODELS)]
+    # v63：短い（0,1）は Lite / temp 0.6 / 500、長い（2,3）は Flash / temp 0.95 / 1200
+    # 下の既存ループは使わず、ここで2回呼んで合成する
+    slot_ja_tmp = {"morning": "朝（6〜10時）", "noon": "昼（11〜15時）", "evening": "夕方（18〜20時）"}.get(slot, slot)
+    slot_ban_tmp = {"morning": "夕暮れ・夕方・夕日・黄昏・宵・日暮れ・夕焼けなどの夕方の言葉は、絶対に使わない", "noon": "夕暮れ・夕方・夕日・黄昏・朝日・朝霧・夜明けなどの朝夕の言葉は、絶対に使わない", "evening": "朝日・朝霧・夜明け・朝の光などの朝の言葉は、絶対に使わない"}.get(slot, "")
+    _short_j, _short_m = _call_gemini_for_levels(api_key, b64, place_name, slot_ja_tmp, slot_ban_tmp, ["0", "1"], _s, 0.6, 500)
+    _long_j, _long_m = _call_gemini_for_levels(api_key, b64, place_name, slot_ja_tmp, slot_ban_tmp, ["2", "3"], _l, 0.95, 1200)
+    if _short_j is None and _long_j is None:
+        return fallback_poems(place_name, lat, lon), "fallback-all-fail"
+    _merged = {"kyodatsu": {}, "taiyou": {}}
+    for _poet in ("kyodatsu", "taiyou"):
+        for _lv in ("0", "1"):
+            if _short_j and _short_j.get(_poet, {}).get(_lv):
+                _merged[_poet][_lv] = _short_j[_poet][_lv]
+        for _lv in ("2", "3"):
+            if _long_j and _long_j.get(_poet, {}).get(_lv):
+                _merged[_poet][_lv] = _long_j[_poet][_lv]
+    # 欠けた分は、ある方で補う（片方だけ成功しても、全部空にしない）
+    for _poet in ("kyodatsu", "taiyou"):
+        for _lv in ("0", "1", "2", "3"):
+            if _lv not in _merged[_poet] or not _merged[_poet][_lv]:
+                _fb = fallback_poems(place_name, lat, lon)
+                _merged[_poet][_lv] = _fb[_poet][_lv]
+    # 禁止ワード置き換え（v61 と同じ）
+    _rep = {"morning": {"夕暮れ": "夜明け", "夕方": "朝", "夕日": "朝日", "黄昏": "夜明け", "宵": "朝", "日暮れ": "夜明け", "夕焼け": "朝焼け"}, "noon": {"夕暮れ": "昼", "夕方": "昼", "夕日": "昼の光", "黄昏": "昼", "夜明け": "朝", "朝日": "昼の光"}, "evening": {"朝日": "夕日", "朝霧": "夕霧", "夜明け": "夕暮れ", "朝の光": "夕の光"}}.get(slot, {})
+    for _poet in ("kyodatsu", "taiyou"):
+        for _lv in ("0", "1", "2", "3"):
+            _txt = _merged[_poet][_lv] or ""
+            for _k, _v in _rep.items():
+                if _k in _txt:
+                    _txt = _txt.replace(_k, _v)
+            _merged[_poet][_lv] = _txt
+    return _merged, (_short_m + "+" + _long_m)
     models = GEMINI_MODELS[loc_index % len(GEMINI_MODELS):] + GEMINI_MODELS[:loc_index % len(GEMINI_MODELS)]
     # 時間帯を Gemini に伝えないと、朝の低い太陽を夕日と間違える
     slot_ja = {"morning": "朝（6〜10時）", "noon": "昼（11〜15時）", "evening": "夕方（18〜20時）"}.get(slot, slot)
