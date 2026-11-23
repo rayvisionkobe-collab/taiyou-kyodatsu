@@ -1,6 +1,6 @@
 # ============================================================
-# fetch.py v68 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v68」と出ます。出なければ、古い fetch.py です
+# fetch.py v70 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v70」と出ます。出なければ、古い fetch.py です
 # - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
 # - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
 # - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
@@ -11,10 +11,12 @@
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v68")
+print("Weathernews版 v70")
 
 Path("images").mkdir(exist_ok=True)
 
+# v70：3.6-flash が 4/4 で落ちるので外す（07:40 東京・名古屋で確認）
+# v69：06:38 神戸の JSON パース失敗対応（mime 修正＋生テキスト表示）
 # v68：休日バイアスを直す ＋ 仙人級なしの分を反映
 # 11/22 の統計は、日曜（＋前後 3日は休日）のもの。昼 12時の山は、休日型。
 # 平日は、夕方 18〜20時が混む（帰宅後に使う人が多い）。v67 は「夕方は空いてる」と
@@ -60,6 +62,17 @@ def load_locations():
         {"id": "naha", "name": "那覇", "lat": 26.21, "lon": 127.68, "weathernews_id": "7CDDE9086CB8", "page_url": "https://weathernews.jp/onebox/livecam/okinawa/7CDDE9086CB8/"},
     ]
 
+
+def _detect_mime(data: bytes) -> str:
+    # v69：画像は .webp で来るのに、Gemini には image/jpeg と送っていたのが原因の一つ
+    # 先頭バイトで判定して、正しい mime を送る
+    if data[:2] == b"\xff\xd8":
+        return "image/jpeg"
+    if data[:4] == b"RIFF" and b"WEBP" in data[:16]:
+        return "image/webp"
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return "image/png"
+    return "image/jpeg"
 
 def _is_image(data: bytes) -> bool:
     # サイズだけでは、夜の暗い写真（小さい）とエラーHTML（小さい）を見分けられない
@@ -164,14 +177,13 @@ def fallback_poems(name, lat, lon):
     }
 
 
-def _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, levels, models, temp, max_tok):
+def _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, levels, models, temp, max_tok, mime_type="image/jpeg"):
     lv_str = "、".join(levels)
     lv_desc = {"0": "0=からっと1行", "1": "1=ほどよく2行", "2": "2=こいめ3行", "3": "3=仙人級 長め1段落"}
     lv_line = " / ".join([lv_desc[lv] for lv in levels])
     prompt = "この画像は" + place_name + "のライブカメラの空と風景です。今は" + slot_ja + "です。" + slot_ban + "。画像をよく見て、中原中也風（kyodatsu）と宮沢賢治風（taiyou）の詩を、日本語で作ってください。\n"
     prompt += "条件：\n"
     prompt += "- 今回は濃淡 " + lv_line + " だけ作る\n"
-    # v65：順序の根本修正 — 0,1,2 を1回の呼び出しで、長さの順序を厳守させる。別々に呼ぶと、2 が 0 より短くなる逆転が起きた
     if set(levels) == {"0", "1", "2"}:
         prompt += "- 順序は、必ず 0 < 1 < 2 の長さにする。0 が一番短く、2 が一番長く、濃い。逆転は禁止\n"
         prompt += "- 0=からっと：1文だけ、約15文字、余白を残して、あっさり。詩人の特徴は一番薄く\n"
@@ -184,12 +196,13 @@ def _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, levels,
     prompt += "- 2行目以降は風や音や気配を感じる言葉を\n"
     prompt += "- 酒・タバコ・ギャンブルなど、人間の嗜好品の話は入れない。空・雲・光・風・街の灯りを中心に\n"
     prompt += "- 天気の言葉（晴れ・曇り・雨・風など）を1つだけ入れる\n"
-    prompt += "- 説明文やタイトルは不要。JSONだけを返す\n"
+    # v69：JSON だけを返すことを、強くする。説明文・謝罪・```json の囲みは禁止
+    prompt += "- 説明文・タイトル・謝罪・前置きは不要。```json の囲みも不要。JSONだけを返す\n"
     prompt += '- 返却形式は必ずこの形：{"kyodatsu": {"0": "...", "1": "..."}, "taiyou": {"0": "...", "1": "..."}} のように、今回の濃淡だけを入れる\n'
     for model in models:
         try:
             url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + api_key
-            payload = {"contents": [{"parts": [{"text": prompt}, {"inline_data": {"mime_type": "image/jpeg", "data": b64}}]}], "generationConfig": {"temperature": temp, "maxOutputTokens": max_tok}}
+            payload = {"contents": [{"parts": [{"text": prompt}, {"inline_data": {"mime_type": mime_type, "data": b64}}]}], "generationConfig": {"temperature": temp, "maxOutputTokens": max_tok}}
             r = requests.post(url, json=payload, timeout=60)
             if r.status_code == 404:
                 print("  gemini " + model + " 404 " + place_name + ": 次へ")
@@ -205,11 +218,42 @@ def _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, levels,
             if r.status_code != 200:
                 print("  gemini " + model + " status " + str(r.status_code) + ": " + r.text[:300])
                 continue
-            text = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+            # v69：06:38 神戸の失敗は、ここ。HTTP は 200 なのに、JSON パースで落ちた
+            # 「Expecting value: line 1 column 1 (char 0)」は、空文字か、JSON ではない文字を json.loads したときのエラー
+            # 原因の生テキストを出さないと、次も同じ失敗を繰り返す
+            try:
+                _rj = r.json()
+            except Exception as e:
+                print(f"  gemini {model} {place_name}: response が JSON ではない {e} head={r.text[:300]!r}")
+                continue
+            _cands = _rj.get("candidates", []) or []
+            if not _cands:
+                print(f"  gemini {model} {place_name}: candidates が空（安全フィルター等） finish={_rj.get('promptFeedback')} raw={str(_rj)[:400]!r}")
+                continue
+            _parts = _cands[0].get("content", {}).get("parts", []) or []
+            if not _parts or not _parts[0].get("text"):
+                print(f"  gemini {model} {place_name}: text が空 finishReason={_cands[0].get('finishReason')} raw={str(_cands[0])[:400]!r}")
+                continue
+            text = _parts[0]["text"].strip()
+            # v69：```json の囲み・前置きを剥がす。{ から最後の } までを抜く
+            # 前は re.search(r'\{.*\}', ...) だけで、``` が残ると落ちた
+            if text.startswith("```"):
+                # ```json ... ``` を剥がす
+                text = re.sub(r"^```[a-zA-Z]*\s*", "", text)
+                text = re.sub(r"\s*```\s*$", "", text)
+                text = text.strip()
             m = re.search(r'\{.*\}', text, re.S)
             if m:
                 text = m.group(0)
-            j = json.loads(text)
+            else:
+                # { がない = JSON ではない（謝罪文・空文字など）。生テキストを出して、次へ
+                print(f"  gemini {model} {place_name}: JSON なし（{{ がない） raw={text[:500]!r}")
+                continue
+            try:
+                j = json.loads(text)
+            except Exception as e:
+                print(f"  gemini {model} {place_name}: json.loads 失敗 {e} raw={text[:500]!r}")
+                continue
             ok = 0
             for poet in ("kyodatsu", "taiyou"):
                 for lv in levels:
@@ -218,6 +262,8 @@ def _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, levels,
             print("  gemini ok " + place_name + " model=" + model + " levels=" + lv_str + " parsed=" + str(ok) + "/" + str(len(levels)*2) + " temp=" + str(temp))
             if ok >= len(levels):
                 return j, model
+            else:
+                print(f"  gemini {model} {place_name}: parsed が足りない {ok}/{len(levels)*2} raw={text[:500]!r}")
         except Exception as e:
             print("  gemini fail " + place_name + " model=" + model + " levels=" + lv_str + ": " + str(e))
             continue
@@ -236,8 +282,10 @@ def generate_senjin(image_path, place_name, lat, lon, slot="morning"):
         return None, "fallback-no-image"
     slot_ja = {"morning": "朝（6〜10時）", "noon": "昼（11〜15時）", "evening": "夕方（18〜20時）"}.get(slot, slot)
     slot_ban = {"morning": "夕暮れ・夕方・夕日・黄昏・宵・日暮れ・夕焼けなどの夕方の言葉は、絶対に使わない", "noon": "夕暮れ・夕方・夕日・黄昏・朝日・朝霧・夜明けなどの朝夕の言葉は、絶対に使わない", "evening": "朝日・朝霧・夜明け・朝の光などの朝の言葉は、絶対に使わない"}.get(slot, "")
-    SENJIN_MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3-flash-preview"]
-    j, m = _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, ["3"], SENJIN_MODELS, 0.95, 1200)
+    # v70：仙人級も 3.6 を外す。3.8 が落ちたら、実績のある 3.5-lite に回す
+    SENJIN_MODELS = ["gemini-3.8-flash", "gemini-3.5-flash-lite", "gemini-3-flash-preview"]
+    _mime = _detect_mime(Path(image_path).read_bytes() if Path(image_path).exists() else b"")
+    j, m = _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, ["3"], SENJIN_MODELS, 0.95, 1200, mime_type=_mime)
     if j is None:
         return None, "fail"
     _rep = {"morning": {"夕暮れ": "夜明け", "夕方": "朝", "夕日": "朝日", "黄昏": "夜明け", "宵": "朝", "日暮れ": "夜明け", "夕焼け": "朝焼け"}, "noon": {"夕暮れ": "昼", "夕方": "昼", "夕日": "昼の光", "黄昏": "昼", "夜明け": "朝", "朝日": "昼の光"}, "evening": {"朝日": "夕日", "朝霧": "夕霧", "夜明け": "夕暮れ", "朝の光": "夕の光"}}.get(slot, {})
@@ -263,11 +311,16 @@ def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"
         return fallback_poems(place_name, lat, lon), "fallback-no-image"
     # v65：効率化 — 0,1,2 を1回の呼び出しで作る。2回呼ぶと、画像トークンが2倍、リクエストが2倍、503 のリトライも2倍になる
     # モデルは 2つだけに絞る（4つ試すと、503 のたびにリクエストが増える）。都市ごとにローテーションして、負荷を分散
-    ALL_MODELS = ["gemini-3.5-flash-lite", "gemini-3.6-flash"]
+    # v70：06:38＋07:40 で、3.6-flash が 4回中 4回「Expecting value」で落ちた
+    # 同じ画像で 3.5 は成功するので、画像ではなく 3.6 側の問題（返し方が変わった等）
+    # 3.6 を試すと、1都市で 2回呼んで無駄になるので、普段は 3.5 だけにする
+    ALL_MODELS = ["gemini-3.5-flash-lite"]
     _m = ALL_MODELS[loc_index % len(ALL_MODELS):] + ALL_MODELS[:loc_index % len(ALL_MODELS)]
     slot_ja_tmp = {"morning": "朝（6〜10時）", "noon": "昼（11〜15時）", "evening": "夕方（18〜20時）"}.get(slot, slot)
     slot_ban_tmp = {"morning": "夕暮れ・夕方・夕日・黄昏・宵・日暮れ・夕焼けなどの夕方の言葉は、絶対に使わない", "noon": "夕暮れ・夕方・夕日・黄昏・朝日・朝霧・夜明けなどの朝夕の言葉は、絶対に使わない", "evening": "朝日・朝霧・夜明け・朝の光などの朝の言葉は、絶対に使わない"}.get(slot, "")
-    _j, _model = _call_gemini_for_levels(api_key, b64, place_name, slot_ja_tmp, slot_ban_tmp, ["0", "1", "2"], _m, 0.7, 900)
+    _mime = _detect_mime(Path(image_path).read_bytes() if Path(image_path).exists() else b"")
+    print(f"  gemini mime={_mime} {place_name} image={image_path}")
+    _j, _model = _call_gemini_for_levels(api_key, b64, place_name, slot_ja_tmp, slot_ban_tmp, ["0", "1", "2"], _m, 0.7, 900, mime_type=_mime)
     if _j is None:
         return fallback_poems(place_name, lat, lon), "fallback-all-fail"
     _merged = {"kyodatsu": {}, "taiyou": {}}
