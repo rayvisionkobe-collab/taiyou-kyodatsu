@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-23T21:30:05.940312+09:00",
+  "updated_at": "2026-11-23T22:57:37.663875+09:00",
   "locations": {
     "kobe": {
       "image": "images/kobe.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-23T21:30:05.940312+09:00",
+      "updated_at": "2026-11-23T22:57:37.663875+09:00",
       "status": "ok",
       "poem_date": "2026-11-23",
       "poem_slot": "evening",
@@ -40,8 +40,8 @@
           "3": "朝の透き通った光が幾千もの窓に反射し、ビル群はまるで水晶の森のように輝いている。頭上の広く高い空はすっきりと晴れわたり、きりりと冷たい風が、大地を踏みしめて歩き出すすべての命の足音を、どこまでも爽やかに運んでいくのだ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-23T21:30:05.940312+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-23T22:57:37.663875+09:00",
       "status": "ok",
       "poem_date": "2026-11-23",
       "poem_slot": "evening",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-23T21:30:05.940312+09:00",
+      "updated_at": "2026-11-23T22:57:37.663875+09:00",
       "status": "ok",
       "poem_date": "2026-11-23",
       "poem_slot": "noon",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-23T21:30:05.940312+09:00",
+      "updated_at": "2026-11-23T22:57:37.663875+09:00",
       "status": "ok",
       "poem_date": "2026-11-23",
       "poem_slot": "evening",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-23T21:30:05.940312+09:00",
+      "updated_at": "2026-11-23T22:57:37.663875+09:00",
       "status": "ok",
       "poem_date": "2026-11-23",
       "poem_slot": "noon",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-23T21:30:05.940312+09:00",
+      "updated_at": "2026-11-23T22:57:37.663875+09:00",
       "status": "ok",
       "poem_date": "2026-11-23",
       "poem_slot": "morning",
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-23T21:30:05.940312+09:00",
+      "updated_at": "2026-11-23T22:57:37.663875+09:00",
       "status": "ok",
       "poem_date": "2026-11-23",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-23T21:30:05.940312+09:00",
+      "updated_at": "2026-11-23T22:57:37.663875+09:00",
       "status": "ok",
       "poem_date": "2026-11-23",
       "poem_slot": "morning",
@@ -202,7 +202,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-23T21:30:05.940312+09:00",
+      "updated_at": "2026-11-23T22:57:37.663875+09:00",
       "status": "ok",
       "poem_date": "2026-11-23",
       "poem_slot": "noon",
