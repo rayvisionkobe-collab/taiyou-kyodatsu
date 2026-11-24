@@ -1,7 +1,11 @@
 # ============================================================
-# fetch.py v70 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v70」と出ます。出なければ、古い fetch.py です
+ # fetch.py v71 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v71」と出ます。出なければ、古い fetch.py です
 # - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
+# - v71：履歴ログを自動で残す。毎回 logs/YYYY-MM-DD.jsonl に 1行ずつ追記して、
+#   update.yml が logs/ もコミットする。Actions のログを手でコピーしなくてよくなる
+#   1行 = 1イベント（image / skip / gemini_try / poem_ok / poem_fail / run_end）
+#   logs/latest.json には直近の1回分だけ入る（ぱっと見用）
 # - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
 # - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
 #   → その場合は、直接URLでも取れないので、赤いままが正しい
@@ -11,9 +15,64 @@
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v70")
+print("Weathernews版 v71")
 
 Path("images").mkdir(exist_ok=True)
+Path("logs").mkdir(exist_ok=True)
+
+# --- v71：履歴ログ ---
+# Actions のログは 90日で消えるし、手でコピーしないと残らない。
+# だから fetch.py 自体が、毎回 logs/YYYY-MM-DD.jsonl に追記する。
+# 1行が 1イベント。あとで grep / jq で集計できる。
+_HISTORY = []
+_RUN_ID = ""
+_RUN_TS = ""
+
+def _hist(event, city="", city_ja="", slot="", model="", parsed="", error="", extra=None):
+    rec = {
+        "ts": datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).isoformat(),
+        "run_id": _RUN_ID,
+        "version": "v71",
+        "event": event,
+        "city": city,
+        "city_ja": city_ja,
+        "slot": slot,
+        "model": model,
+        "parsed": parsed,
+        "error": (str(error)[:400] if error else ""),
+    }
+    if extra:
+        rec.update(extra)
+    _HISTORY.append(rec)
+    return rec
+
+def _save_history(now_dt):
+    if not _HISTORY:
+        return
+    try:
+        Path("logs").mkdir(exist_ok=True)
+        day = now_dt.strftime("%Y-%m-%d")
+        p = Path(f"logs/{day}.jsonl")
+        with p.open("a", encoding="utf-8") as f:
+            for r in _HISTORY:
+                f.write(json.dumps(r, ensure_ascii=False) + "\n")
+        # ぱっと見用：直近の1回分だけ
+        summary = {
+            "run_id": _RUN_ID,
+            "ts": now_dt.isoformat(),
+            "events": len(_HISTORY),
+            "poem_ok": sum(1 for r in _HISTORY if r["event"] == "poem_ok"),
+            "poem_fail": sum(1 for r in _HISTORY if r["event"] == "poem_fail"),
+            "gemini_try": sum(1 for r in _HISTORY if r["event"] == "gemini_try"),
+            "image_ok": sum(1 for r in _HISTORY if r["event"] == "image" and r.get("image_ok")),
+            "image_fail": sum(1 for r in _HISTORY if r["event"] == "image" and not r.get("image_ok")),
+            "records": _HISTORY,
+        }
+        Path("logs/latest.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"wrote logs/{day}.jsonl lines={len(_HISTORY)} + logs/latest.json")
+    except Exception as e:
+        print(f"history save fail: {e}")
+
 
 # v70：3.6-flash が 4/4 で落ちるので外す（07:40 東京・名古屋で確認）
 # v69：06:38 神戸の JSON パース失敗対応（mime 修正＋生テキスト表示）
@@ -206,17 +265,21 @@ def _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, levels,
             r = requests.post(url, json=payload, timeout=60)
             if r.status_code == 404:
                 print("  gemini " + model + " 404 " + place_name + ": 次へ")
+                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error="404 NotFound")
                 continue
             if r.status_code == 429:
                 print("  gemini " + model + " 429 " + place_name + ": 20秒待って次へ")
+                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error="429 TooManyRequests")
                 time.sleep(20)
                 continue
             if r.status_code == 503:
                 print("  gemini " + model + " 503 " + place_name + ": 5秒待って次へ")
+                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error="503 ServiceUnavailable")
                 time.sleep(5)
                 continue
             if r.status_code != 200:
                 print("  gemini " + model + " status " + str(r.status_code) + ": " + r.text[:300])
+                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error=f"status {r.status_code}")
                 continue
             # v69：06:38 神戸の失敗は、ここ。HTTP は 200 なのに、JSON パースで落ちた
             # 「Expecting value: line 1 column 1 (char 0)」は、空文字か、JSON ではない文字を json.loads したときのエラー
@@ -225,14 +288,17 @@ def _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, levels,
                 _rj = r.json()
             except Exception as e:
                 print(f"  gemini {model} {place_name}: response が JSON ではない {e} head={r.text[:300]!r}")
+                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error=f"response not JSON: {e}")
                 continue
             _cands = _rj.get("candidates", []) or []
             if not _cands:
                 print(f"  gemini {model} {place_name}: candidates が空（安全フィルター等） finish={_rj.get('promptFeedback')} raw={str(_rj)[:400]!r}")
+                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error="candidates empty")
                 continue
             _parts = _cands[0].get("content", {}).get("parts", []) or []
             if not _parts or not _parts[0].get("text"):
                 print(f"  gemini {model} {place_name}: text が空 finishReason={_cands[0].get('finishReason')} raw={str(_cands[0])[:400]!r}")
+                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error="text empty")
                 continue
             text = _parts[0]["text"].strip()
             # v69：```json の囲み・前置きを剥がす。{ から最後の } までを抜く
@@ -248,11 +314,13 @@ def _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, levels,
             else:
                 # { がない = JSON ではない（謝罪文・空文字など）。生テキストを出して、次へ
                 print(f"  gemini {model} {place_name}: JSON なし（{{ がない） raw={text[:500]!r}")
+                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error="no JSON, raw=" + text[:200])
                 continue
             try:
                 j = json.loads(text)
             except Exception as e:
                 print(f"  gemini {model} {place_name}: json.loads 失敗 {e} raw={text[:500]!r}")
+                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error=f"json.loads fail: {e} raw=" + text[:200])
                 continue
             ok = 0
             for poet in ("kyodatsu", "taiyou"):
@@ -260,12 +328,15 @@ def _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, levels,
                     if j.get(poet, {}).get(lv):
                         ok += 1
             print("  gemini ok " + place_name + " model=" + model + " levels=" + lv_str + " parsed=" + str(ok) + "/" + str(len(levels)*2) + " temp=" + str(temp))
+            _hist("gemini_try", city_ja=place_name, model=model, parsed=f"{ok}/{len(levels)*2}", error="" if ok >= len(levels) else "parsed insufficient", extra={"ok": True, "levels": lv_str})
             if ok >= len(levels):
                 return j, model
             else:
                 print(f"  gemini {model} {place_name}: parsed が足りない {ok}/{len(levels)*2} raw={text[:500]!r}")
+                _hist("gemini_try", city_ja=place_name, model=model, parsed=f"{ok}/{len(levels)*2}", error="parsed insufficient")
         except Exception as e:
             print("  gemini fail " + place_name + " model=" + model + " levels=" + lv_str + ": " + str(e))
+            _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error=str(e))
             continue
     return None, "fail"
 
@@ -421,10 +492,14 @@ def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"
     return fallback_poems(place_name, lat, lon), "fallback-all-fail"
 
 def main():
+    global _RUN_ID, _RUN_TS
     now_dt = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+    _RUN_ID = now_dt.strftime("%Y%m%d-%H%M%S")
+    _RUN_TS = now_dt.isoformat()
     now = now_dt.isoformat()
     hour = now_dt.hour
     print(f"now JST {now} hour={hour} FORCE_POEM={os.environ.get('FORCE_POEM')}")
+    _hist("run_start", slot="", extra={"hour": hour, "force_poem": os.environ.get("FORCE_POEM",""), "force_slot": os.environ.get("FORCE_SLOT",""), "force_city": os.environ.get("FORCE_CITY",""), "force_senjin": os.environ.get("FORCE_SENJIN","")})
     old = {}
     if Path("data.json").exists():
         try:
@@ -463,6 +538,7 @@ def main():
         out = f"images/{key}.jpg"
         existing = old_locs.get(key, {})
         ok, status = fetch_weathernews(loc["weathernews_id"], out, loc["page_url"])
+        _hist("image", city=key, city_ja=name, slot=(sched["slot"] if sched else ""), extra={"image_ok": bool(ok), "status": status, "image_path": out})
         do_gen = False
         slot = None
         _skip_reason = ""
@@ -482,6 +558,7 @@ def main():
                 _skip_reason = f"key={key} は今の targets={sched.get('targets')} にない → 生成しません"
         if not do_gen:
             print(f"{key}: SKIP {_skip_reason}")
+            _hist("skip", city=key, city_ja=name, slot=(sched["slot"] if sched else ""), extra={"reason": _skip_reason})
         # 既存の詩に禁止ワードが入ってたら、FORCE なしでも作り直す（自己修復）
         if not do_gen and existing.get("poems") and existing.get("poem_slot") in ("morning", "noon", "evening"):
             _ban2 = {"morning": ["夕暮れ","夕方","夕日","黄昏","夕焼け"], "noon": ["夕暮れ","夕方","夕日","黄昏"], "evening": ["朝日","夜明け"]}.get(existing.get("poem_slot"), [])
@@ -520,6 +597,7 @@ def main():
             if model.startswith("fallback") and existing.get("poems"):
                 poems, model = existing["poems"], "cached-keep"
                 print(f"{key}: gemini fail -> cached-keep, poem_date は更新しない（次の時間に再試行）")
+                _hist("poem_fail", city=key, city_ja=name, slot=slot or "", model=model, error="gemini fail -> cached-keep")
                 # ここがバグだった：fallback なのに poem_date を今日にすると、
                 # 7,8,9,10時が「もう作った」と思って、ずっと再試行しなくなる
                 poem_date = existing.get("poem_date", "")
@@ -553,6 +631,8 @@ def main():
             time.sleep(10)
     Path("data.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"wrote data.json updated_at={now} locations={len(data['locations'])}")
+    _hist("run_end", extra={"locations": len(data["locations"])})
+    _save_history(now_dt)
 
 if __name__ == "__main__":
     main()
