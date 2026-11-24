@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-25T02:26:15.283154+09:00",
+  "updated_at": "2026-11-25T03:20:28.300630+09:00",
   "locations": {
     "kobe": {
       "image": "images/kobe.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T02:26:15.283154+09:00",
+      "updated_at": "2026-11-25T03:20:28.300630+09:00",
       "status": "ok",
       "poem_date": "2026-11-24",
       "poem_slot": "evening",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T02:26:15.283154+09:00",
+      "updated_at": "2026-11-25T03:20:28.300630+09:00",
       "status": "ok",
       "poem_date": "2026-11-24",
       "poem_slot": "evening",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T02:26:15.283154+09:00",
+      "updated_at": "2026-11-25T03:20:28.300630+09:00",
       "status": "ok",
       "poem_date": "2026-11-24",
       "poem_slot": "noon",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T02:26:15.283154+09:00",
+      "updated_at": "2026-11-25T03:20:28.300630+09:00",
       "status": "ok",
       "poem_date": "2026-11-24",
       "poem_slot": "evening",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T02:26:15.283154+09:00",
+      "updated_at": "2026-11-25T03:20:28.300630+09:00",
       "status": "ok",
       "poem_date": "2026-11-24",
       "poem_slot": "noon",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T02:26:15.283154+09:00",
+      "updated_at": "2026-11-25T03:20:28.300630+09:00",
       "status": "ok",
       "poem_date": "2026-11-24",
       "poem_slot": "morning",
@@ -157,7 +157,7 @@
       },
       "model": "cached",
       "updated_at": "2026-11-25T02:26:15.283154+09:00",
-      "status": "ok",
+      "status": "keep-old",
       "poem_date": "2026-11-24",
       "poem_slot": "noon",
       "page_url": "https://weathernews.jp/onebox/livecam/chugoku/hiroshima/7CDDE908C8DC/"
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T02:26:15.283154+09:00",
+      "updated_at": "2026-11-25T03:20:28.300630+09:00",
       "status": "ok",
       "poem_date": "2026-11-24",
       "poem_slot": "morning",
@@ -202,7 +202,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T02:26:15.283154+09:00",
+      "updated_at": "2026-11-25T03:20:28.300630+09:00",
       "status": "ok",
       "poem_date": "2026-11-24",
       "poem_slot": "noon",
