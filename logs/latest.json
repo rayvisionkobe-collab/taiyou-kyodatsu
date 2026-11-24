@@ -1,6 +1,6 @@
 {
-  "run_id": "20261124-225214",
-  "ts": "2026-11-24T22:52:14.326053+09:00",
+  "run_id": "20261125-010200",
+  "ts": "2026-11-25T01:02:00.086990+09:00",
   "events": 20,
   "poem_ok": 0,
   "poem_fail": 0,
@@ -9,9 +9,9 @@
   "image_fail": 0,
   "records": [
     {
-      "ts": "2026-11-24T22:52:14.326093+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:00.087039+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "run_start",
       "city": "",
       "city_ja": "",
@@ -19,16 +19,16 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "hour": 22,
+      "hour": 1,
       "force_poem": "",
       "force_slot": "",
       "force_city": "",
       "force_senjin": ""
     },
     {
-      "ts": "2026-11-24T22:52:16.163224+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:02.062481+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "image",
       "city": "kobe",
       "city_ja": "神戸",
@@ -41,9 +41,9 @@
       "image_path": "images/kobe.jpg"
     },
     {
-      "ts": "2026-11-24T22:52:16.163253+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:02.062506+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "skip",
       "city": "kobe",
       "city_ja": "神戸",
@@ -51,12 +51,12 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "hour=22 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
+      "reason": "hour=1 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
     },
     {
-      "ts": "2026-11-24T22:52:17.835265+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:03.702533+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "image",
       "city": "osaka",
       "city_ja": "大阪",
@@ -69,9 +69,9 @@
       "image_path": "images/osaka.jpg"
     },
     {
-      "ts": "2026-11-24T22:52:17.835294+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:03.702559+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "skip",
       "city": "osaka",
       "city_ja": "大阪",
@@ -79,12 +79,12 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "hour=22 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
+      "reason": "hour=1 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
     },
     {
-      "ts": "2026-11-24T22:52:18.704885+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:05.355879+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "image",
       "city": "sapporo",
       "city_ja": "札幌",
@@ -97,9 +97,9 @@
       "image_path": "images/sapporo.jpg"
     },
     {
-      "ts": "2026-11-24T22:52:18.704914+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:05.355908+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "skip",
       "city": "sapporo",
       "city_ja": "札幌",
@@ -107,12 +107,12 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "hour=22 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
+      "reason": "hour=1 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
     },
     {
-      "ts": "2026-11-24T22:52:20.298186+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:06.929978+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "image",
       "city": "tokyo",
       "city_ja": "東京",
@@ -125,9 +125,9 @@
       "image_path": "images/tokyo.jpg"
     },
     {
-      "ts": "2026-11-24T22:52:20.298217+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:06.930001+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "skip",
       "city": "tokyo",
       "city_ja": "東京",
@@ -135,12 +135,12 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "hour=22 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
+      "reason": "hour=1 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
     },
     {
-      "ts": "2026-11-24T22:52:21.943561+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:08.578625+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "image",
       "city": "sendai",
       "city_ja": "仙台",
@@ -153,9 +153,9 @@
       "image_path": "images/sendai.jpg"
     },
     {
-      "ts": "2026-11-24T22:52:21.943588+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:08.578649+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "skip",
       "city": "sendai",
       "city_ja": "仙台",
@@ -163,12 +163,12 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "hour=22 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
+      "reason": "hour=1 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
     },
     {
-      "ts": "2026-11-24T22:52:23.842734+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:10.240629+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "image",
       "city": "nagoya",
       "city_ja": "名古屋",
@@ -181,9 +181,9 @@
       "image_path": "images/nagoya.jpg"
     },
     {
-      "ts": "2026-11-24T22:52:23.842764+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:10.240655+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "skip",
       "city": "nagoya",
       "city_ja": "名古屋",
@@ -191,12 +191,12 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "hour=22 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
+      "reason": "hour=1 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
     },
     {
-      "ts": "2026-11-24T22:52:25.302967+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:11.916501+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "image",
       "city": "hiroshima",
       "city_ja": "広島",
@@ -209,9 +209,9 @@
       "image_path": "images/hiroshima.jpg"
     },
     {
-      "ts": "2026-11-24T22:52:25.302995+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:11.916527+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "skip",
       "city": "hiroshima",
       "city_ja": "広島",
@@ -219,12 +219,12 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "hour=22 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
+      "reason": "hour=1 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
     },
     {
-      "ts": "2026-11-24T22:52:26.160368+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:13.820607+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "image",
       "city": "fukuoka",
       "city_ja": "福岡",
@@ -237,9 +237,9 @@
       "image_path": "images/fukuoka.jpg"
     },
     {
-      "ts": "2026-11-24T22:52:26.160392+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:13.820633+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "skip",
       "city": "fukuoka",
       "city_ja": "福岡",
@@ -247,12 +247,12 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "hour=22 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
+      "reason": "hour=1 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
     },
     {
-      "ts": "2026-11-24T22:52:27.157260+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:15.512074+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "image",
       "city": "naha",
       "city_ja": "那覇",
@@ -265,9 +265,9 @@
       "image_path": "images/naha.jpg"
     },
     {
-      "ts": "2026-11-24T22:52:27.157291+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:15.512099+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "skip",
       "city": "naha",
       "city_ja": "那覇",
@@ -275,12 +275,12 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "hour=22 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
+      "reason": "hour=1 は POEM_SCHEDULE にない → 生成しません（これが今までの根本原因）"
     },
     {
-      "ts": "2026-11-24T22:52:27.157672+09:00",
-      "run_id": "20261124-225214",
-      "version": "v71",
+      "ts": "2026-11-25T01:02:15.512446+09:00",
+      "run_id": "20261125-010200",
+      "version": "v72",
       "event": "run_end",
       "city": "",
       "city_ja": "",
