@@ -1,11 +1,16 @@
 # ============================================================
- # fetch.py v71 - Weathernews版（YouTube版ではありません）
-# 実行したら最初に「Weathernews版 v71」と出ます。出なければ、古い fetch.py です
+ # fetch.py v72 - Weathernews版（YouTube版ではありません）
+# 実行したら最初に「Weathernews版 v72」と出ます。出なければ、古い fetch.py です
 # - 画像は毎回取りに行く。詩だけ、POEM_SCHEDULE の時間に作る
 # - v71：履歴ログを自動で残す。毎回 logs/YYYY-MM-DD.jsonl に 1行ずつ追記して、
 #   update.yml が logs/ もコミットする。Actions のログを手でコピーしなくてよくなる
 #   1行 = 1イベント（image / skip / gemini_try / poem_ok / poem_fail / run_end）
 #   logs/latest.json には直近の1回分だけ入る（ぱっと見用）
+# - v72：v71 の2つのバグを直す
+#   (1) poem_ok が記録されなかった（置き換えが効いていなかった）→ 20:23 東京・20:26 神戸・21:29 大阪が
+#       gemini_try ok なのに poem_ok なしに見えた。生成自体は成功していた（次回で already evening -> keep になった）
+#   (2) 大阪 19:03 の「no JSON」は、実は途中で切れた JSON（閉じ } なし）だった。MAX_TOKENS 疑い。
+#       900 -> 1200 に増やして、切れた場合は truncated として finishReason と長めの raw を残す
 # - 画像が取れなかった場所は、updated_at を古いままにする（新しいように見せない）
 # - 東京は、元カメラ自体が 11/18 04:56 で止まっている（Weathernews側）
 #   → その場合は、直接URLでも取れないので、赤いままが正しい
@@ -15,7 +20,7 @@
 import os, json, time, base64, datetime, requests, re
 from pathlib import Path
 
-print("Weathernews版 v71")
+print("Weathernews版 v72")
 
 Path("images").mkdir(exist_ok=True)
 Path("logs").mkdir(exist_ok=True)
@@ -32,14 +37,14 @@ def _hist(event, city="", city_ja="", slot="", model="", parsed="", error="", ex
     rec = {
         "ts": datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).isoformat(),
         "run_id": _RUN_ID,
-        "version": "v71",
+        "version": "v72",
         "event": event,
         "city": city,
         "city_ja": city_ja,
         "slot": slot,
         "model": model,
         "parsed": parsed,
-        "error": (str(error)[:400] if error else ""),
+        "error": (str(error)[:1000] if error else ""),
     }
     if extra:
         rec.update(extra)
@@ -308,19 +313,28 @@ def _call_gemini_for_levels(api_key, b64, place_name, slot_ja, slot_ban, levels,
                 text = re.sub(r"^```[a-zA-Z]*\s*", "", text)
                 text = re.sub(r"\s*```\s*$", "", text)
                 text = text.strip()
+            # v72：大阪 19:03 の失敗は、ここ。raw は {"kyodatsu": ... で始まっていたのに
+            # 「no JSON」になった。原因は、閉じ } がない＝途中で切れた JSON（MAX_TOKENS）
+            # re.search(r'\{.*\}') は閉じ } がないと None になるので、区別する
+            _finish = _cands[0].get("finishReason", "")
             m = re.search(r'\{.*\}', text, re.S)
             if m:
                 text = m.group(0)
+            elif text.strip().startswith("{"):
+                # { で始まるのに閉じ } がない＝出力が途中で切れた（トークン不足）
+                print(f"  gemini {model} {place_name}: JSON が途中で切れた finishReason={_finish} len={len(text)} raw={text[:800]!r}")
+                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error=f"truncated JSON finishReason={_finish} len={len(text)} raw=" + text[:800], extra={"finishReason": _finish, "raw_len": len(text)})
+                continue
             else:
                 # { がない = JSON ではない（謝罪文・空文字など）。生テキストを出して、次へ
-                print(f"  gemini {model} {place_name}: JSON なし（{{ がない） raw={text[:500]!r}")
-                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error="no JSON, raw=" + text[:200])
+                print(f"  gemini {model} {place_name}: JSON なし（{{ がない） finishReason={_finish} raw={text[:500]!r}")
+                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error=f"no JSON finishReason={_finish} raw=" + text[:800])
                 continue
             try:
                 j = json.loads(text)
             except Exception as e:
                 print(f"  gemini {model} {place_name}: json.loads 失敗 {e} raw={text[:500]!r}")
-                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error=f"json.loads fail: {e} raw=" + text[:200])
+                _hist("gemini_try", city_ja=place_name, model=model, parsed=0, error=f"json.loads fail: {e} raw=" + text[:800], extra={"finishReason": _cands[0].get("finishReason","")})
                 continue
             ok = 0
             for poet in ("kyodatsu", "taiyou"):
@@ -391,7 +405,7 @@ def generate_poems(image_path, place_name, lat, lon, loc_index=0, slot="morning"
     slot_ban_tmp = {"morning": "夕暮れ・夕方・夕日・黄昏・宵・日暮れ・夕焼けなどの夕方の言葉は、絶対に使わない", "noon": "夕暮れ・夕方・夕日・黄昏・朝日・朝霧・夜明けなどの朝夕の言葉は、絶対に使わない", "evening": "朝日・朝霧・夜明け・朝の光などの朝の言葉は、絶対に使わない"}.get(slot, "")
     _mime = _detect_mime(Path(image_path).read_bytes() if Path(image_path).exists() else b"")
     print(f"  gemini mime={_mime} {place_name} image={image_path}")
-    _j, _model = _call_gemini_for_levels(api_key, b64, place_name, slot_ja_tmp, slot_ban_tmp, ["0", "1", "2"], _m, 0.7, 900, mime_type=_mime)
+    _j, _model = _call_gemini_for_levels(api_key, b64, place_name, slot_ja_tmp, slot_ban_tmp, ["0", "1", "2"], _m, 0.7, 1200, mime_type=_mime)
     if _j is None:
         return fallback_poems(place_name, lat, lon), "fallback-all-fail"
     _merged = {"kyodatsu": {}, "taiyou": {}}
@@ -626,6 +640,10 @@ def main():
             "page_url": loc["page_url"],
         }
         print(f"{key}: image_ok={ok} status={data['locations'][key]['status']} poem slot={poem_slot} model={model}")
+        if do_gen and not model.startswith("cached-keep") and not model.startswith("fallback"):
+            _hist("poem_ok", city=key, city_ja=name, slot=poem_slot, model=model, extra={"image_ok": bool(ok), "status": data["locations"][key]["status"]})
+        elif do_gen and model.startswith("fallback"):
+            _hist("poem_fail", city=key, city_ja=name, slot=poem_slot, model=model, error="fallback (no existing poems)")
         # v67：都市ごとに 10秒待つ（v51 にあった 429回避を復活）。一気に叩くと 503 が増える
         if do_gen:
             time.sleep(10)
