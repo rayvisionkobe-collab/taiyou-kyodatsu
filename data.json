@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-25T10:01:48.112664+09:00",
+  "updated_at": "2026-11-25T11:36:34.725111+09:00",
   "locations": {
     "kobe": {
       "image": "images/kobe.jpg",
@@ -17,8 +17,8 @@
           "3": "みんな、おはよう。あんなにも高い朝の天心から、美しい光の矢がまっすぐに射し込み、ちぎれた灰色の雲のひとひらひとひらが、讃美歌のようにきらきらと透明な朝露をふるっているよ。冷たい風がわたしたちの頬をぴんと引き締め、港の見える坂道を、みんな一緒にもいちど元気に出発しようではないか。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-25T10:01:48.112664+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-25T11:36:34.725111+09:00",
       "status": "ok",
       "poem_date": "2026-11-25",
       "poem_slot": "morning",
@@ -40,8 +40,8 @@
           "3": "朝の透き通った光が幾千もの窓に反射し、ビル群はまるで水晶の森のように輝いている。頭上の広く高い空はすっきりと晴れわたり、きりりと冷たい風が、大地を踏みしめて歩き出すすべての命の足音を、どこまでも爽やかに運んでいくのだ。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-25T10:01:48.112664+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-25T11:36:34.725111+09:00",
       "status": "ok",
       "poem_date": "2026-11-25",
       "poem_slot": "morning",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T10:01:48.112664+09:00",
+      "updated_at": "2026-11-25T11:36:34.725111+09:00",
       "status": "ok",
       "poem_date": "2026-11-24",
       "poem_slot": "noon",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T10:01:48.112664+09:00",
+      "updated_at": "2026-11-25T11:36:34.725111+09:00",
       "status": "ok",
       "poem_date": "2026-11-25",
       "poem_slot": "morning",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T10:01:48.112664+09:00",
+      "updated_at": "2026-11-25T11:36:34.725111+09:00",
       "status": "ok",
       "poem_date": "2026-11-24",
       "poem_slot": "noon",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T10:01:48.112664+09:00",
+      "updated_at": "2026-11-25T11:36:34.725111+09:00",
       "status": "ok",
       "poem_date": "2026-11-25",
       "poem_slot": "morning",
@@ -156,8 +156,8 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T07:53:28.165759+09:00",
-      "status": "keep-old",
+      "updated_at": "2026-11-25T11:36:34.725111+09:00",
+      "status": "ok",
       "poem_date": "2026-11-24",
       "poem_slot": "noon",
       "page_url": "https://weathernews.jp/onebox/livecam/chugoku/hiroshima/7CDDE908C8DC/"
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T10:01:48.112664+09:00",
+      "updated_at": "2026-11-25T11:36:34.725111+09:00",
       "status": "ok",
       "poem_date": "2026-11-25",
       "poem_slot": "morning",
@@ -202,7 +202,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-25T10:01:48.112664+09:00",
+      "updated_at": "2026-11-25T11:36:34.725111+09:00",
       "status": "ok",
       "poem_date": "2026-11-24",
       "poem_slot": "noon",
