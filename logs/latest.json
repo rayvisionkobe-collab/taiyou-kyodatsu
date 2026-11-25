@@ -1,16 +1,16 @@
 {
-  "run_id": "20261125-084553",
-  "ts": "2026-11-25T08:45:53.208704+09:00",
-  "events": 21,
-  "poem_ok": 1,
+  "run_id": "20261125-100148",
+  "ts": "2026-11-25T10:01:48.112664+09:00",
+  "events": 22,
+  "poem_ok": 2,
   "poem_fail": 0,
-  "gemini_try": 1,
+  "gemini_try": 2,
   "image_ok": 8,
   "image_fail": 1,
   "records": [
     {
-      "ts": "2026-11-25T08:45:53.208748+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:01:48.112706+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "run_start",
       "city": "",
@@ -19,15 +19,15 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "hour": 8,
+      "hour": 10,
       "force_poem": "",
       "force_slot": "",
       "force_city": "",
       "force_senjin": ""
     },
     {
-      "ts": "2026-11-25T08:45:55.128166+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:01:49.955617+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "image",
       "city": "kobe",
@@ -41,21 +41,36 @@
       "image_path": "images/kobe.jpg"
     },
     {
-      "ts": "2026-11-25T08:45:55.128199+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:01:52.439190+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
-      "event": "skip",
+      "event": "gemini_try",
+      "city": "",
+      "city_ja": "神戸",
+      "slot": "",
+      "model": "gemini-3.5-flash-lite",
+      "parsed": "6/6",
+      "error": "",
+      "ok": true,
+      "levels": "0、1、2"
+    },
+    {
+      "ts": "2026-11-25T10:01:52.440314+09:00",
+      "run_id": "20261125-100148",
+      "version": "v72",
+      "event": "poem_ok",
       "city": "kobe",
       "city_ja": "神戸",
       "slot": "morning",
-      "model": "",
+      "model": "gemini-3.5-flash-lite",
       "parsed": "",
       "error": "",
-      "reason": "key=kobe は今の targets=['fukuoka'] にない → 生成しません"
+      "image_ok": true,
+      "status": "ok"
     },
     {
-      "ts": "2026-11-25T08:45:56.905540+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:04.192494+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "image",
       "city": "osaka",
@@ -69,21 +84,36 @@
       "image_path": "images/osaka.jpg"
     },
     {
-      "ts": "2026-11-25T08:45:56.905567+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:06.077609+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
-      "event": "skip",
+      "event": "gemini_try",
+      "city": "",
+      "city_ja": "大阪",
+      "slot": "",
+      "model": "gemini-3.5-flash-lite",
+      "parsed": "6/6",
+      "error": "",
+      "ok": true,
+      "levels": "0、1、2"
+    },
+    {
+      "ts": "2026-11-25T10:02:06.078425+09:00",
+      "run_id": "20261125-100148",
+      "version": "v72",
+      "event": "poem_ok",
       "city": "osaka",
       "city_ja": "大阪",
       "slot": "morning",
-      "model": "",
+      "model": "gemini-3.5-flash-lite",
       "parsed": "",
       "error": "",
-      "reason": "key=osaka は今の targets=['fukuoka'] にない → 生成しません"
+      "image_ok": true,
+      "status": "ok"
     },
     {
-      "ts": "2026-11-25T08:45:58.488049+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:17.669400+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "image",
       "city": "sapporo",
@@ -97,8 +127,8 @@
       "image_path": "images/sapporo.jpg"
     },
     {
-      "ts": "2026-11-25T08:45:58.488075+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:17.669438+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "skip",
       "city": "sapporo",
@@ -107,11 +137,11 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "key=sapporo は今の targets=['fukuoka'] にない → 生成しません"
+      "reason": "key=sapporo は今の targets=['kobe', 'osaka', 'tokyo', 'nagoya', 'fukuoka'] にない → 生成しません"
     },
     {
-      "ts": "2026-11-25T08:46:00.126074+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:19.280826+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "image",
       "city": "tokyo",
@@ -125,8 +155,8 @@
       "image_path": "images/tokyo.jpg"
     },
     {
-      "ts": "2026-11-25T08:46:00.126102+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:19.280857+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "skip",
       "city": "tokyo",
@@ -135,11 +165,11 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "key=tokyo は今の targets=['fukuoka'] にない → 生成しません"
+      "reason": "poem already 2026-11-25 morning -> keep（生成しません）"
     },
     {
-      "ts": "2026-11-25T08:46:01.835744+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:20.213253+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "image",
       "city": "sendai",
@@ -153,8 +183,8 @@
       "image_path": "images/sendai.jpg"
     },
     {
-      "ts": "2026-11-25T08:46:01.835772+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:20.213290+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "skip",
       "city": "sendai",
@@ -163,11 +193,11 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "key=sendai は今の targets=['fukuoka'] にない → 生成しません"
+      "reason": "key=sendai は今の targets=['kobe', 'osaka', 'tokyo', 'nagoya', 'fukuoka'] にない → 生成しません"
     },
     {
-      "ts": "2026-11-25T08:46:03.361401+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:21.680796+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "image",
       "city": "nagoya",
@@ -181,8 +211,8 @@
       "image_path": "images/nagoya.jpg"
     },
     {
-      "ts": "2026-11-25T08:46:03.361428+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:21.680825+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "skip",
       "city": "nagoya",
@@ -191,11 +221,11 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "key=nagoya は今の targets=['fukuoka'] にない → 生成しません"
+      "reason": "poem already 2026-11-25 morning -> keep（生成しません）"
     },
     {
-      "ts": "2026-11-25T08:46:18.318073+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:36.624655+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "image",
       "city": "hiroshima",
@@ -209,8 +239,8 @@
       "image_path": "images/hiroshima.jpg"
     },
     {
-      "ts": "2026-11-25T08:46:18.318101+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:36.624682+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "skip",
       "city": "hiroshima",
@@ -219,11 +249,11 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "key=hiroshima は今の targets=['fukuoka'] にない → 生成しません"
+      "reason": "key=hiroshima は今の targets=['kobe', 'osaka', 'tokyo', 'nagoya', 'fukuoka'] にない → 生成しません"
     },
     {
-      "ts": "2026-11-25T08:46:20.147624+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:38.254051+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "image",
       "city": "fukuoka",
@@ -237,36 +267,21 @@
       "image_path": "images/fukuoka.jpg"
     },
     {
-      "ts": "2026-11-25T08:46:22.167117+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:38.254079+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
-      "event": "gemini_try",
-      "city": "",
-      "city_ja": "福岡",
-      "slot": "",
-      "model": "gemini-3.5-flash-lite",
-      "parsed": "6/6",
-      "error": "",
-      "ok": true,
-      "levels": "0、1、2"
-    },
-    {
-      "ts": "2026-11-25T08:46:22.167935+09:00",
-      "run_id": "20261125-084553",
-      "version": "v72",
-      "event": "poem_ok",
+      "event": "skip",
       "city": "fukuoka",
       "city_ja": "福岡",
       "slot": "morning",
-      "model": "gemini-3.5-flash-lite",
+      "model": "",
       "parsed": "",
       "error": "",
-      "image_ok": true,
-      "status": "ok"
+      "reason": "poem already 2026-11-25 morning -> keep（生成しません）"
     },
     {
-      "ts": "2026-11-25T08:46:33.678603+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:39.800005+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "image",
       "city": "naha",
@@ -280,8 +295,8 @@
       "image_path": "images/naha.jpg"
     },
     {
-      "ts": "2026-11-25T08:46:33.678629+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:39.800033+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "skip",
       "city": "naha",
@@ -290,11 +305,11 @@
       "model": "",
       "parsed": "",
       "error": "",
-      "reason": "key=naha は今の targets=['fukuoka'] にない → 生成しません"
+      "reason": "key=naha は今の targets=['kobe', 'osaka', 'tokyo', 'nagoya', 'fukuoka'] にない → 生成しません"
     },
     {
-      "ts": "2026-11-25T08:46:33.679146+09:00",
-      "run_id": "20261125-084553",
+      "ts": "2026-11-25T10:02:39.800547+09:00",
+      "run_id": "20261125-100148",
       "version": "v72",
       "event": "run_end",
       "city": "",
