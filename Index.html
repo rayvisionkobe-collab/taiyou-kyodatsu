@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>太陽の涙、虚脱の空</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1c1917">
+<link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Zen+Old+Mincho:wght@400;500&family=Shippori+Mincho+B1:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1c1917;--card:#231e1b;--text:#f5f1e8;--muted:#a8a29e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:"Zen Old Mincho",serif}
+header{height:38px;background:rgba(28,25,23,0.9);display:flex;align-items:center;justify-content:space-between;padding:0 12px;position:sticky;top:0;z-index:10;backdrop-filter:blur(8px)}
+header h1{font-family:"Shippori Mincho B1",serif;font-size:14px;letter-spacing:0.08em;margin:0}
+.device{display:flex;gap:6px} .device button{font-size:11px;padding:4px 8px;border:1px solid #444;background:transparent;color:var(--text);border-radius:12px}
+.device button.active{background:var(--text);color:var(--bg)}
+.hero{width:100%;background:#0a0a0a;display:flex;justify-content:center;align-items:center;overflow:hidden}
+.hero img{width:100%;height:auto;max-height:85vh;object-fit:contain;object-position:center}
+@media(max-width:430px){.hero img{aspect-ratio:4/3;}}
+.poem-wrap{max-width:768px;margin:0 auto;padding:24px 16px;background:rgba(28,25,23,0.78);backdrop-filter:blur(12px)}
+.poem-card{padding:28px 20px;text-align:center}
+.poem-main{font-family:"Yuji Syuku",cursive;font-size:26px;line-height:1.6;letter-spacing:0.04em;white-space:pre-wrap}
+.poem-sub{margin-top:12px;font-size:13px;color:var(--muted);font-family:"Shippori Mincho B1",serif}
+.practical{margin-top:16px;padding:10px 14px;background:#1e1e1e;border-radius:8px;color:var(--text);font-size:13px;line-height:1.5}
+.controls{margin-top:20px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.select{width:100%;padding:10px;background:#111;color:var(--text);border:1px solid #333;border-radius:8px;font-size:13px}
+.toggle{display:flex;background:#111;border-radius:20px;padding:3px}
+.toggle button{flex:1;padding:6px 12px;border-radius:16px;border:none;background:transparent;color:var(--muted);font-size:13px}
+.toggle button.active{background:var(--text);color:var(--bg)}
+.slider{width:100%}
+.labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
+.real{max-width:768px;margin:0 auto;padding:16px}
+.diag{max-width:768px;margin:0 auto;padding:0 16px 16px}
+.diag-box{background:rgba(28,25,23,0.78);backdrop-filter:blur(12px);border-radius:12px;padding:20px 16px}
+.diag-box h2{font-family:"Shippori Mincho B1",serif;font-size:15px;letter-spacing:0.08em;margin:0 0 6px}
+.diag-lead{font-size:13px;line-height:1.6;color:var(--muted);margin:0 0 14px;text-align:left}
+.diag-options{display:grid;gap:8px}
+.diag-option{display:flex;gap:10px;align-items:flex-start;text-align:left;padding:12px;border:1px solid #444;border-radius:10px;cursor:pointer;background:#111}
+.diag-option input{margin-top:4px;accent-color:var(--text)}
+.diag-option b{font-size:14px;display:block}
+.diag-option span{font-size:12px;color:var(--muted);line-height:1.5;display:block;margin-top:2px}
+.diag-option.selected{border-color:var(--text);background:#2a2623}
+.diag-btn{width:100%;margin-top:14px;padding:11px;border-radius:20px;border:none;background:var(--text);color:var(--bg);font-size:14px;font-family:"Zen Old Mincho",serif;cursor:pointer}
+.diag-btn:disabled{background:#444;color:#888;cursor:default}
+.diag-result{margin-top:14px;padding:16px;background:#231e1b;border-radius:12px;text-align:left}
+.diag-result-type{font-family:"Yuji Syuku",cursive;font-size:22px;line-height:1.5}
+.diag-result h3{font-size:13px;margin:16px 0 6px;color:var(--text)}
+.diag-result p{font-size:13px;line-height:1.8;margin:0;color:var(--text)}
+.diag-result ul{margin:0;padding-left:18px;font-size:13px;line-height:1.8}
+.diag-close{width:100%;margin-top:16px;padding:11px;border-radius:20px;border:1px solid var(--text);background:transparent;color:var(--text);font-size:14px;font-family:"Zen Old Mincho",serif;cursor:pointer}
+.diag-confirmed{margin-top:14px;padding:12px 14px;border:1px solid #444;border-radius:10px;font-size:13px;line-height:1.6;text-align:left;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.diag-confirmed button{flex-shrink:0;background:transparent;border:none;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer}
+.real-card{aspect-ratio:16/9;background:linear-gradient(180deg,#2a3a5a,#1c1917);border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+<h1>太陽の涙、虚脱の空</h1>
+<div class="device"><button id="sp" class="active">スマホ</button><button id="tab">タブレット</button></div>
+</header>
+
+<div class="hero"><img src="/hero.jpg" alt="hero"></div>
+
+<div class="poem-wrap" id="poemWrap">
+  <div class="poem-card">
+    <div class="poem-main" id="poemMain">汚れっちまった悲しみに、小雪が降る。</div>
+    <div class="poem-sub" id="poemSub">虚脱の空 / 仙人級 / 舞子ビラ</div>
+  </div>
+
+  <div class="controls">
+    <select id="placeSelect" class="select"></select>
+    <div class="practical" id="practical">晴 21℃/12℃ 降水30% 南西3m 神戸・舞子ビラ</div>
+    <div class="toggle" id="poetToggle">
+      <button data-poet="kyodatsu" class="active">虚脱の空</button>
+      <button data-poet="taiyou">太陽の涙</button>
+    </div>
+    <div>
+      <input type="range" id="level" min="0" max="3" step="1" value="3" class="slider">
+      <div class="labels"><span>からっと</span><span>ほどよく</span><span>こいめ</span><span>仙人級</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="diag" id="diag">
+  <div class="diag-box">
+    <h2>詩人診断</h2>
+    <p class="diag-lead">今日の気分に一番近いものをひとつ選んでください。名前ではなく、詩人としての向き合い方のタイプで診断します。</p>
+    <div class="diag-options" id="diagOptions">
+      <label class="diag-option"><input type="radio" name="poetType" value="sora"><span><b>空を見つめる詩人</b><span>空の広がりに心を預けて、静かに眺めていたい</span></span></label>
+      <label class="diag-option"><input type="radio" name="poetType" value="hikari"><span><b>光を追う詩人</b><span>光の粒や影の動きに、つい目がいってしまう</span></span></label>
+      <label class="diag-option"><input type="radio" name="poetType" value="kaze"><span><b>風の気配を読む詩人</b><span>風の匂いや音の変わり目に、季節を感じ取る</span></span></label>
+      <label class="diag-option"><input type="radio" name="poetType" value="ame"><span><b>雨の余韻に寄り添う詩人</b><span>雨上がりの静けさや、濡れたものの気配に惹かれる</span></span></label>
+    </div>
+    <button id="diagShow" class="diag-btn" disabled>診断結果を見る</button>
+    <div id="diagResult" class="diag-result" hidden>
+      <div class="diag-result-type" id="diagResultType"></div>
+      <h3>詩人としての性格</h3>
+      <p id="diagResultPersonality"></p>
+      <h3>このタイプの詩の鑑賞ポイント</h3>
+      <ul id="diagResultPoints"></ul>
+      <button id="diagClose" class="diag-close">閉じる・このタイプに決定</button>
+    </div>
+    <div id="diagConfirmed" class="diag-confirmed" hidden>
+      <span id="diagConfirmedText"></span>
+      <button id="diagRedo" type="button">選び直す</button>
+    </div>
+  </div>
+</div>
+
+<div class="real">
+  <div class="real-card" id="realCard">実写静止画（プロトタイプはグラデーション）<br><span id="time"></span></div>
+</div>
+
+<footer>© rayvisionkobe-collab / PWA template v1 / 背景は生成り #1c1917 温墨</footer>
+
+<script>
+let cfg=null;
+async function loadConfig(){
+  const r=await fetch('/config.json'); cfg=await r.json();
+  const sel=document.getElementById('placeSelect');
+  cfg.locations.forEach(l=>{
+    const o=document.createElement('option'); o.value=l.id; o.textContent=l.name; sel.appendChild(o);
+  });
+  updatePoem();
+}
+function getPoem(poet,level,place){
+  const base={
+    kyodatsu:[
+      "今日は歩けそうな空です。",
+      "雲が橋を渡ろうとしています。",
+      "汚れっちまった悲しみに、風が触れる。",
+      "汚れっちまった悲しみに、今日も小雪の降りかかる、虚脱の空でした。どこへも行けず、空だけが遠くへ行ってしまうような、仙人級の午後。"
+    ],
+    taiyou:[
+      "光が砕けて、道に落ちています。",
+      "海の向こうで、風が渡ろうとしています。",
+      "空が少し傾いて、3°、光をこぼした。",
+      "光の粒子が霧を照らし、樹々は朝日を浴びて輝く。今日の空は、すべての存在を光に包むような、太陽の涙の仙人級でした。"
+    ]
+  };
+  return base[poet][level]||base[poet][1];
+}
+function updatePoem(){
+  const poet=document.querySelector('#poetToggle button.active').dataset.poet;
+  const level=parseInt(document.getElementById('level').value);
+  const place=document.getElementById('placeSelect').value;
+  const placeName=document.getElementById('placeSelect').selectedOptions[0]?.textContent||'舞子ビラ';
+  const levels=["からっと","ほどよく","こいめ","仙人級"];
+  document.getElementById('poemMain').textContent=getPoem(poet,level,place);
+  document.getElementById('poemSub').textContent=`${poet==='kyodatsu'?'虚脱の空':'太陽の涙'} / ${levels[level]} / ${placeName}`;
+  document.getElementById('time').textContent=new Date().toLocaleString('ja-JP');
+}
+document.getElementById('placeSelect').addEventListener('change',updatePoem);
+document.getElementById('level').addEventListener('input',updatePoem);
+document.getElementById('poetToggle').addEventListener('click',e=>{
+  if(e.target.tagName==='BUTTON'){
+    document.querySelectorAll('#poetToggle button').forEach(b=>b.classList.remove('active'));
+    e.target.classList.add('active'); updatePoem();
+  }
+});
+document.getElementById('sp').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='390px';document.getElementById('sp').classList.add('active');document.getElementById('tab').classList.remove('active')};
+document.getElementById('tab').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='768px';document.getElementById('tab').classList.add('active');document.getElementById('sp').classList.remove('active')};
+const POET_TYPES={
+  sora:{label:"空を見つめる詩人",personality:"あなたは、急いで答えを出さず、まず空全体を受け止めるタイプです。広がりや余白に安心し、言葉もゆっくり選びます。ひとりの時間を大切にし、静かな場所ほど本音に近づきます。",points:["空の色が変わる瞬間に、詩の気持ちが切り替わっていないか","雲の形や余白が、言葉の余韻と合っているか","一行目と最後の一行で、空の距離感がどう変わったか"]},
+  hikari:{label:"光を追う詩人",personality:"あなたは、小さな光や影の動きにすぐ気づくタイプです。明るさのなかに希望を見つけ、暗さのなかにも温かさを見つけようとします。気持ちが沈んだときほど、光の方向を探します。",points:["光がどこから差して、どこに落ちているか","明るい言葉と暗い言葉の配分が、光と影のようになっているか","光の強さが、詩の温度と連動しているか"]},
+  kaze:{label:"風の気配を読む詩人",personality:"あなたは、目に見えない変化に敏感なタイプです。人の声のトーンや空気の動きから、言葉の裏側を感じ取ります。流れに逆らわず、少し先の気配を読むのが得意です。",points:["風の向きや強さが、詩のリズムと合っているか","音や匂いのような、見えないものがどう描かれているか","吹き抜ける感じと、立ち止まる感じのバランス"]},
+  ame:{label:"雨の余韻に寄り添う詩人",personality:"あなたは、雨上がりのような、静かで少し切ない時間に心が動くタイプです。派手さより余韻を大切にし、終わったことのなかに残る温かさを拾います。寄り添う言葉を選ぶのが得意です。",points:["雨の前と後で、気持ちがどう変わったか","濡れたもの・湿った空気など、余韻の描き方","最後に残る静けさが、寂しさか安らぎか"]}
+};
+let diagDecided=null;
+function getDiagSelected(){const el=document.querySelector('input[name="poetType"]:checked');return el?el.value:null;}
+function syncDiagOptions(){document.querySelectorAll('.diag-option').forEach(l=>{l.classList.toggle('selected',!!l.querySelector('input').checked)});document.getElementById('diagShow').disabled=!getDiagSelected();}
+document.querySelectorAll('input[name="poetType"]').forEach(r=>r.addEventListener('change',()=>{document.getElementById('diagConfirmed').hidden=true;diagDecided=null;syncDiagOptions();}));
+document.getElementById('diagShow').addEventListener('click',()=>{
+  const key=getDiagSelected(); if(!key) return;
+  const d=POET_TYPES[key];
+  document.getElementById('diagResultType').textContent="あなたは「"+d.label+"」です";
+  document.getElementById('diagResultPersonality').textContent=d.personality;
+  document.getElementById('diagResultPoints').innerHTML=d.points.map(p=>"<li>"+p+"</li>").join("");
+  document.getElementById('diagResult').hidden=false;
+  document.getElementById('diagResult').scrollIntoView({behavior:"smooth",block:"nearest"});
+});
+document.getElementById('diagClose').addEventListener('click',()=>{
+  const key=getDiagSelected(); if(!key) return;
+  diagDecided=key;
+  document.getElementById('diagResult').hidden=true;
+  document.getElementById('diagConfirmedText').textContent="決定："+POET_TYPES[key].label+" に決まりました。";
+  document.getElementById('diagConfirmed').hidden=false;
+});
+document.getElementById('diagRedo').addEventListener('click',()=>{
+  diagDecided=null;
+  document.querySelectorAll('input[name="poetType"]').forEach(r=>r.checked=false);
+  document.getElementById('diagConfirmed').hidden=true;
+  document.getElementById('diagResult').hidden=true;
+  syncDiagOptions();
+});
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}
+loadConfig();
+</script>
+</body>
+</html>
