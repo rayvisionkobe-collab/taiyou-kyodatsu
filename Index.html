@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>太陽の涙、虚脱の空</title>
-<link rel="manifest" href="/manifest.json">
+<title>太陽の涙、虚脱の空 — v110 元ファイル基準</title>
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1c1917">
 <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Zen+Old+Mincho:wght@400;500&family=Shippori+Mincho+B1:wght@400&display=swap" rel="stylesheet">
 <style>
@@ -18,8 +18,9 @@ header h1{font-family:"Shippori Mincho B1",serif;font-size:14px;letter-spacing:0
 .hero img{width:100%;height:auto;max-height:85vh;object-fit:contain;object-position:center}
 @media(max-width:430px){.hero img{aspect-ratio:4/3;}}
 .poem-wrap{max-width:768px;margin:0 auto;padding:24px 16px;background:rgba(28,25,23,0.78);backdrop-filter:blur(12px)}
-.poem-card{padding:28px 20px;text-align:center}
-.poem-main{font-family:"Yuji Syuku",cursive;font-size:26px;line-height:1.6;letter-spacing:0.04em;white-space:pre-wrap}
+@media(max-width:430px){.poem-wrap{padding:24px 10px} .poem-wrap h2{font-size:clamp(21px,5.2vw,34px)!important;letter-spacing:0.01em!important;white-space:nowrap!important}}
+.poem-card{padding:28px 20px;text-align:left}
+.poem-main{font-family:"Yuji Syuku",cursive;font-size:clamp(17px,4.6vw,21px);line-height:1.95;word-break:keep-all;overflow-wrap:break-word;line-break:strict;text-wrap:pretty;letter-spacing:0.04em;white-space:pre-wrap;text-align:left}
 .poem-sub{margin-top:12px;font-size:13px;color:var(--muted);font-family:"Shippori Mincho B1",serif}
 .practical{margin-top:16px;padding:10px 14px;background:#1e1e1e;border-radius:8px;color:var(--text);font-size:13px;line-height:1.5}
 .controls{margin-top:20px;display:flex;flex-direction:column;gap:12px}
@@ -31,172 +32,684 @@ header h1{font-family:"Shippori Mincho B1",serif;font-size:14px;letter-spacing:0
 .slider{width:100%}
 .labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
 .real{max-width:768px;margin:0 auto;padding:16px}
-.diag{max-width:768px;margin:0 auto;padding:0 16px 16px}
-.diag-box{background:rgba(28,25,23,0.78);backdrop-filter:blur(12px);border-radius:12px;padding:20px 16px}
-.diag-box h2{font-family:"Shippori Mincho B1",serif;font-size:15px;letter-spacing:0.08em;margin:0 0 6px}
-.diag-lead{font-size:13px;line-height:1.6;color:var(--muted);margin:0 0 14px;text-align:left}
-.diag-options{display:grid;gap:8px}
-.diag-option{display:flex;gap:10px;align-items:flex-start;text-align:left;padding:12px;border:1px solid #444;border-radius:10px;cursor:pointer;background:#111}
-.diag-option input{margin-top:4px;accent-color:var(--text)}
-.diag-option b{font-size:14px;display:block}
-.diag-option span{font-size:12px;color:var(--muted);line-height:1.5;display:block;margin-top:2px}
-.diag-option.selected{border-color:var(--text);background:#2a2623}
-.diag-btn{width:100%;margin-top:14px;padding:11px;border-radius:20px;border:none;background:var(--text);color:var(--bg);font-size:14px;font-family:"Zen Old Mincho",serif;cursor:pointer}
-.diag-btn:disabled{background:#444;color:#888;cursor:default}
-.diag-result{margin-top:14px;padding:16px;background:#231e1b;border-radius:12px;text-align:left}
-.diag-result-type{font-family:"Yuji Syuku",cursive;font-size:22px;line-height:1.5}
-.diag-result h3{font-size:13px;margin:16px 0 6px;color:var(--text)}
-.diag-result p{font-size:13px;line-height:1.8;margin:0;color:var(--text)}
-.diag-result ul{margin:0;padding-left:18px;font-size:13px;line-height:1.8}
-.diag-close{width:100%;margin-top:16px;padding:11px;border-radius:20px;border:1px solid var(--text);background:transparent;color:var(--text);font-size:14px;font-family:"Zen Old Mincho",serif;cursor:pointer}
-.diag-confirmed{margin-top:14px;padding:12px 14px;border:1px solid #444;border-radius:10px;font-size:13px;line-height:1.6;text-align:left;display:flex;justify-content:space-between;gap:10px;align-items:center}
-.diag-confirmed button{flex-shrink:0;background:transparent;border:none;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer}
 .real-card{aspect-ratio:16/9;background:linear-gradient(180deg,#2a3a5a,#1c1917);border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+
+/* シェアボタン */
+.share-btn{width:100%;margin-top:14px;padding:11px;background:#f5f1e8;color:#1c1917;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
+.share-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.share-modal.open{display:flex}
+.share-sheet{width:100%;max-width:520px;background:#231e1b;border-radius:16px 16px 0 0;padding:16px;max-height:85vh;overflow:auto}
+.share-tabs{display:flex;gap:6px;margin-bottom:12px}
+.share-tabs button{flex:1;padding:8px 4px;border-radius:10px;border:1px solid #444;background:transparent;color:#f5f1e8;font-size:12px}
+.share-tabs button.active{background:#f5f1e8;color:#1c1917}
+.share-preview{white-space:pre-wrap;background:#111;padding:12px;border-radius:10px;font-size:13px;line-height:1.7;min-height:120px}
+.share-actions{display:flex;gap:8px;margin-top:12px}
+.share-actions button{flex:1;padding:10px;border-radius:10px;border:none;font-size:13px;cursor:pointer}
+.copy-btn{background:#f5f1e8;color:#1c1917;font-weight:600}
+.img-btn{background:#333;color:#f5f1e8}
+.close-btn{background:transparent;color:#a8a29e;font-size:12px;margin-top:8px;width:100%;border:none;padding:8px}
+.share-note{font-size:11px;color:#a8a29e;margin-top:8px;line-height:1.5}
 footer{padding:24px;text-align:center;font-size:11px;color:var(--muted)}
+/* 追加：シェア箱は下から立ち上がる */
+#shareOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);opacity:0;pointer-events:none;transition:opacity .28s;z-index:90;display:none}
+#shareOverlay.open{display:block;opacity:1;pointer-events:auto}
+ #shareCard{position:fixed;transform:translateY(100%);left:0;right:0;bottom:0;z-index:91;display:none;visibility:hidden;max-height:88vh;overflow:auto;background:#231e1b;border-radius:18px 18px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.9,.25,1);box-shadow:0 -12px 40px rgba(0,0,0,0.45);padding:14px;max-width:768px;margin:0 auto}
+#shareCard.open{display:block;visibility:visible;transform:translateY(0)}
+#shareHandle{width:40px;height:5px;border-radius:99px;background:rgba(255,255,255,0.35);margin:6px auto 10px}
+#shareCloseBar{position:sticky;top:-14px;z-index:10;background:#231e1b;padding:14px 0 10px;margin:-14px -14px 0;display:flex;justify-content:space-between;align-items:center}
+#closeShare{background:#f5f1e8;color:#1c1917;border:0;font-weight:900;padding:10px 18px;font-size:14px;border-radius:999px;cursor:pointer}
+.btn{padding:11px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+.btn-dark{background:#f5f1e8;color:#1c1917}
+.btn-ghost{background:#2a2a2a;color:#f5f1e8;border:1px solid #444}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row button{flex:1;min-width:140px}
+canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
+.q{margin:10px 0;padding:16px 12px;background:#2a2a2a;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:118px;gap:10px}
+.q b{font-size:14px;line-height:1.6}
+.q label{display:flex;align-items:center;justify-content:center;gap:12px;background:#333;border:1px solid #555;border-radius:8px;padding:12px 16px;cursor:pointer;font-size:14px;line-height:1.6;width:100%;max-width:460px}
+.q label input{flex:0 0 18px;width:18px;height:18px;margin:0}
+.q label span.opt-text{flex:1;text-align:center}
+
+
+/* v24: 詩をメインに */
+.poem-main{font-size:21px !important;line-height:1.9 !important;text-align:left !important;}
+@media(min-width:768px){
+  .poem-main{font-size:24px !important;line-height:2.0 !important;}
+  .poem-wrap{max-width:720px;margin:0 auto;}
+  .real{max-width:520px;margin:0 auto;}  /* 画像は小さく */
+  .real-card{aspect-ratio:16/9;}
+}
+@media(min-width:1024px){
+  .poem-main{font-size:26px !important;}
+  .real{max-width:480px;}
+}
+/* ③ 下の詩風と濃淡を小さく、目立たなく */
+#bottomControls{opacity:0.75;transform:scale(0.92);transform-origin:top center;}
+#bottomControls .toggle button{font-size:13px;padding:6px 10px;}
+#bottomControls .slider{height:4px;}
+#bottomControls .labels{font-size:11px;color:#a8a29e;}
 </style>
 </head>
 <body>
 <header>
 <h1>太陽の涙、虚脱の空</h1>
+<div style="display:flex;gap:6px;align-items:center">
+  <span style="font-size:10px;letter-spacing:0.12em;background:#f5f1e8;color:#1c1917;padding:4px 8px;border-radius:10px;font-weight:700">PROTOTYPE – 開発中</span>
+</div>
 <div class="device"><button id="sp" class="active">スマホ</button><button id="tab">タブレット</button></div>
 </header>
+<div style="background:#292524;color:#d6d3d1;font-size:11px;text-align:center;padding:6px 12px;line-height:1.5">これはプロトタイプです。画像・詩はテスト中です。バグや感想は、下のリンクから教えてください。</div>
 
-<div class="hero"><img src="/hero.jpg" alt="hero"></div>
+<div class="hero"><img src="hero.jpg" alt="hero"></div>
 
 <div class="poem-wrap" id="poemWrap">
-  <div class="poem-card">
-    <div class="poem-main" id="poemMain">汚れっちまった悲しみに、小雪が降る。</div>
-    <div class="poem-sub" id="poemSub">虚脱の空 / 仙人級 / 舞子ビラ</div>
+  <div style="text-align:center;padding:0 0 6px">
+    <h2 id="poemTitle" style="font-family:'Yuji Syuku',cursive;font-weight:400;font-size:clamp(21px,5.2vw,34px);letter-spacing:0.01em;line-height:1.3;margin:0;color:#f5efe6;white-space:nowrap;text-align:center">今日のそらと、僕のこころ</h2>
+    <div style="height:1px;background:rgba(255,255,255,0.18);margin:10px auto 0;max-width:280px"></div>
   </div>
-
+  <div class="poem-card">
+    <div class="poem-main" id="poemMain">神戸の空は、今日も静かだ。
+風が、遠くで何かを運んでくる。
+曇りの午後、どこへも行けず、
+空だけが、遠くへ行って
+しまうような、
+虚脱の午後だった。</div>
+  <div id="poemTime" style="font-size:11px;color:#a8a29e;text-align:center;margin-top:4px;display:none"></div>
+    <div style="text-align:center;margin-top:4px"><button id="poemReloadBtn" style="font-size:11px;padding:4px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.25);background:transparent;color:#d6d3d1;cursor:pointer">詩を読み直す</button> <span id="poemReloadMsg" style="font-size:11px;color:#a8a29e"></span></div>
+  </div>
+  <!-- シェアモーダル -->
   <div class="controls">
     <select id="placeSelect" class="select"></select>
-    <div class="practical" id="practical">晴 21℃/12℃ 降水30% 南西3m 神戸・舞子ビラ</div>
-    <div class="toggle" id="poetToggle">
-      <button data-poet="kyodatsu" class="active">虚脱の空</button>
-      <button data-poet="taiyou">太陽の涙</button>
-    </div>
-    <div>
-      <input type="range" id="level" min="0" max="3" step="1" value="3" class="slider">
-      <div class="labels"><span>からっと</span><span>ほどよく</span><span>こいめ</span><span>仙人級</span></div>
-    </div>
-  </div>
-</div>
-
-<div class="diag" id="diag">
-  <div class="diag-box">
-    <h2>詩人診断</h2>
-    <p class="diag-lead">今日の気分に一番近いものをひとつ選んでください。名前ではなく、詩人としての向き合い方のタイプで診断します。</p>
-    <div class="diag-options" id="diagOptions">
-      <label class="diag-option"><input type="radio" name="poetType" value="sora"><span><b>空を見つめる詩人</b><span>空の広がりに心を預けて、静かに眺めていたい</span></span></label>
-      <label class="diag-option"><input type="radio" name="poetType" value="hikari"><span><b>光を追う詩人</b><span>光の粒や影の動きに、つい目がいってしまう</span></span></label>
-      <label class="diag-option"><input type="radio" name="poetType" value="kaze"><span><b>風の気配を読む詩人</b><span>風の匂いや音の変わり目に、季節を感じ取る</span></span></label>
-      <label class="diag-option"><input type="radio" name="poetType" value="ame"><span><b>雨の余韻に寄り添う詩人</b><span>雨上がりの静けさや、濡れたものの気配に惹かれる</span></span></label>
-    </div>
-    <button id="diagShow" class="diag-btn" disabled>診断結果を見る</button>
-    <div id="diagResult" class="diag-result" hidden>
-      <div class="diag-result-type" id="diagResultType"></div>
-      <h3>詩人としての性格</h3>
-      <p id="diagResultPersonality"></p>
-      <h3>このタイプの詩の鑑賞ポイント</h3>
-      <ul id="diagResultPoints"></ul>
-      <button id="diagClose" class="diag-close">閉じる・このタイプに決定</button>
-    </div>
-    <div id="diagConfirmed" class="diag-confirmed" hidden>
-      <span id="diagConfirmedText"></span>
-      <button id="diagRedo" type="button">選び直す</button>
-    </div>
+    <div class="practical" id="practical">晴 14℃ / 12℃ 降水0mm 風6m 神戸</div>
+    <div id="weatherTime" style="font-size:11px;color:#a8a29e;margin-top:2px;"></div>
   </div>
 </div>
 
 <div class="real">
-  <div class="real-card" id="realCard">実写静止画（プロトタイプはグラデーション）<br><span id="time"></span></div>
+  <div style="font-size:12px;color:#a8a29e;margin-bottom:6px;">ライブ静止画 ・ 30分おきに更新 <span id="liveUpdated"></span></div>
+  <div class="real-card" id="realCard">
+    <img id="liveImg" src="hero.jpg" alt="ライブ静止画" style="width:100%;height:100%;object-fit:cover;display:none;">
+    <div id="livePlaceholder" style="text-align:center;padding:20px;">ライブ静止画 — 次の更新で表示されます<br><span id="time"></span></div>
+  </div>
+  <div id="livePoem" style="margin-top:10px;padding:14px;background:#231e1b;border-radius:8px;font-family:'Yuji Syuku',cursive;font-size:19px;line-height:1.9;white-space:pre-wrap;text-align:left;display:none;"></div>
+  <div id="livePoemNote" style="font-size:11px;color:#a8a29e;margin-top:6px;display:none;">AIがライブ画像から自動生成した詩です。上の温墨イラストはトップのままです。</div>
+  <div style="font-size:11px;color:#a8a29e;margin-top:6px;text-align:center"><a id="liveCamLink" href="https://weathernews.jp/onebox/livecam/kinki/hyogo/7CDDE9067E16/" target="_blank" rel="noopener" style="color:#f5f1e8;text-decoration:underline">ウェザーニュースの元のカメラを見る →</a><span id="liveImgDebug" style="display:block;margin-top:2px"></span></div>
+  <button class="btn btn-ghost" id="saveImgLive" style="margin-top:10px;width:100%">💾 このライブ画像を保存する</button>
+  <div id="saveMsg" style="font-size:11px;color:#a8a29e;text-align:center;margin-top:4px"></div>
+  <button class="share-btn" id="shareBtn" style="margin-top:14px">↗ シェアする</button>
+  <div style="background:#231e1b;border-radius:8px;padding:12px;margin-top:12px">
+    <div style="font-size:13px;font-weight:700">詩の濃淡 — 詩人の特徴を、4段階で濃くする</div>
+    <input type="range" id="level" min="0" max="3" step="1" value="1" class="slider" style="margin-top:8px">
+    <div class="labels"><span>からっと</span><span>ほどよく</span><span>こいめ</span><span id="senjinLabel">仙人級</span></div>
+    <p id="strengthLabel" style="font-size:12px;opacity:.8;text-align:center;margin:8px 0 0">今：ほどよく — 詩人の特徴が、ほどよく</p>
+  </div>
+  <div style="font-size:11px;color:#a8a29e;margin-top:6px;text-align:center">今開いている画面の詩と画像をシェアします</div>
 </div>
 
-<footer>© rayvisionkobe-collab / PWA template v1 / 背景は生成り #1c1917 温墨</footer>
+
+<div class="controls" id="bottomControls" style="margin-top:18px;border-top:1px solid #44403c;padding-top:14px;">
+  <div style="display:flex;justify-content:center;margin-top:10px"><button id="diagToggle" style="background:#6b4eff;color:#fff;border:0;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer">あなたの詩人タイプ診断</button></div>
+    <div id="diagPanel" style="display:none;margin-top:12px;background:#222;border:1px solid #6b4eff;border-radius:12px;padding:12px;text-align:left">
+      <div style="font-weight:800;text-align:center">あなたの詩人タイプ診断 — 5問、2択だけ</div>
+      <div id="shindanQs"></div>
+      <div class="row" style="margin-top:10px"><button class="btn" style="background:#6b4eff;color:#fff" id="shindanBtn">診断する → 詩を作る</button><button class="btn btn-ghost" id="shindanReset">もう一度</button></div>
+      <div id="shindanResult" style="display:none"></div>
+    <div id="shindanConfirmed" style="display:none;background:#222;border:1px solid #444;border-radius:10px;padding:10px;margin-top:10px;text-align:left;font-size:13px;line-height:1.6"><span id="shindanConfirmedText"></span><div style="text-align:right;margin-top:6px"><button id="shindanRedo" class="btn btn-ghost" style="font-size:12px;padding:6px 10px">選び直す</button></div></div>
+    </div>
+    <div class="toggle" id="poetToggle">
+    <button data-poet="kyodatsu" class="active">虚脱の空</button>
+    <button data-poet="taiyou">太陽の涙</button>
+  </div>
+</div>
+
+<div id="shareOverlay"></div>
+<div id="shareCard"><div id="shareHandle"></div><div id="shareCloseBar"><b>シェアする</b><button id="closeShare">✕ とじる</button></div>
+  <p style="font-size:12px;opacity:.7">Instagram / Threads / Bluesky / X の切り替え、テキストコピー、画像保存、詩入り画像を作る、スマホのシェアで送る。元のままです。</p>
+  <div class="row" id="snsTopRow" style="margin-top:8px"><button class="btn btn-dark" id="snsTopIG" data-sns="ig" style="min-width:0;white-space:nowrap;font-size:13px">Instagram</button><button class="btn btn-ghost" id="snsTopThreads" data-sns="threads" style="min-width:0;white-space:nowrap;font-size:13px">Threads</button><button class="btn btn-ghost" id="snsTopBluesky" data-sns="bluesky" style="min-width:0;white-space:nowrap;font-size:13px">Bluesky</button><button class="btn btn-ghost" id="snsTopX" data-sns="x" style="min-width:0;white-space:nowrap;font-size:13px">X</button></div>
+  <div id="sharePreviewLabel" style="font-size:11px;color:#a8a29e;margin-top:8px">今は Instagram 用です</div><div id="sharePreviewText" style="background:#000;border-radius:10px;padding:12px;margin-top:6px;white-space:pre-line;font-size:14px;line-height:1.7">今日のそらと僕のこころ…詩にしてみました。
+続きはプロフィールのリンクから
+#太陽の涙虚脱の空 #詩 #天気 #神戸</div>
+  <div id="shareSizeLabel" style="font-size:11px;color:#a8a29e;margin-top:6px">Instagram：縦 4:5（1080×1350）</div>
+  <div style="margin-top:8px;border-radius:12px;overflow:hidden;background:#111"><canvas id="cv" width="1280" height="720" style="width:100%;height:auto;display:block"></canvas></div>
+  <p style="font-size:11px;color:#a8a29e;text-align:center;margin-top:4px">画像をドラッグで動かせます。詩やタイトルも、ドラッグで動かせます。</p>
+  <button id="editToggle" class="btn btn-dark" style="width:100%;margin-top:8px">✏️ 編集する — 1つだけ開く</button>
+  <div id="editPanel" style="display:none;margin-top:10px">
+    <div class="row" id="editTabs" style="margin-top:0"><button class="btn btn-dark" data-edittab="color">色</button><button class="btn btn-ghost" data-edittab="pos">位置・大きさ</button><button class="btn btn-ghost" data-edittab="text">文字</button><button class="btn btn-ghost" data-edittab="photo">写真</button></div>
+    <p style="font-size:11px;color:#a8a29e;margin-top:6px">タブを押すと、その1つだけ出ます。画像は、上に残ったままです。</p>
+<div style="background:#222;border-radius:10px;padding:12px;margin-top:10px"><b style="font-size:13px">詩入り画像の編集</b><p style="font-size:12px;opacity:.7">① 詩情フィルターと、② 保存した画像は、ここにあります。</p>
+    <div data-edit-group="color" style="background:#1c1917;border-radius:8px;padding:10px;margin-top:8px"><b style="font-size:13px">① フィルター — 詩情の色で分ける</b><div class="row" style="margin-top:8px"><button class="btn btn-ghost" data-filter="none">なし</button><button class="btn btn-dark" data-filter="sumi">澄み</button><button class="btn btn-ghost" data-filter="hakanai">儚い</button><button class="btn btn-ghost" data-filter="nukumori">温もり</button><button class="btn btn-ghost" data-filter="shizukesa">静けさ</button><button class="btn btn-ghost" data-filter="gin">銀</button><button class="btn btn-ghost" data-filter="kagayaki">輝き</button></div><p style="font-size:12px;opacity:.7">天気・時間帯ではなく、詩情の色で分けました。どんな空にも、かけられます。1回押すと適用、もう1回押すと、スライダーが出ます。</p><div id="filterSliders" style="display:none"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>青の濃さ <span id="blueVal">1.25</span></label><input type="range" id="blueBoost" min="0.8" max="1.6" step="0.01" value="1.25" class="slider"></div><div><label>オレンジ <span id="warmVal">0.18</span></label><input type="range" id="warm" min="0" max="0.45" step="0.01" value="0.18" class="slider"></div><div><label>鮮やかさ <span id="satVal">1.30</span></label><input type="range" id="sat" min="0.7" max="1.6" step="0.01" value="1.30" class="slider"></div><div><label>コントラスト <span id="conVal">1.10</span></label><input type="range" id="con" min="0.9" max="1.3" step="0.01" value="1.10" class="slider"></div></div></div></div>
+    <div data-edit-group="photo" style="background:#1c1917;border-radius:8px;padding:10px;margin-top:10px"><b style="font-size:13px">② 保存した画像で作る</b><p style="font-size:12px;opacity:.7">保存は、ライブ画像の下のボタンでする。ここは、選ぶだけです。</p><div id="savedGallery" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div></div>
+    <div data-edit-group="pos" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div><label>クロップ / ズーム <span id="zoomVal">1.20</span></label><input type="range" id="zoom" min="1" max="2" step="0.01" value="1.2" class="slider"></div><div><label>画像の位置 — 左右 <span id="imgXVal">0</span></label><input type="range" id="imgX" min="-100" max="100" step="1" value="0" class="slider"></div><div><label>画像の位置 — 上下 <span id="imgYVal">0</span></label><input type="range" id="imgY" min="-100" max="100" step="1" value="0" class="slider"></div></div><div data-edit-group="text" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div><label>詩の大きさ <span id="fontVal">42</span></label><input type="range" id="fontSize" min="28" max="64" step="1" value="42" class="slider"></div><div><label>上の暗さ <span id="shadeVal">0.18</span></label><input type="range" id="shade" min="0" max="0.45" step="0.01" value="0.18" class="slider"></div><div><label>タイトル・天気の大きさ <span id="titleSizeVal">1.00</span></label><input type="range" id="titleSize" min="0.7" max="1.5" step="0.01" value="1" class="slider"></div></div><div data-edit-group="pos" style="margin-top:8px"><div class="row"><button class="btn btn-ghost" id="imgLeft">←</button><button class="btn btn-ghost" id="imgRight">→</button><button class="btn btn-ghost" id="imgUp">↑</button><button class="btn btn-ghost" id="imgDown">↓</button><button class="btn btn-dark" id="imgCenter">中央に戻す</button></div><div style="margin-top:8px"><b style="font-size:12px">ドラッグで動かすもの</b><div class="row" style="margin-top:6px"><button class="btn btn-dark" data-dragmode="auto">自動</button><button class="btn btn-ghost" data-dragmode="image">画像</button><button class="btn btn-ghost" data-dragmode="poem">詩</button><button class="btn btn-ghost" data-dragmode="title">タイトル</button></div></div></div>
+    <p data-edit-group="pos" style="font-size:12px;opacity:.7;margin-top:8px">ドラッグ：空をドラッグで上下に動かせます。詩をドラッグで位置を動かせます。詩の右下をドラッグで、詩の大きさを変えられます。右下のタイトル・天気も、ドラッグで上下左右に動かせます。</p>
+    <div data-edit-group="photo" style="background:#1c1917;border-radius:8px;padding:10px;margin-top:10px"><b style="font-size:13px">③ 元になる写真を選ぶ</b><div class="row" style="margin-top:8px"><button class="btn btn-dark" id="imgSrcLive" style="flex:1 1 0;min-width:0;white-space:nowrap;font-size:13px;padding:11px 6px">📷 ライブ画像で作る</button><button class="btn btn-ghost" id="imgSrcSaved" style="flex:1 1 0;min-width:0;white-space:nowrap;font-size:13px;padding:11px 6px">💾 保存画像で作る</button></div><p id="imgSrcLabel" style="font-size:12px;opacity:.8;margin-top:6px">今：ライブ画像</p></div>
+    
+    <p id="makePoemMsg" style="font-size:11px;color:#a8a29e;text-align:center;margin-top:4px"></p>
+    <div data-edit-group="text" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px"><div><label>詩の箱の大きさ <span id="poemBoxVal">1.00</span></label><input type="range" id="poemBoxScale" min="0.7" max="1.5" step="0.05" value="1" class="slider"></div><div><label>箱の濃さ <span id="poemBoxAlphaVal">0.35</span></label><input type="range" id="poemBoxAlpha" min="0" max="0.6" step="0.05" value="0.35" class="slider"></div></div>
+    <div class="row" style="margin-top:8px"><button class="btn btn-dark" id="makePoemImg" style="width:100%">🖼 詩入り画像を作る</button></div>
+    
+  </div></div>
+    <div class="row" style="margin-top:12px"><button class="btn btn-dark" id="sharePoemImg">📱 詩入り画像でシェア — SNSを選ぶ</button></div>
+    <div id="snsPicker" style="display:none;background:#111;border:1px solid #555;border-radius:10px;padding:12px;margin-top:10px"><b>どこでシェアしますか？</b><div class="row" style="margin-top:10px"><button class="btn btn-dark" id="shareX">X でシェア</button><button class="btn btn-ghost" id="shareThreads">Threads</button></div><div class="row" style="margin-top:8px"><button class="btn btn-ghost" id="shareBluesky">Bluesky</button><button class="btn btn-ghost" id="shareIG">Instagram — 投稿画面を開く</button></div><div class="row" style="margin-top:8px"><button class="btn btn-ghost" id="shareOS">📱 スマホのシェア画面</button></div><p style="font-size:12px;opacity:.7">PCでも、X / Threads / Bluesky は、シェア画面が開きます。</p></div>
+    <div class="row" style="margin-top:12px"><button class="btn btn-dark" id="closeShareBottom">✕ とじる</button></div>
+</div>
+<footer>
+  <div style="margin-bottom:8px;line-height:1.8">
+    バグ報告・改善の提案 → <a href="https://github.com/rayvisionkobe-collab/taiyo-no-namida-feedback/issues/new/choose" target="_blank" rel="noopener" style="color:#f5f1e8;text-decoration:underline">GitHub Issues</a><br>
+    感想・ひとこと → <a href="https://forms.gle/PLACEHOLDER" target="_blank" rel="noopener" style="color:#f5f1e8;text-decoration:underline">Googleフォーム (匿名OK)</a>
+  </div>
+  <div style="font-size:10px;color:#a8a29e">このサイトは、個人情報を集めません。感想を送るときも、名前は入れなくて大丈夫です。</div>
+  <div style="margin-top:6px">出典：ウェザーニュース / Myライブカメラ © rayvisionkobe-collab / v143 スライダー連動 根本修正版 / data.json対応 / 背景は生成り #1c1917 温墨</div>
+</footer>
 
 <script>
-let cfg=null;
-async function loadConfig(){
-  const r=await fetch('/config.json'); cfg=await r.json();
+
+// 「。」で改行 + 左寄せ用 – 「。」の後で改行する (最後の「。」の後は改行しない)
+function breakByMaru(text){
+  if(!text) return text;
+  // すでに改行がある場合は、それを残して、「。」でも改行
+  return text.replace(/\n/g, '').replace(/。(?!$)/g, '。\n');
+}
+const LOCATIONS = [
+  {id:"kobe", name:"神戸", lat:34.69, lon:135.19, weathernews_id:"7CDDE9067E16", page_url:"https://weathernews.jp/onebox/livecam/kinki/hyogo/7CDDE9067E16/"},
+  {id:"osaka", name:"大阪", lat:34.69, lon:135.50, weathernews_id:"7CDDE90683C1", page_url:"https://weathernews.jp/onebox/livecam/kinki/osaka/7CDDE90683C1/"},
+  {id:"sapporo", name:"札幌", lat:43.06, lon:141.35, weathernews_id:"7CDDE9068F23", page_url:"https://weathernews.jp/onebox/livecam/hokkaido/douou/7CDDE9068F23/"},
+  {id:"tokyo", name:"東京", lat:35.68, lon:139.76, weathernews_id:"7CDDE90689B1", page_url:"https://weathernews.jp/onebox/livecam/kanto/tokyo/7CDDE90689B1/"},
+  {id:"sendai", name:"仙台", lat:38.26, lon:140.87, weathernews_id:"7CDDE905CDB1", page_url:"https://weathernews.jp/onebox/livecam/tohoku/miyagi/7CDDE905CDB1/"},
+  {id:"nagoya", name:"名古屋", lat:35.18, lon:136.90, weathernews_id:"7CDDE906BBEF", page_url:"https://weathernews.jp/onebox/livecam/chubu/aichi/7CDDE906BBEF/"},
+  {id:"hiroshima", name:"広島", lat:34.39, lon:132.45, weathernews_id:"7CDDE908C8DC", page_url:"https://weathernews.jp/onebox/livecam/chugoku/hiroshima/7CDDE908C8DC/"},
+  {id:"fukuoka", name:"福岡", lat:33.59, lon:130.40, weathernews_id:"7CDDE906F156", page_url:"https://weathernews.jp/onebox/livecam/kyushu/fukuoka/7CDDE906F156/"},
+  {id:"naha", name:"那覇", lat:26.21, lon:127.68, weathernews_id:"7CDDE9086CB8", page_url:"https://weathernews.jp/onebox/livecam/okinawa/7CDDE9086CB8/"}
+];
+let liveData=null;
+async function loadLive(){
+  try{
+    const res=await fetch('data.json?v='+Date.now(), {cache:'no-store'});
+    if(res.ok) liveData=await res.json();
+  }catch(e){ console.log('live skip', e); }
+}
+function getPoem(place, poet, level){
+  let entry = liveData?.locations?.[place];
+  if(!entry && place==='kobe') entry = liveData?.locations?.['maiko'] || liveData?.locations?.['kobe_air'];
+  if(entry?.poems?.[poet]?.[String(level)]) return entry.poems[poet][String(level)];
+  if(entry?.poem){
+    const lines = entry.poem.split('\n').filter(Boolean);
+    if(level===0) return lines[0]||entry.poem;
+    if(level===1) return lines.slice(0,2).join('\n');
+    return lines.slice(0,3).join('\n');
+  }
+  const loc = LOCATIONS.find(l=>l.id===place);
+  const name = loc?.name || place;
+  const tpl = {
+    kyodatsu: [`${name}の空は、今日も静かだ。`, `${name}の空は、今日も静かだ。\n風が、遠くで何かを運んでくる。`, `${name}の空は、今日も静かだ。\n風が、遠くで何かを運んでくる。\n曇りの午後、空だけが遠くへ行く。`, `${name}の空は、今日も静かだ。風が、遠くで何かを運んでくる。曇りの午後、どこへも行けず、空だけが遠くへ行ってしまうような、虚脱の午後だった。`],
+    taiyou: [`${name}に、光が落ちている。`, `${name}に、光が落ちている。\n海の向こうで、風が渡ろうとしている。`, `${name}に、光が落ちている。\n海の向こうで、風が渡ろうとしている。\n晴れの光が、今日の空を包んでいる。`, `${name}に、光が落ちている。海の向こうで、風が渡ろうとしている。晴れの光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった。`]
+  };
+  return tpl[poet][level]||tpl[poet][1];
+}
+async function fetchWeather(lat, lon){
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo`;
+    const r = await fetch(url);
+    const j = await r.json();
+    const cur = j.current, day = j.daily;
+    const wmap = {0:'晴',1:'晴',2:'曇',3:'曇',45:'霧',48:'霧',51:'小雨',53:'雨',55:'雨',61:'雨',63:'雨',65:'大雨',71:'雪',73:'雪',75:'大雪',80:'雨',95:'雷雨'};
+    const w = wmap[cur.weather_code]||'曇';
+    return `${w} ${Math.round(cur.temperature_2m)}℃ / ${Math.round(day.temperature_2m_min[0])}℃ 降水${cur.precipitation}mm 風${Math.round(cur.wind_speed_10m)}m`;
+  }catch(e){ return '晴 14℃ / 12℃ 降水0mm 風6m 神戸'; }
+}
+// v143：スライダー連動の根本修正 — 詩とラベルだけを、同期で即更新する
+// 従来は updateAll() が天気取得 await を含み、スライダーの input が重く・遅く感じられ、
+// ゲートの2つ目の input リスナーが clamp だけして update を呼ばず、表示が置いていかれた
+function updatePoemOnly(){
+  try{
+    var place = (document.getElementById('placeSelect')?.value) || 'kobe';
+    var poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
+    var slider = document.getElementById('level');
+    var level = parseInt(slider ? slider.value : '1', 10);
+    if(isNaN(level)) level = 1;
+    // ゲート：ロック時は 3 に行かせない。ここで clamp して、表示も合わせる
+    if(typeof isSenjinUnlocked === 'function' && !isSenjinUnlocked() && level > 2){
+      level = 2;
+      if(slider) slider.value = '2';
+    }
+    var levels = ["からっと","ほどよく","こいめ","仙人級"];
+    var poemEl = document.getElementById('poemMain');
+    if(poemEl) poemEl.textContent = breakByMaru(getPoem(place, poet, level));
+    var sl = document.getElementById('strengthLabel');
+    if(sl){
+      var poetName = (poet === 'taiyou' ? '太陽の涙' : '虚脱の空');
+      var lvName = levels[level] || levels[1];
+      var lvDesc = ['からっと — 余白を残して、ひと言', 'ほどよく — 詩人の特徴が、ほどよく', 'こいめ — 濃く、深く', '仙人級 — 奥の座敷、ここだけ'][level] || '';
+      sl.textContent = '今：' + lvName + ' — ' + poetName + '、' + (lvDesc.split(' — ')[1] || '');
+    }
+    // 詩の長さでフォントを調整（updateAll と同じ）
+    try{
+      var pm = document.getElementById('poemMain');
+      if(pm){ var longest = Math.max.apply(null, pm.textContent.split('\n').map(function(l){return l.length;})); if(longest>=16) pm.style.fontSize='16px'; else if(longest>=14) pm.style.fontSize='18px'; else pm.style.fontSize=''; }
+    }catch(e){}
+    return level;
+  }catch(e){ console.log('updatePoemOnly fail', e); return 1; }
+}
+async function updateAll(){
+  const place = document.getElementById('placeSelect').value || 'kobe';
+  const loc = LOCATIONS.find(l=>l.id===place) || LOCATIONS[0];
+  const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
+  const level = updatePoemOnly();
+  const levels = ["からっと","ほどよく","こいめ","仙人級"];
+  try{ const _pe=liveData?.locations?.[place]; const _el=document.getElementById('poemTime'); if(_el){ if(_pe?.poem_date || _pe?.poem_slot){ const _slotMap={morning:'朝', noon:'昼', evening:'夕方'}; _el.textContent='詩：'+(_pe.poem_date||'')+' '+(_slotMap[_pe.poem_slot]||_pe.poem_slot||'')+'の詩'; _el.style.display='block'; } else { _el.style.display='none'; } } }catch(e){}
+  try{const pm=document.getElementById('poemMain'); if(pm){const longest=Math.max(...pm.textContent.split('\n').map(l=>l.length)); if(longest>=16) pm.style.fontSize='16px'; else if(longest>=14) pm.style.fontSize='18px'; else pm.style.fontSize='';}}catch(e){}
+  const placeName = loc.name;
+  const isAI = !!liveData?.locations?.[place]?.poems;
+  document.getElementById('practical').textContent = '晴 14℃ / 12℃ 降水0mm 風6m 神戸 ' + placeName;
+  const w = await fetchWeather(loc.lat, loc.lon);
+  document.getElementById('practical').textContent = w + ' ' + placeName;
+    // 何時現在の天気か: data.json の updated_at から表示
+    try{
+      const wt = liveData?.updated_at || liveData?.locations?.[place]?.updated_at;
+      if(wt){
+        const d = new Date(wt);
+        const mm = d.getMonth()+1, dd = d.getDate(), hh = String(d.getHours()).padStart(2,'0'), mi = String(d.getMinutes()).padStart(2,'0');
+        document.getElementById('weatherTime').textContent = mm + '月' + dd + '日 ' + hh + ':' + mi + ' 現在の天気';
+      } else {
+        document.getElementById('weatherTime').textContent = '';
+      }
+    }catch(e){}
+  const item = liveData?.locations?.[place];
+  const img = document.getElementById('liveImg');
+  const ph = document.getElementById('livePlaceholder');
+  // ライブは、data.json 経由じゃなく、直接 gvs から取る。data.json が古くても、画像は新しくなる
+  const _tsFor = (backMin)=>{ const d=new Date(Date.now()-backMin*60000); d.setSeconds(0,0); d.setMinutes(Math.floor(d.getMinutes()/10)*10); const p=(n)=>String(n).padStart(2,'0'); return ''+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+p(d.getHours())+p(d.getMinutes())+'00'; };
+  let _tryIdx = 0;
+  const _tryList = [0,10,20,30,40,50,60];
+  const _setLiveUpdatedDirect = ()=>{ const upd2=document.getElementById('liveUpdated'); if(upd2){ upd2.textContent='・ ライブ直接取得 ' + new Date().toLocaleString('ja-JP'); upd2.style.color=''; } };
+  img.onerror = ()=>{
+    _tryIdx++;
+    if(_tryIdx < _tryList.length){
+      const ts2=_tsFor(_tryList[_tryIdx]);
+      img.src='https://gvs.weathernews.jp/livecam/'+loc.weathernews_id+'/1280/'+ts2+'.jpg';
+      return;
+    }
+    // 直接が全部ダメなら、data.json の画像に落ちる
+    if(item && item.image && item.status!=='no-image'){
+      img.onerror=null;
+      img.src=item.image+'?v='+Date.now();
+      return;
+    }
+    img.style.display='none';
+    if(ph){ ph.style.display='block'; ph.innerHTML='ライブ静止画 — 次の更新で表示されます<br>次回の更新（1時間おき）で表示されます<br><span id="time"></span>'; }
+  };
+  img.onload = ()=>{ _setLiveUpdatedDirect(); };
+  _tryIdx = 0;
+  img.src='https://gvs.weathernews.jp/livecam/'+loc.weathernews_id+'/1280/'+_tsFor(0)+'.jpg';
+  img.style.display='block';
+  if(ph) ph.style.display='none';
+  const upd = document.getElementById('liveUpdated');
+  const _updSrc = item?.updated_at || liveData?.updated_at;
+  if(upd && _updSrc){ upd.textContent = '・ ' + new Date(_updSrc).toLocaleString('ja-JP'); const _ageMin=Math.max(0, Math.round((Date.now()-new Date(_updSrc).getTime())/60000)); if(_ageMin>=90){ upd.textContent += '（'+_ageMin+'分前・更新が止まっています）'; upd.style.color='#fca5a5'; } else { upd.style.color=''; } }
+  { const lk=document.getElementById('liveCamLink'); if(lk && loc.page_url) lk.href=loc.page_url; const dbg=document.getElementById('liveImgDebug'); if(dbg) dbg.textContent = 'data.json: ' + (item?.image||'(なし)') + ' / ' + (liveData?.updated_at||''); }
+  const t = document.getElementById('time'); if(t) t.textContent = new Date().toLocaleString('ja-JP');
+}
+function loadPrefs(){
+  try{
+    return {
+      place: localStorage.getItem('kyodatsu_place') || 'kobe',
+      poet: localStorage.getItem('kyodatsu_poet') || 'kyodatsu',
+      level: localStorage.getItem('kyodatsu_level') || '1'
+    };
+  }catch(e){ return {place:'kobe', poet:'kyodatsu', level:'1'}; }
+}
+function savePrefs(){
+  try{
+    const place = document.getElementById('placeSelect').value;
+    const poet = document.querySelector('#poetToggle button.active')?.dataset.poet || 'kyodatsu';
+    const level = document.getElementById('level').value;
+    localStorage.setItem('kyodatsu_place', place);
+    localStorage.setItem('kyodatsu_poet', poet);
+    localStorage.setItem('kyodatsu_level', level);
+  }catch(e){}
+}
+function init(){
   const sel=document.getElementById('placeSelect');
-  cfg.locations.forEach(l=>{
+  sel.innerHTML='';
+  LOCATIONS.forEach(l=>{
     const o=document.createElement('option'); o.value=l.id; o.textContent=l.name; sel.appendChild(o);
   });
-  updatePoem();
+  // 保存されたデフォルトを復元
+  const prefs = loadPrefs();
+  sel.value = prefs.place;
+  document.getElementById('level').value = prefs.level;
+  try{ if(typeof applySenjinGate === 'function'){ applySenjinGate(); var _lv=document.getElementById('level'); if(_lv && !isSenjinUnlocked() && parseInt(_lv.value,10)>2) _lv.value='2'; } }catch(e){}
+  document.querySelectorAll('#poetToggle button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.poet === prefs.poet);
+  });
+  // Service Workerの古いキャッシュを消す
+  // 追加：シェア箱、診断、詩入り画像
+function renderSavedGallery(){ try{const g=document.getElementById('savedGallery'); if(!g) return; const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); if(!arr.length){g.innerHTML='<p style="font-size:12px;opacity:.7">まだ保存がありません。ライブ画像の下の「保存する」で、保存できます</p>'; return;} g.innerHTML=''; arr.forEach((it,i)=>{ const wrap=document.createElement('div'); wrap.style.cssText='position:relative;width:72px;height:48px'; const im=document.createElement('img'); im.src=it.src; im.style.cssText='width:72px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid #555'; im.title='保存'+(i+1)+' — タップで使う'; im.onclick=()=>{ _poemImgMode='saved'; _poemSavedIdx=i; _updateImgSrcLabel(); try{drawPoemImg();}catch(e){} document.querySelectorAll('#savedGallery img').forEach(x=>x.style.border='2px solid #555'); im.style.border='3px solid #f5f1e8'; }; const del=document.createElement('button'); del.textContent='✕'; del.title='この1枚を消す'; del.style.cssText='position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;border:none;background:#f5f1e8;color:#1c1917;font-size:11px;font-weight:700;cursor:pointer;line-height:1'; del.onclick=(e)=>{ e.stopPropagation(); if(!confirm('この1枚を消しますか？')) return; const a2=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); a2.splice(i,1); localStorage.setItem('kyodatsu_saved', JSON.stringify(a2)); if(_poemImgMode==='saved'){ if(a2.length===0){ _poemImgMode='live'; _poemSavedIdx=0; } else if(_poemSavedIdx>=a2.length){ _poemSavedIdx=a2.length-1; } } renderSavedGallery(); try{drawPoemImg();}catch(e){} }; wrap.appendChild(im); wrap.appendChild(del); g.appendChild(wrap); }); }catch(e){} }
+function openShareSheet(){ const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.style.display='block';c.style.visibility='visible';requestAnimationFrame(()=>c.classList.add('open'));} if(o){o.style.display='block';requestAnimationFrame(()=>o.classList.add('open'));}}
+function closeShareSheet(){const c=document.getElementById('shareCard'),o=document.getElementById('shareOverlay'); if(c){c.classList.remove('open');setTimeout(()=>{if(!c.classList.contains('open')){c.style.display='none';c.style.visibility='hidden';}},320);} if(o){o.classList.remove('open');setTimeout(()=>{if(!o.classList.contains('open'))o.style.display='none';},320);}}
+  document.getElementById('shareBtnLive')?.addEventListener('click',openShareSheet);
+  document.getElementById('shareBtn')?.addEventListener('click',()=>{ openShareSheet(); setTimeout(()=>{ try{drawPoemImg();}catch(e){} renderSavedGallery(); },80); });
+  document.getElementById('imgSrcLive')?.addEventListener('click',()=>{ _poemImgMode='live'; _updateImgSrcLabel(); try{drawPoemImg();}catch(e){} const m=document.getElementById('makePoemMsg'); if(m) m.textContent='ライブ画像で作ります'; });
+  document.getElementById('imgSrcSaved')?.addEventListener('click',()=>{ const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); if(!arr.length){ const m=document.getElementById('makePoemMsg'); if(m) m.textContent='まだ保存がありません。ライブ画像の下の「保存する」を押してください'; return; } _poemImgMode='saved'; _poemSavedIdx=0; _updateImgSrcLabel(); renderSavedGallery(); try{drawPoemImg();}catch(e){} });
+  document.getElementById('poemBoxScale')?.addEventListener('input',(e)=>{ _poemBoxScale=parseFloat(e.target.value||1); const v=document.getElementById('poemBoxVal'); if(v) v.textContent=_poemBoxScale.toFixed(2); try{drawPoemImg();}catch(e){} });
+  document.getElementById('poemBoxAlpha')?.addEventListener('input',(e)=>{ _poemBoxAlpha=parseFloat(e.target.value||0.35); const v=document.getElementById('poemBoxAlphaVal'); if(v) v.textContent=_poemBoxAlpha.toFixed(2); try{drawPoemImg();}catch(e){} });
+  const _mk=document.getElementById('makePoemImg'); if(_mk){ _mk.onclick=()=>{ const m=document.getElementById('makePoemMsg'); try{drawPoemImg(); renderSavedGallery(); if(m) m.textContent=(_poemImgMode==='saved'?'保存画像で作りました':'ライブ画像で作りました')+' — 下の画像を確認してください'; }catch(e){ if(m) m.textContent='作れませんでした：'+e.message; } }; _mk.addEventListener('click',()=>{ try{drawPoemImg();}catch(e){} }); }
+  document.getElementById('closeShare')?.addEventListener('click',closeShareSheet);
+  document.getElementById('closeShareBottom')?.addEventListener('click',closeShareSheet);
+  document.getElementById('shareOverlay')?.addEventListener('click',closeShareSheet);
+  {const sc0=document.getElementById('shareCard'); if(sc0){sc0.style.display='none';sc0.style.visibility='hidden';}}  
+  {const so0=document.getElementById('shareOverlay'); if(so0){so0.style.display='none';}}
+const SHINDAN_QS=[
+  {q:'1. 朝、目が覚めたら、まず何を感じる？', a:'胸が、ぎゅっとなる', b:'空が、どうなってるか気になる'},
+  {q:'2. 悲しいとき、どうする？', a:'部屋にこもって、自分の心と向き合う', b:'外に出て、風や雨にあたる'},
+  {q:'3. 好きな場所は？', a:'港の夜、静かな街角', b:'田んぼ、山、星空'},
+  {q:'4. 言葉で大切にしたいのは？', a:'自分の痛みを、そのまま言葉にする', b:'誰かのために、祈るような言葉'},
+  {q:'5. 雨が降ったら、どう感じる？', a:'灰色の霧に溶けていく感じ', b:'雨のなかでも、空を見上げて、誰かのために祈りたい'},
+];
+function renderShindan(){
+  const wrap=document.getElementById('shindanQs'); if(!wrap) return; wrap.innerHTML='';
+  SHINDAN_QS.forEach((item,idx)=>{
+    const div=document.createElement('div'); div.className='q';
+    div.innerHTML='<b>'+item.q+'</b>';
+    ['a','b'].forEach(k=>{ const lab=document.createElement('label'); lab.innerHTML='<input type="radio" name="sq'+idx+'" value="'+k+'"><span class="opt-text">'+item[k]+'</span>'; div.appendChild(lab); });
+    wrap.appendChild(div);
+  });
 }
-function getPoem(poet,level,place){
-  const base={
-    kyodatsu:[
-      "今日は歩けそうな空です。",
-      "雲が橋を渡ろうとしています。",
-      "汚れっちまった悲しみに、風が触れる。",
-      "汚れっちまった悲しみに、今日も小雪の降りかかる、虚脱の空でした。どこへも行けず、空だけが遠くへ行ってしまうような、仙人級の午後。"
-    ],
-    taiyou:[
-      "光が砕けて、道に落ちています。",
-      "海の向こうで、風が渡ろうとしています。",
-      "空が少し傾いて、3°、光をこぼした。",
-      "光の粒子が霧を照らし、樹々は朝日を浴びて輝く。今日の空は、すべての存在を光に包むような、太陽の涙の仙人級でした。"
-    ]
+renderShindan();
+document.getElementById('diagToggle').onclick=()=>{
+  const p=document.getElementById('diagPanel'); const wasOpen=p.style.display==='block'; p.style.display=wasOpen?'none':'block';
+};
+const SHINDAN_DETAIL={
+  kyodatsu:{label:'あなたは、自分の痛みを、そのまま言葉にする詩人',personality:'痛みや寂しさを無理に明るくせず、まずそのまま受け止めるタイプです。心の中の重さを言葉にすることで、少しずつ整理していきます。静かな場所や一人の時間に、本音が出やすくなります。誰かの痛みにも、軽く流さず寄り添えます。',points:['痛みの言葉が、どこで少し和らいでいるか','寂しさの中に、温かさが残っているか','最後の一行で、心の距離がどう変わったか']},
+  taiyou:{label:'あなたは、空や風に心を重ねて、誰かのために祈る詩人',personality:'自分ひとりの中に留まらず、空や風、誰かのことを思い浮かべるタイプです。つらいときほど、外の広がりに気持ちを預けます。祈るような言葉で、自分も誰かも少し軽くしようとします。明るさの中に、そっと影も残します。',points:['空や風の広がりが、気持ちをどう運んでいるか','祈るような言葉が、誰に向けられているか','明るさと影の配分が、希望の感じ方と合っているか']}
+};
+let _shindanPendingType=null;
+document.getElementById('shindanBtn').onclick=()=>{
+  let a=0,b=0,ans=0;
+  SHINDAN_QS.forEach((_,i)=>{ const el=document.querySelector('input[name="sq'+i+'"]:checked'); if(el){ans++; if(el.value==='a')a++; else b++;}});
+  if(ans<5){ alert('5問、全部答えてください'); return; }
+  const type=a>=3?'kyodatsu':'taiyou';
+  _shindanPendingType=type;
+  const d=SHINDAN_DETAIL[type];
+  const rEl=document.getElementById('shindanResult'); rEl.style.display='block';
+  document.getElementById('shindanConfirmed').style.display='none';
+  rEl.innerHTML='<div style="background:#2e2a4a;border:1px solid #6b4eff;border-radius:10px;padding:12px;margin-top:10px;text-align:left">'
+    +'<div style="font-size:16px;font-weight:800;line-height:1.5">'+d.label+' です</div>'
+    +'<div style="font-weight:800;margin-top:14px;font-size:13px">詩人としての性格</div>'
+    +'<p style="font-size:13px;line-height:1.8;margin:6px 0 0">'+d.personality+'</p>'
+    +'<div style="font-weight:800;margin-top:14px;font-size:13px">このタイプの詩の鑑賞ポイント</div>'
+    +'<ul style="font-size:13px;line-height:1.8;margin:6px 0 0;padding-left:18px">'+d.points.map(p=>'<li>'+p+'</li>').join('')+'</ul>'
+    +'<button id="shindanClose" class="btn" style="width:100%;margin-top:14px;background:#f5f1e8;color:#1c1917">閉じる・このタイプに決定</button></div>';
+  document.getElementById('shindanClose').onclick=()=>{
+    const t2=_shindanPendingType; if(!t2) return;
+    document.querySelectorAll('#poetToggle button').forEach(bb=>bb.classList.toggle('active', bb.dataset.poet===t2));
+    try{ updateAll(); }catch(e){}
+    rEl.style.display='none';
+    document.getElementById('diagPanel').style.display='none';
+    const cEl=document.getElementById('shindanConfirmed'); cEl.style.display='block';
+    document.getElementById('shindanConfirmedText').textContent='決定：'+SHINDAN_DETAIL[t2].label+' に決まりました。詩の表示もこのタイプに切り替わりました。';
+    _shindanPendingType=null;
   };
-  return base[poet][level]||base[poet][1];
+};
+document.getElementById('shindanReset').onclick=()=>{ document.querySelectorAll('#shindanQs input[type=radio]').forEach(e=>e.checked=false); document.getElementById('shindanResult').style.display='none'; document.getElementById('shindanConfirmed').style.display='none'; _shindanPendingType=null; };
+document.getElementById('shindanRedo').onclick=()=>{ document.querySelectorAll('#shindanQs input[type=radio]').forEach(e=>e.checked=false); document.getElementById('shindanResult').style.display='none'; document.getElementById('shindanConfirmed').style.display='none'; _shindanPendingType=null; document.getElementById('diagPanel').style.display='block'; };
+// スライダーは1つだけ（level） — 同期はいらない
+// 詩入り画像：簡易描画＋ドラッグ
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d'); let curW=1280, curH=720, poemXRatio=0.07, poemYRatio=0.11, titleXRatio=0.955, titleYRatio=0.905, titleSizeScale=1, dragMode=null, dragStartX=0, dragStartY=0, startPoemX=0.07, startPoemY=0.11, startFont=42; let _poemImgMode='live', _poemSavedIdx=0, _poemBoxScale=1.0, _poemBoxAlpha=0.35, _poemImgCache=null, _poemImgCacheSrc='';
+let _imgX=0, _imgY=0, _dragModeOverride='auto', _shareW=1280, _shareH=720;
+function applyShareSize(){ if(_currentSns==='ig'){ _shareW=1080; _shareH=1350; } else { _shareW=1280; _shareH=720; } try{ const _cv=document.getElementById('cv'); if(_cv){ _cv.width=_shareW; _cv.height=_shareH; } curW=_shareW; curH=_shareH; }catch(e){} const _lbl=document.getElementById('shareSizeLabel'); if(_lbl) _lbl.textContent = (_currentSns==='ig' ? 'Instagram：縦 4:5（1080×1350）' : 'Threads / Bluesky / X：横 16:9（1280×720）'); }
+function _getPoemImgSrc(){ try{ if(_poemImgMode==='saved'){ const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); if(arr[_poemSavedIdx]) return arr[_poemSavedIdx].src; } }catch(e){} const li=document.getElementById('liveImg'); return (li?.currentSrc||li?.src||'hero.jpg'); }
+function _updateImgSrcLabel(){ const el=document.getElementById('imgSrcLabel'); if(!el) return; if(_poemImgMode==='saved'){ const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); el.textContent = arr.length ? ('今：保存画像 ' + (_poemSavedIdx+1) + ' / ' + arr.length + '枚目') : '今：保存画像（まだ保存がありません）'; } else { el.textContent='今：ライブ画像'; } const a=document.getElementById('imgSrcLive'), b=document.getElementById('imgSrcSaved'); if(a&&b){ a.style.background=_poemImgMode==='live'?'#f5f1e8':'transparent'; a.style.color=_poemImgMode==='live'?'#1c1917':'#a8a29e'; b.style.background=_poemImgMode==='saved'?'#f5f1e8':'transparent'; b.style.color=_poemImgMode==='saved'?'#1c1917':'#a8a29e'; } }
+function drawPoemImg(){
+  const poem=document.getElementById('poemMain').textContent;
+  const title='太陽の涙、虚脱の空';
+  const weather=document.getElementById('practical').textContent;
+  const zoom=parseFloat(document.getElementById('zoom').value||1.2), fontSize=parseFloat(document.getElementById('fontSize').value||42), shade=parseFloat(document.getElementById('shade').value||0.18);
+  const sat=parseFloat(document.getElementById('sat').value||1.3), con=parseFloat(document.getElementById('con').value||1.1), warm=parseFloat(document.getElementById('warm').value||0.18);
+  const zv=document.getElementById('zoomVal'); if(zv) zv.textContent=zoom.toFixed(2); const fv=document.getElementById('fontVal'); if(fv) fv.textContent=fontSize; const sv=document.getElementById('shadeVal'); if(sv) sv.textContent=shade.toFixed(2);
+  const bv=document.getElementById('poemBoxVal'); if(bv) bv.textContent=_poemBoxScale.toFixed(2);
+  ctx.clearRect(0,0,curW,curH);
+  const src=_getPoemImgSrc();
+  // 写真を描く。まだ読み込み中なら、グラデでつないで、読めたら描き直す
+  if(_poemImgCacheSrc!==src){ _poemImgCache=new Image(); _poemImgCacheSrc=src; _poemImgCache.crossOrigin='anonymous'; _poemImgCache.onload=()=>{ try{drawPoemImg();}catch(e){} }; _poemImgCache.onerror=()=>{}; _poemImgCache.src=src; }
+  if(_poemImgCache && _poemImgCache.complete && _poemImgCache.naturalWidth>0){
+    try{ ctx.save(); try{ctx.filter='saturate('+sat+') contrast('+con+') brightness(1.02)';}catch(e){} const iw=_poemImgCache.naturalWidth, ih=_poemImgCache.naturalHeight; const sc=Math.max(curW/iw, curH/ih)*zoom; const w=iw*sc, hh=ih*sc; const _ox=(curW-w)/2 + _imgX*curW*0.35; const _oy=(curH-hh)/2 + _imgY*curH*0.35; ctx.drawImage(_poemImgCache,_ox,_oy,w,hh); ctx.restore(); }catch(e){}
+  } else {
+    ctx.save(); ctx.fillStyle='#1c1917'; ctx.fillRect(0,0,curW,curH); const g=ctx.createLinearGradient(0,0,0,curH); g.addColorStop(0,'#3a7bd5'); g.addColorStop(0.55,'#7aa8e6'); g.addColorStop(1,'#f6c9a0'); ctx.fillStyle=g; ctx.fillRect(0,0,curW,curH); ctx.restore();
+  }
+  if(warm>0){ const wg=ctx.createLinearGradient(0,curH*0.35,0,curH*0.95); wg.addColorStop(0,'rgba(255,140,60,0)'); wg.addColorStop(1,'rgba(255,120,40,'+warm+')'); ctx.fillStyle=wg; ctx.fillRect(0,0,curW,curH); }
+  if(shade>0){ const g2=ctx.createLinearGradient(0,0,0,curH*0.55); g2.addColorStop(0,'rgba(0,0,0,'+shade+')'); g2.addColorStop(1,'rgba(0,0,0,0)'); ctx.fillStyle=g2; ctx.fillRect(0,0,curW,curH*0.55); }
+  // 詩の箱 — 大きさはスライダーとドラッグで変えられる
+  // 詩の箱 — 箱の幅で、1行の文字数を決めて、折り返す（箱と文字数を連動）
+  const padX=curW*poemXRatio, padY=curH*poemYRatio;
+  const boxPad=Math.round(26*_poemBoxScale);
+  const boxW=Math.min(curW*0.92, Math.max(curW*0.45, curW*0.86*_poemBoxScale));
+  const availW=boxW-boxPad*2;
+  const maxChars=Math.max(8, Math.floor(availW/(fontSize*0.98)));
+  const _flat=poem.replace(/\n/g,'');
+  const lines=[]; let _cur='';
+  for(let _ci=0; _ci<_flat.length; _ci++){
+    _cur+=_flat[_ci];
+    const _isBreak=_cur.endsWith('。')||_cur.endsWith('、');
+    if(_cur.length>=maxChars || (_isBreak && _cur.length>=Math.floor(maxChars*0.6))){ lines.push(_cur); _cur=''; }
+  }
+  if(_cur) lines.push(_cur);
+  const boxH=lines.length*fontSize*1.55 + boxPad*2;
+  try{ ctx.save(); ctx.fillStyle='rgba(0,0,0,'+_poemBoxAlpha+')'; ctx.beginPath(); ctx.roundRect(padX-boxPad, padY-boxPad, boxW, boxH, 16); ctx.fill(); ctx.restore(); }catch(e){ ctx.fillStyle='rgba(0,0,0,'+_poemBoxAlpha+')'; ctx.fillRect(padX-boxPad, padY-boxPad, boxW, boxH); }
+  ctx.textAlign='left'; ctx.textBaseline='top'; ctx.font='600 '+fontSize+'px "Yuji Syuku",cursive'; ctx.shadowColor='rgba(0,0,0,0.55)'; ctx.shadowBlur=12; ctx.shadowOffsetY=2; ctx.fillStyle='#fff';
+  lines.forEach((line,i)=>{ ctx.fillText(line, padX, padY+i*fontSize*1.55); });
+  const bx=curW*titleXRatio, titleSize=Math.round(curW*0.018*titleSizeScale), weaSize=Math.round(curW*0.016*titleSizeScale), titleY=curH*titleYRatio;
+  ctx.textAlign='right'; ctx.font='600 '+titleSize+'px "Shippori Mincho B1",serif'; ctx.fillText(title, bx, titleY);
+  ctx.font='500 '+weaSize+'px "Shippori Mincho B1",serif'; ctx.fillText(weather, bx, titleY+titleSize+6);
+  _updateImgSrcLabel();
 }
-function updatePoem(){
-  const poet=document.querySelector('#poetToggle button.active').dataset.poet;
-  const level=parseInt(document.getElementById('level').value);
-  const place=document.getElementById('placeSelect').value;
-  const placeName=document.getElementById('placeSelect').selectedOptions[0]?.textContent||'舞子ビラ';
-  const levels=["からっと","ほどよく","こいめ","仙人級"];
-  document.getElementById('poemMain').textContent=getPoem(poet,level,place);
-  document.getElementById('poemSub').textContent=`${poet==='kyodatsu'?'虚脱の空':'太陽の涙'} / ${levels[level]} / ${placeName}`;
-  document.getElementById('time').textContent=new Date().toLocaleString('ja-JP');
+['zoom','fontSize','shade','blueBoost','warm','sat','con','titleSize'].forEach(id=>{ document.getElementById(id)?.addEventListener('input',()=>{ if(id==='titleSize') titleSizeScale=parseFloat(document.getElementById(id).value); drawPoemImg(); }); });
+let lastFilter=null;
+document.querySelectorAll('[data-filter]').forEach(btn=>{ btn.onclick=()=>{
+  const f=btn.dataset.filter;
+  /* 押したボタンだけ白くする — これが無かった */
+  document.querySelectorAll('[data-filter]').forEach(x=>{ x.classList.remove('btn-dark'); x.classList.add('btn-ghost'); });
+  btn.classList.remove('btn-ghost'); btn.classList.add('btn-dark');
+  if(lastFilter===f){ const s=document.getElementById('filterSliders'); s.style.display=s.style.display==='none'?'block':'none'; }
+  lastFilter=f;
+  const set=(sat,con,warm,blue)=>{ document.getElementById('sat').value=sat; document.getElementById('con').value=con; document.getElementById('warm').value=warm; document.getElementById('blueBoost').value=blue; };
+  if(f==='none') set(1,1,0,1); if(f==='sumi') set(1.35,1.10,0.02,1.40); if(f==='hakanai') set(0.85,0.98,0.06,1.05); if(f==='nukumori') set(1.20,1.08,0.28,1.08); if(f==='shizukesa') set(0.95,1.12,0.02,1.15); if(f==='gin') set(0.80,1.02,0,0.95); if(f==='kagayaki') set(1.30,1.18,0.10,1.20);
+  drawPoemImg();
+};});
+cv.addEventListener('pointerdown', e=>{
+  const rect=cv.getBoundingClientRect(); const x=(e.clientX-rect.left)/rect.width, y=(e.clientY-rect.top)/rect.height;
+  const fontSize=parseFloat(document.getElementById('fontSize').value); const poemH=(document.getElementById('poemMain').textContent.split('\n').length*fontSize*1.55)/curH; const poemW=0.6;
+  if(_dragModeOverride==='image'){ dragMode='image'; }
+  else if(_dragModeOverride==='poem'){ dragMode='poem'; }
+  else if(_dragModeOverride==='title'){ dragMode='title'; }
+  else if(x>poemXRatio+poemW-0.06 && x<poemXRatio+poemW+0.04 && y>poemYRatio+poemH-0.06 && y<poemYRatio+poemH+0.04){ dragMode='resizePoem'; }
+  else if(x>=titleXRatio-0.32 && x<=titleXRatio+0.02 && y>=titleYRatio-0.03 && y<=titleYRatio+0.12){ dragMode='title'; }
+  else if(x>=poemXRatio && x<=poemXRatio+poemW && y>=poemYRatio && y<=poemYRatio+poemH+0.05){ dragMode='poem'; }
+  else { dragMode='image'; }
+  dragStartX=x; dragStartY=y; startPoemX=poemXRatio; startPoemY=poemYRatio; startFont=fontSize; window._startTitleX=titleXRatio; window._startTitleY=titleYRatio;
+  cv.setPointerCapture(e.pointerId);
+});
+cv.addEventListener('pointermove', e=>{
+  if(!dragMode) return; const rect=cv.getBoundingClientRect(); const x=(e.clientX-rect.left)/rect.width, y=(e.clientY-rect.top)/rect.height; const dx=x-dragStartX, dy=y-dragStartY;
+  if(dragMode==='image'){ const _z=parseFloat(document.getElementById('zoom').value||1.2); const _f=0.30/_z; _imgX=Math.max(-1,Math.min(1,_imgX+dx*_f)); _imgY=Math.max(-1,Math.min(1,_imgY+dy*_f)); _syncImgPos(); drawPoemImg(); }
+  else if(dragMode==='poem'){ poemXRatio=Math.min(0.6,Math.max(0.02,startPoemX+dx)); poemYRatio=Math.min(0.7,Math.max(0.02,startPoemY+dy)); drawPoemImg(); }
+  else if(dragMode==='title'){ titleXRatio=Math.min(0.98,Math.max(0.55,window._startTitleX+dx)); titleYRatio=Math.min(0.97,Math.max(0.55,window._startTitleY+dy)); drawPoemImg(); }
+  else if(dragMode==='resizePoem'){ const ns=Math.min(1.5,Math.max(0.7,1.0+dy*1.2)); _poemBoxScale=ns; const s=document.getElementById('poemBoxScale'); if(s) s.value=String(ns); drawPoemImg(); }
+});
+cv.addEventListener('pointerup', ()=>{ dragMode=null; drawPoemImg(); });
+
+// --- SNSごとの文：押したSNSで、文が変わる ---
+let _currentSns = "ig";
+function _sharePlaceTag(){ try{ const sel=document.getElementById("placeSelect"); const loc=LOCATIONS.find(l=>l.id===(sel?.value||"kobe")); return loc?loc.name:"神戸"; }catch(e){ return "神戸"; } }
+function buildShareTextFor(sns){
+  const place = _sharePlaceTag();
+  const base = "今日のそらと僕のこころ…詩にしてみました。";
+  const tags = "#太陽の涙虚脱の空 #詩 #天気 #" + place;
+  if(sns==="ig") return base + "\n続きはプロフィールのリンクから\n" + tags;
+  if(sns==="x") return base + " " + tags + "\n" + APP_URL;
+  // Threads / Bluesky は、リンクが押せる
+  return base + "\n続きはここから → " + APP_URL + "\n" + tags;
 }
-document.getElementById('placeSelect').addEventListener('change',updatePoem);
-document.getElementById('level').addEventListener('input',updatePoem);
-document.getElementById('poetToggle').addEventListener('click',e=>{
+function renderSharePreview(sns){
+  _currentSns = sns;
+  try{ applyShareSize(); }catch(e){}
+  try{ drawPoemImg(); }catch(e){}
+  const el=document.getElementById("sharePreviewText"); if(el) el.textContent=buildShareTextFor(sns);
+  const lbl=document.getElementById("sharePreviewLabel");
+  const map={ig:"今は Instagram 用です", threads:"今は Threads 用です", bluesky:"今は Bluesky 用です", x:"今は X 用です"};
+  if(lbl) lbl.textContent=map[sns]||"";
+}
+
+document.getElementById("editToggle")?.addEventListener("click", ()=>{
+  const p=document.getElementById("editPanel"); if(!p) return;
+  const open = p.style.display==="none";
+  p.style.display = open ? "block" : "none";
+  const btn=document.getElementById("editToggle"); if(btn) btn.textContent = open ? "✏️ 編集を閉じる — 画像だけ見る" : "✏️ 編集する — 1つだけ開く";
+  if(open){ try{ _showEditGroup("color"); }catch(e){} try{ drawPoemImg(); }catch(e){} }
+});
+function _showEditGroup(name){
+  document.querySelectorAll("[data-edit-group]").forEach(el=>{ el.style.display = (el.dataset.editGroup===name ? "" : "none"); });
+  document.querySelectorAll("[data-edittab]").forEach(b=>{ if(b.dataset.edittab===name){ b.classList.remove("btn-ghost"); b.classList.add("btn-dark"); } else { b.classList.remove("btn-dark"); b.classList.add("btn-ghost"); } });
+}
+document.querySelectorAll("[data-edittab]").forEach(b=>{ b.addEventListener("click", ()=>{ _showEditGroup(b.dataset.edittab); }); });
+function _syncImgPos(){ const xv=document.getElementById("imgXVal"); if(xv) xv.textContent=Math.round(_imgX*100); const yv=document.getElementById("imgYVal"); if(yv) yv.textContent=Math.round(_imgY*100); const xs=document.getElementById("imgX"); if(xs) xs.value=String(Math.round(_imgX*100)); const ys=document.getElementById("imgY"); if(ys) ys.value=String(Math.round(_imgY*100)); }
+document.getElementById("imgX")?.addEventListener("input", (e)=>{ _imgX=parseFloat(e.target.value)/100; _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgY")?.addEventListener("input", (e)=>{ _imgY=parseFloat(e.target.value)/100; _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgLeft")?.addEventListener("click", ()=>{ _imgX=Math.max(-1,_imgX-0.1); _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgRight")?.addEventListener("click", ()=>{ _imgX=Math.min(1,_imgX+0.1); _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgUp")?.addEventListener("click", ()=>{ _imgY=Math.max(-1,_imgY-0.1); _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgDown")?.addEventListener("click", ()=>{ _imgY=Math.min(1,_imgY+0.1); _syncImgPos(); drawPoemImg(); });
+document.getElementById("imgCenter")?.addEventListener("click", ()=>{ _imgX=0; _imgY=0; const z=document.getElementById("zoom"); if(z) z.value="1.2"; _syncImgPos(); drawPoemImg(); });
+document.querySelectorAll("[data-dragmode]").forEach(b=>{ b.addEventListener("click", ()=>{ document.querySelectorAll("[data-dragmode]").forEach(x=>{ x.classList.remove("btn-dark"); x.classList.add("btn-ghost"); }); b.classList.remove("btn-ghost"); b.classList.add("btn-dark"); _dragModeOverride=b.dataset.dragmode; }); });
+document.querySelectorAll('#snsTopRow button').forEach(_b=>{ _b.addEventListener('click',()=>{document.querySelectorAll('#snsTopRow button').forEach(_x=>{ _x.classList.remove('btn-dark'); _x.classList.add('btn-ghost'); }); _b.classList.remove('btn-ghost'); _b.classList.add('btn-dark'); renderSharePreview(_b.dataset.sns); }); });
+document.getElementById('sharePoemImg').onclick=()=>{ const p=document.getElementById('snsPicker'); const willOpen = p.style.display==='none'; p.style.display=willOpen?'block':'none'; if(willOpen){ setTimeout(()=>{ try{ p.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){ p.scrollIntoView(); } },30); } };
+document.getElementById('shareX').onclick=()=>{ window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(buildShareTextFor('x')),'_blank'); };
+document.getElementById('shareThreads').onclick=()=>{ window.open('https://www.threads.net/intent/post?text='+encodeURIComponent(buildShareTextFor('threads')),'_blank'); };
+document.getElementById('shareBluesky').onclick=()=>{ window.open('https://bsky.app/intent/compose?text='+encodeURIComponent(buildShareTextFor('bluesky')),'_blank'); };
+document.getElementById('shareIG').onclick=async()=>{ const text=buildShareTextFor('ig'); const blob=await new Promise(res=>cv.toBlob(res,'image/png')); const file=new File([blob],'taiyou_poem.png',{type:'image/png'}); if(navigator.share){ try{ await navigator.share({files:[file], text:text}); return; }catch(e){ if(String(e).includes('Abort')) return; console.log('IG share fail, fallback', e); } } const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=cv.toDataURL('image/png'); a.click(); try{ await navigator.clipboard.writeText(text); }catch(e){} window.open('https://www.instagram.com/','_blank'); };
+document.getElementById('shareOS').onclick=async()=>{ try{ const blob=await new Promise(res=>cv.toBlob(res,'image/png')); const file=new File([blob],'taiyou_poem.png',{type:'image/png'}); if(navigator.share && navigator.canShare({files:[file]})){ await navigator.share({files:[file], text:buildShareTextFor(_currentSns)}); } else { const a=document.createElement('a'); a.download='taiyou_poem.png'; a.href=URL.createObjectURL(blob); a.click(); alert('OSのシェア画面が出ないので、画像を保存しました。'); } }catch(e){} };
+document.getElementById('saveImgLive')?.addEventListener('click',()=>{ try{const img=document.getElementById('liveImg'); const src=img?.currentSrc||img?.src||''; if(!src){document.getElementById('saveMsg').textContent='まだライブ画像がありません'; return;} const arr=JSON.parse(localStorage.getItem('kyodatsu_saved')||'[]'); arr.unshift({src, at:new Date().toISOString(), place:document.getElementById('placeSelect')?.value||''}); localStorage.setItem('kyodatsu_saved', JSON.stringify(arr.slice(0,12))); const m=document.getElementById('saveMsg'); if(m) m.textContent='保存しました（'+arr.length+'枚）。シェア箱の「保存した画像で作る」から使えます'; renderSavedGallery(); }catch(e){ alert('保存できませんでした'); } });
+if('serviceWorker' in navigator)
+{
+    navigator.serviceWorker.getRegistrations().then(regs=>{
+      regs.forEach(r=>r.unregister());
+    });
+    if('caches' in window){ caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))); }
+  }
+  loadLive().then(updateAll);
+  try{ const _rb=document.getElementById('poemReloadBtn'); if(_rb){ _rb.addEventListener('click', async ()=>{ const _m=document.getElementById('poemReloadMsg'); if(_m) _m.textContent='読み込み中…'; await loadLive(); updateAll(); if(_m){ const _pe=liveData?.locations?.[document.getElementById('placeSelect').value||'kobe']; _m.textContent = _pe ? ('data.json：'+(liveData?.updated_at||'')+' / 詩：'+(_pe.poem_date||'')+' '+(_pe.poem_slot||'')) : '読めませんでした'; } }); } }catch(e){}
+  setInterval(()=>{ console.log('auto refresh 30min'); loadLive().then(updateAll); }, 30*60*1000);
+  let lastUpdatedAt = null;
+  setInterval(async ()=>{
+    try{
+      const r = await fetch('data.json?v='+Date.now(), {cache:'no-store'});
+      if(!r.ok) return;
+      const j = await r.json();
+      const _t=document.getElementById('time'); if(_t) _t.textContent = 'チェック：' + new Date().toLocaleString('ja-JP') + ' / data.json：' + (j.updated_at ? new Date(j.updated_at).toLocaleString('ja-JP') : '(なし)');
+      if(lastUpdatedAt && j.updated_at === lastUpdatedAt) return;
+      if(!lastUpdatedAt) lastUpdatedAt = liveData?.updated_at;
+      if(j.updated_at !== lastUpdatedAt){ lastUpdatedAt = j.updated_at; liveData = j; updateAll(); }
+    }catch(e){}
+  }, 5*60*1000);
+  // 5分おきに data.json の updated_at だけ軽くチェック (30分より早く気づくため)
+  // 実際は30分ごとの更新に合わせるので、30分間隔で十分。5分チェックは入れない。
+  // アプリに戻ってきたら、すぐ更新 (バックグラウンドから復帰)
+  document.addEventListener('visibilitychange', ()=>{
+    if(!document.hidden){
+      console.log('back to foreground, refresh');
+      loadLive().then(updateAll);
+  try{ const _rb=document.getElementById('poemReloadBtn'); if(_rb){ _rb.addEventListener('click', async ()=>{ const _m=document.getElementById('poemReloadMsg'); if(_m) _m.textContent='読み込み中…'; await loadLive(); updateAll(); if(_m){ const _pe=liveData?.locations?.[document.getElementById('placeSelect').value||'kobe']; _m.textContent = _pe ? ('data.json：'+(liveData?.updated_at||'')+' / 詩：'+(_pe.poem_date||'')+' '+(_pe.poem_slot||'')) : '読めませんでした'; } }); } }catch(e){}
+    }
+  });
+}
+document.getElementById('placeSelect').addEventListener('change', ()=>{ savePrefs(); updateAll(); });
+(function(){
+  var _sl = document.getElementById('level');
+  if(!_sl) return;
+  var _onLevel = function(){ savePrefs(); updatePoemOnly(); };
+  _sl.addEventListener('input', _onLevel);
+  _sl.addEventListener('change', _onLevel);
+})();
+document.getElementById('poetToggle').addEventListener('click', e=>{
   if(e.target.tagName==='BUTTON'){
     document.querySelectorAll('#poetToggle button').forEach(b=>b.classList.remove('active'));
-    e.target.classList.add('active'); updatePoem();
+    e.target.classList.add('active'); savePrefs(); updateAll();
   }
 });
 document.getElementById('sp').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='390px';document.getElementById('sp').classList.add('active');document.getElementById('tab').classList.remove('active')};
 document.getElementById('tab').onclick=()=>{document.getElementById('poemWrap').style.maxWidth='768px';document.getElementById('tab').classList.add('active');document.getElementById('sp').classList.remove('active')};
-const POET_TYPES={
-  sora:{label:"空を見つめる詩人",personality:"あなたは、急いで答えを出さず、まず空全体を受け止めるタイプです。広がりや余白に安心し、言葉もゆっくり選びます。ひとりの時間を大切にし、静かな場所ほど本音に近づきます。",points:["空の色が変わる瞬間に、詩の気持ちが切り替わっていないか","雲の形や余白が、言葉の余韻と合っているか","一行目と最後の一行で、空の距離感がどう変わったか"]},
-  hikari:{label:"光を追う詩人",personality:"あなたは、小さな光や影の動きにすぐ気づくタイプです。明るさのなかに希望を見つけ、暗さのなかにも温かさを見つけようとします。気持ちが沈んだときほど、光の方向を探します。",points:["光がどこから差して、どこに落ちているか","明るい言葉と暗い言葉の配分が、光と影のようになっているか","光の強さが、詩の温度と連動しているか"]},
-  kaze:{label:"風の気配を読む詩人",personality:"あなたは、目に見えない変化に敏感なタイプです。人の声のトーンや空気の動きから、言葉の裏側を感じ取ります。流れに逆らわず、少し先の気配を読むのが得意です。",points:["風の向きや強さが、詩のリズムと合っているか","音や匂いのような、見えないものがどう描かれているか","吹き抜ける感じと、立ち止まる感じのバランス"]},
-  ame:{label:"雨の余韻に寄り添う詩人",personality:"あなたは、雨上がりのような、静かで少し切ない時間に心が動くタイプです。派手さより余韻を大切にし、終わったことのなかに残る温かさを拾います。寄り添う言葉を選ぶのが得意です。",points:["雨の前と後で、気持ちがどう変わったか","濡れたもの・湿った空気など、余韻の描き方","最後に残る静けさが、寂しさか安らぎか"]}
-};
-let diagDecided=null;
-function getDiagSelected(){const el=document.querySelector('input[name="poetType"]:checked');return el?el.value:null;}
-function syncDiagOptions(){document.querySelectorAll('.diag-option').forEach(l=>{l.classList.toggle('selected',!!l.querySelector('input').checked)});document.getElementById('diagShow').disabled=!getDiagSelected();}
-document.querySelectorAll('input[name="poetType"]').forEach(r=>r.addEventListener('change',()=>{document.getElementById('diagConfirmed').hidden=true;diagDecided=null;syncDiagOptions();}));
-document.getElementById('diagShow').addEventListener('click',()=>{
-  const key=getDiagSelected(); if(!key) return;
-  const d=POET_TYPES[key];
-  document.getElementById('diagResultType').textContent="あなたは「"+d.label+"」です";
-  document.getElementById('diagResultPersonality').textContent=d.personality;
-  document.getElementById('diagResultPoints').innerHTML=d.points.map(p=>"<li>"+p+"</li>").join("");
-  document.getElementById('diagResult').hidden=false;
-  document.getElementById('diagResult').scrollIntoView({behavior:"smooth",block:"nearest"});
-});
-document.getElementById('diagClose').addEventListener('click',()=>{
-  const key=getDiagSelected(); if(!key) return;
-  diagDecided=key;
-  document.getElementById('diagResult').hidden=true;
-  document.getElementById('diagConfirmedText').textContent="決定："+POET_TYPES[key].label+" に決まりました。";
-  document.getElementById('diagConfirmed').hidden=false;
-});
-document.getElementById('diagRedo').addEventListener('click',()=>{
-  diagDecided=null;
-  document.querySelectorAll('input[name="poetType"]').forEach(r=>r.checked=false);
-  document.getElementById('diagConfirmed').hidden=true;
-  document.getElementById('diagResult').hidden=true;
-  syncDiagOptions();
-});
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}
-loadConfig();
+
+// ---- シェア ----
+let shareTab = 'instagram';
+const APP_URL = 'https://rayvisionkobe-collab.github.io/taiyou-kyodatsu/';
+document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', ()=>{ setTimeout(()=>{ try{ applyShareSize(); drawPoemImg(); }catch(e){} },300); });
+
+// ---- 仙人級ゲート v141：4段階は維持、仙人級だけ私だけ ----
+// 仕組み：
+//  - 生成は 4段階のまま（fetch.py は 0〜3 を全部作る）
+//  - 表示は、一般は 0〜2 まで。仙人級（3）は、解錠したときだけ
+//  - 解錠：URL ?senjin=1 か #senjin、または タイトルを 5回タップ
+//  - 解錠したら localStorage に残るので、次回からも見れる
+//  - 注意：data.json には 3 も入ってるので、完全な秘匿ではない。一般の人が開かない、という分け方です
+function isSenjinUnlocked(){
+  try{
+    if(localStorage.getItem('senjin_unlocked')==='1') return true;
+    if(location.search.indexOf('senjin=1')!==-1) return true;
+    if(location.hash.indexOf('senjin')!==-1) return true;
+  }catch(e){}
+  return false;
+}
+function applySenjinGate(){
+  var unlocked = isSenjinUnlocked();
+  // URL で来たら、保存する
+  if(unlocked){ try{ localStorage.setItem('senjin_unlocked','1'); }catch(e){} }
+  var slider = document.getElementById('level');
+  var label = document.getElementById('senjinLabel');
+  if(!slider) return;
+  if(unlocked){
+    slider.max = '3';
+    if(label) label.style.display = '';
+    // 解錠中は、タイトルに小さな印をつける（一般には気づかれない）
+    var t = document.getElementById('poemTitle');
+    if(t && t.textContent.indexOf('・')===-1) t.textContent = t.textContent + '・';
+  }else{
+    slider.max = '2';
+    if(label) label.style.display = 'none';
+    if(parseInt(slider.value,10) > 2){ slider.value = '2'; }
+  }
+}
+(function(){
+  var taps = 0, last = 0;
+  var title = document.getElementById('poemTitle');
+  if(title){
+    title.addEventListener('click', function(){
+      var now = Date.now();
+      if(now - last > 2000) taps = 0;
+      last = now; taps++;
+      if(taps >= 5){
+        taps = 0;
+        try{ localStorage.setItem('senjin_unlocked','1'); }catch(e){}
+        applySenjinGate();
+        var m = document.getElementById('strengthLabel');
+        if(m) m.textContent = '奥の座敷が開きました — 仙人級が見れます';
+        if(typeof updateAll === 'function'){ try{ updateAll(); }catch(e){} }
+      }
+    });
+  }
+  // 初期適用
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', applySenjinGate);
+  }else{
+    applySenjinGate();
+  }
+  // v143：ゲートの2つ目の input リスナーは削除。clamp は updatePoemOnly() がやる。
+})();
+
 </script>
+
+
+
+
+
+
 </body>
 </html>
