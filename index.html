@@ -152,8 +152,9 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
       <div style="font-weight:800;text-align:center">あなたの詩人タイプ診断 — 5問、2択だけ</div>
       <div id="shindanQs"></div>
       <div class="row" style="margin-top:10px"><button class="btn" style="background:#6b4eff;color:#fff" id="shindanBtn">診断する → 詩を作る</button><button class="btn btn-ghost" id="shindanReset">もう一度</button></div>
-      <div id="shindanResult" style="display:none"></div>
     </div>
+    <div id="shindanResult" style="display:none"></div>
+    <div id="shindanConfirmed" style="display:none;background:#222;border:1px solid #444;border-radius:10px;padding:10px;margin-top:10px;text-align:left;font-size:13px;line-height:1.6"><span id="shindanConfirmedText"></span><div style="text-align:right;margin-top:6px"><button id="shindanRedo" class="btn btn-ghost" style="font-size:12px;padding:6px 10px">選び直す</button></div></div>
     <div class="toggle" id="poetToggle">
     <button data-poet="kyodatsu" class="active">虚脱の空</button>
     <button data-poet="taiyou">太陽の涙</button>
@@ -196,7 +197,7 @@ canvas{width:100%;height:auto;background:#000;border-radius:12px;display:block}
     感想・ひとこと → <a href="https://forms.gle/PLACEHOLDER" target="_blank" rel="noopener" style="color:#f5f1e8;text-decoration:underline">Googleフォーム (匿名OK)</a>
   </div>
   <div style="font-size:10px;color:#a8a29e">このサイトは、個人情報を集めません。感想を送るときも、名前は入れなくて大丈夫です。</div>
-  <div style="margin-top:6px">出典：ウェザーニュース / Myライブカメラ © rayvisionkobe-collab / v143 スライダー連動 根本修正版 / data.json対応 / 背景は生成り #1c1917 温墨</div>
+  <div style="margin-top:6px">出典：ウェザーニュース / Myライブカメラ © rayvisionkobe-collab / v145 診断・閉じて決定 修正版 / data.json対応 / 背景は生成り #1c1917 温墨</div>
 </footer>
 
 <script>
@@ -416,18 +417,41 @@ renderShindan();
 document.getElementById('diagToggle').onclick=()=>{
   const p=document.getElementById('diagPanel'); const wasOpen=p.style.display==='block'; p.style.display=wasOpen?'none':'block';
 };
+const SHINDAN_DETAIL={
+  kyodatsu:{label:'あなたは、自分の痛みを、そのまま言葉にする詩人',personality:'痛みや寂しさを無理に明るくせず、まずそのまま受け止めるタイプです。心の中の重さを言葉にすることで、少しずつ整理していきます。静かな場所や一人の時間に、本音が出やすくなります。誰かの痛みにも、軽く流さず寄り添えます。',points:['痛みの言葉が、どこで少し和らいでいるか','寂しさの中に、温かさが残っているか','最後の一行で、心の距離がどう変わったか']},
+  taiyou:{label:'あなたは、空や風に心を重ねて、誰かのために祈る詩人',personality:'自分ひとりの中に留まらず、空や風、誰かのことを思い浮かべるタイプです。つらいときほど、外の広がりに気持ちを預けます。祈るような言葉で、自分も誰かも少し軽くしようとします。明るさの中に、そっと影も残します。',points:['空や風の広がりが、気持ちをどう運んでいるか','祈るような言葉が、誰に向けられているか','明るさと影の配分が、希望の感じ方と合っているか']}
+};
+let _shindanPendingType=null;
 document.getElementById('shindanBtn').onclick=()=>{
   let a=0,b=0,ans=0;
   SHINDAN_QS.forEach((_,i)=>{ const el=document.querySelector('input[name="sq'+i+'"]:checked'); if(el){ans++; if(el.value==='a')a++; else b++;}});
   if(ans<5){ alert('5問、全部答えてください'); return; }
   const type=a>=3?'kyodatsu':'taiyou';
-  document.querySelectorAll('#poetToggle button').forEach(bb=>bb.classList.toggle('active', bb.dataset.poet===type));
-  updateAll();
+  _shindanPendingType=type;
+  const d=SHINDAN_DETAIL[type];
   const rEl=document.getElementById('shindanResult'); rEl.style.display='block';
-  rEl.innerHTML='<div style="background:#2e2a4a;border:1px solid #6b4eff;border-radius:10px;padding:10px;margin-top:10px"><b>'+(type==='kyodatsu'?'あなたは、自分の痛みを、そのまま言葉にする詩人':'あなたは、空や風に心を重ねて、誰かのために祈る詩人')+'</b></div>';
+  document.getElementById('shindanConfirmed').style.display='none';
+  rEl.innerHTML='<div style="background:#2e2a4a;border:1px solid #6b4eff;border-radius:10px;padding:12px;margin-top:10px;text-align:left">'
+    +'<div style="font-size:16px;font-weight:800;line-height:1.5">'+d.label+' です</div>'
+    +'<div style="font-weight:800;margin-top:14px;font-size:13px">詩人としての性格</div>'
+    +'<p style="font-size:13px;line-height:1.8;margin:6px 0 0">'+d.personality+'</p>'
+    +'<div style="font-weight:800;margin-top:14px;font-size:13px">このタイプの詩の鑑賞ポイント</div>'
+    +'<ul style="font-size:13px;line-height:1.8;margin:6px 0 0;padding-left:18px">'+d.points.map(p=>'<li>'+p+'</li>').join('')+'</ul>'
+    +'<button id="shindanClose" class="btn" style="width:100%;margin-top:14px;background:#f5f1e8;color:#1c1917">閉じる・このタイプに決定</button></div>';
   document.getElementById('diagPanel').style.display='none';
+  document.getElementById('shindanClose').onclick=()=>{
+    const t2=_shindanPendingType; if(!t2) return;
+    document.querySelectorAll('#poetToggle button').forEach(bb=>bb.classList.toggle('active', bb.dataset.poet===t2));
+    try{ updateAll(); }catch(e){}
+    try{ savePrefs(); }catch(e){}
+    rEl.style.display='none';
+    const cEl=document.getElementById('shindanConfirmed'); cEl.style.display='block';
+    document.getElementById('shindanConfirmedText').textContent='決定：'+SHINDAN_DETAIL[t2].label+' に決まりました。詩の表示もこのタイプに切り替わりました。';
+    _shindanPendingType=null;
+  };
 };
-document.getElementById('shindanReset').onclick=()=>{ document.querySelectorAll('input[type=radio]').forEach(e=>e.checked=false); document.getElementById('shindanResult').style.display='none'; };
+document.getElementById('shindanReset').onclick=()=>{ document.querySelectorAll('#shindanQs input[type=radio]').forEach(e=>e.checked=false); document.getElementById('shindanResult').style.display='none'; document.getElementById('shindanConfirmed').style.display='none'; _shindanPendingType=null; };
+document.getElementById('shindanRedo').onclick=()=>{ document.querySelectorAll('#shindanQs input[type=radio]').forEach(e=>e.checked=false); document.getElementById('shindanResult').style.display='none'; document.getElementById('shindanConfirmed').style.display='none'; _shindanPendingType=null; document.getElementById('diagPanel').style.display='block'; };
 // スライダーは1つだけ（level） — 同期はいらない
 // 詩入り画像：簡易描画＋ドラッグ
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d'); let curW=1280, curH=720, poemXRatio=0.07, poemYRatio=0.11, titleXRatio=0.955, titleYRatio=0.905, titleSizeScale=1, dragMode=null, dragStartX=0, dragStartY=0, startPoemX=0.07, startPoemY=0.11, startFont=42; let _poemImgMode='live', _poemSavedIdx=0, _poemBoxScale=1.0, _poemBoxAlpha=0.35, _poemImgCache=null, _poemImgCacheSrc='';
