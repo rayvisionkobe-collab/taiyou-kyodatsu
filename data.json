@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-27T14:04:04.963456+09:00",
+  "updated_at": "2026-11-27T15:28:49.640315+09:00",
   "locations": {
     "kobe": {
       "image": "images/kobe.jpg",
@@ -18,7 +18,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-27T14:04:04.963456+09:00",
+      "updated_at": "2026-11-27T15:28:49.640315+09:00",
       "status": "ok",
       "poem_date": "2026-11-27",
       "poem_slot": "morning",
@@ -41,7 +41,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-27T14:04:04.963456+09:00",
+      "updated_at": "2026-11-27T15:28:49.640315+09:00",
       "status": "ok",
       "poem_date": "2026-11-27",
       "poem_slot": "morning",
@@ -64,7 +64,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-27T14:04:04.963456+09:00",
+      "updated_at": "2026-11-27T15:28:49.640315+09:00",
       "status": "ok",
       "poem_date": "2026-11-27",
       "poem_slot": "noon",
@@ -87,7 +87,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-27T14:04:04.963456+09:00",
+      "updated_at": "2026-11-27T15:28:49.640315+09:00",
       "status": "ok",
       "poem_date": "2026-11-27",
       "poem_slot": "morning",
@@ -110,7 +110,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-27T14:04:04.963456+09:00",
+      "updated_at": "2026-11-27T15:28:49.640315+09:00",
       "status": "ok",
       "poem_date": "2026-11-26",
       "poem_slot": "noon",
@@ -133,7 +133,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-27T14:04:04.963456+09:00",
+      "updated_at": "2026-11-27T15:28:49.640315+09:00",
       "status": "ok",
       "poem_date": "2026-11-27",
       "poem_slot": "morning",
@@ -156,7 +156,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-27T14:04:04.963456+09:00",
+      "updated_at": "2026-11-27T15:28:49.640315+09:00",
       "status": "ok",
       "poem_date": "2026-11-26",
       "poem_slot": "noon",
@@ -179,7 +179,7 @@
         }
       },
       "model": "cached",
-      "updated_at": "2026-11-27T14:04:04.963456+09:00",
+      "updated_at": "2026-11-27T15:28:49.640315+09:00",
       "status": "ok",
       "poem_date": "2026-11-27",
       "poem_slot": "morning",
@@ -201,8 +201,8 @@
           "3": "那覇に、光が落ちている。海の向こうで、風が渡ろうとしている。晴れの光が、樹々を照らし、すべての存在を光に包むような、太陽の涙の午後だった。"
         }
       },
-      "model": "gemini-3.5-flash-lite",
-      "updated_at": "2026-11-27T14:04:04.963456+09:00",
+      "model": "cached",
+      "updated_at": "2026-11-27T15:28:49.640315+09:00",
       "status": "ok",
       "poem_date": "2026-11-27",
       "poem_slot": "noon",
